@@ -1,27 +1,26 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
+    "target": "ES2017", // 컴파일된 JavaScript의 대상 ECMAScript 버전을 ES2017로 설정
+    "lib": ["dom", "dom.iterable", "esnext"], // 사용할 라이브러리의 타입을 설정 (DOM API, DOM 반복 가능 객체, 최신 ECMAScript)
+    "allowJs": true, // JavaScript 파일을 TypeScript에서 허용
+    "skipLibCheck": true, // 라이브러리 파일의 타입 검사 생략
+    "strict": true, // 엄격한 타입 검사 모드 활성화
+    "forceConsistentCasingInFileNames": true, // 파일 이름의 대소문자 일관성 유지 (대소문자 오류 방지)
+    "noEmit": true, // 컴파일 시 결과 파일을 생성하지 않음
+    "esModuleInterop": true, // CommonJS와 ES6 모듈 호환성 설정
+    "module": "esnext", // 모듈 시스템을 최신 ECMAScript 모듈 형식으로 설정
+    "moduleResolution": "node", // Node.js 방식의 모듈 해석 사용
+    "resolveJsonModule": true, // JSON 파일을 TypeScript 모듈로 임포트 가능
+    "isolatedModules": true, // 개별 파일 단위로 TypeScript 컴파일 (Next.js 프로젝트에서 요구)
+    "jsx": "preserve", // JSX 변환을 유지하여 Babel 등의 도구에서 후처리 가능
+    "incremental": true, // 컴파일 시간을 단축시키기 위한 증분 컴파일 활성화
     "plugins": [
       {
-        "name": "next"
+        "name": "next" // Next.js에서 제공하는 TypeScript 플러그인 사용
       }
     ],
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "baseUrl": "." // 모듈 경로 설정의 기준 디렉토리를 현재 디렉토리로 설정
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"], // 포함할 파일 및 디렉토리 지정
+  "exclude": ["node_modules"] // 제외할 파일 및 디렉토리 지정
 }
