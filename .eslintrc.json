@@ -1,3 +1,27 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": [
+    "next/core-web-vitals",
+    "airbnb",
+    "airbnb-typescript",
+    "prettier"
+  ],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    // React 17+ 버전에서는 React import 불필요
+    "react/react-in-jsx-scope": "off",
+    // props spreading 허용 (Next.js에서 자주 사용)
+    "react/jsx-props-no-spreading": "off",
+    // 일관된 타입 import 스타일
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      { "prefer": "type-imports" }
+    ],
+    // 함수 컴포넌트만 사용
+    "react/function-component-definition": [
+      "error",
+      { "namedComponents": "function-declaration" }
+    ]
+  }
 }
