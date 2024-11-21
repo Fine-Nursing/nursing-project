@@ -22,6 +22,8 @@
     "react/function-component-definition": [
       "error",
       { "namedComponents": "function-declaration" }
-    ]
+    ],
+    "@typescript-eslint/lines-between-class-members": ["error", "always"],
+    "@typescript-eslint/no-throw-literal": "error"
   }
 }
