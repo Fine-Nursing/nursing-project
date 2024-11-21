@@ -23,7 +23,7 @@
       "error",
       { "namedComponents": "function-declaration" }
     ],
-    "@typescript-eslint/lines-between-class-members": ["error", "always"],
-    "@typescript-eslint/no-throw-literal": "error"
+    "@typescript-eslint/lines-between-class-members": "off",
+    "@typescript-eslint/no-throw-literal": "off"
   }
 }
