@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #5d3fd3;
+  --secondary-color: #a855f7;
+  --accent-color: #2dd4bf;
+  --text-primary: #1a1a1a;
+  --text-secondary: #374151;
+  --background-primary: #f8fafc;
+  --background-secondary: #ffffff;
+}
+
+html,
+body {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif;
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--secondary-color)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--primary-color);
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #5d3fd3 0%, #a855f7 100%);
+}
+
+.premium-shadow {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
