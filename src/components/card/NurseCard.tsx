@@ -1,27 +1,23 @@
+'use client';
+
 import React from 'react';
 import { motion, MotionConfig } from 'framer-motion';
-import { FiArrowRight } from 'react-icons/fi';
 import { MapPin, DollarSign, Activity, Calendar, Clock } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import type { NurseProfile } from 'src/types/nurse';
+import type { NurseInfo, NursePosition } from 'src/types/nurse';
 
-function NurseCard({
-  title,
-  subtitle,
-  className,
-  nurseInfo,
-}: {
-  title: string;
-  subtitle: string;
+interface NurseCardProps extends NursePosition {
   className?: string;
-  nurseInfo: NurseProfile;
-}) {
+  nurseInfo: NurseInfo;
+}
+
+function NurseCard({ title, subtitle, className, nurseInfo }: NurseCardProps) {
   const colorStyles = {
     icu: 'bg-slate-50 hover:bg-slate-100',
     emergency: 'bg-purple-50 hover:bg-purple-100',
     pediatrics: 'bg-blue-50 hover:bg-blue-100',
     surgery: 'bg-gray-50 hover:bg-gray-100',
-  };
+  } as const;
 
   return (
     <MotionConfig
@@ -60,7 +56,9 @@ function NurseCard({
             <div className="flex items-center gap-2">
               <span className="text-2xl">{nurseInfo.avatar}</span>
               <p className="flex items-center text-lg font-medium uppercase text-slate-800">
-                <FiArrowRight className="-ml-6 mr-1 opacity-0 transition-all duration-300 ease-in-out group-hover:ml-0 group-hover:opacity-100" />
+                <span className="-ml-6 mr-1 opacity-0 transition-all duration-300 ease-in-out group-hover:ml-0 group-hover:opacity-100">
+                  →
+                </span>
                 {title}
               </p>
             </div>

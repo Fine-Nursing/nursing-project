@@ -1,77 +1,23 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import React from 'react';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ReferenceLine,
-} from 'recharts';
 import NurseBoard from 'src/components/NurseBoard';
+import type {
+  CompensationDataPoint,
+  HospitalCompensation,
+} from 'src/types/nurse';
 
-function CompensationGraph() {
-  const data = [
-    { hourly: 30, concentration: 300, years: '4.8 yrs' },
-    { hourly: 35, concentration: 400, years: '5.1 yrs' },
-    { hourly: 40, concentration: 150, years: '4.4 yrs' },
-    { hourly: 45, concentration: 50, years: '6.2 yrs' },
-    { hourly: 50, concentration: 100, years: '5.0 yrs' },
-    { hourly: 55, concentration: 80, years: '5.2 yrs' },
-    { hourly: 60, concentration: 60, years: '4.4 yrs' },
-    { hourly: 65, concentration: 40, years: '5.1 yrs' },
-  ];
+const CompensationGraph = dynamic(
+  () => import('../../components/charts/CompensationGraph'),
+  { ssr: false } // 서버사이드 렌더링 비활성화
+);
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-4">
-        Compensation Distribution Analysis
-      </h3>
-      <AreaChart width={800} height={400} data={data}>
-        <XAxis
-          dataKey="hourly"
-          label={{ value: 'Hourly Pay', position: 'bottom' }}
-          tick={{ fill: '#64748B' }}
-        />
-        <YAxis
-          label={{ value: 'Concentration', angle: -90, position: 'left' }}
-          tick={{ fill: '#64748B' }}
-        />
-        <Tooltip
-          contentStyle={{
-            backgroundColor: '#FFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '0.5rem',
-          }}
-        />
-        <ReferenceLine
-          x={42.04}
-          stroke="#7C3AED"
-          strokeDasharray="3 3"
-          label={{
-            value: 'Avg: $42.04',
-            fill: '#7C3AED',
-          }}
-        />
-        <defs>
-          <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.3} />
-            <stop offset="95%" stopColor="#7C3AED" stopOpacity={0.1} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="concentration"
-          stroke="#7C3AED"
-          fill="url(#colorGradient)"
-        />
-      </AreaChart>
-    </div>
-  );
+interface CompensationTableProps {
+  data: HospitalCompensation[];
 }
 
-function CompensationTable() {
+function CompensationTable({ data }: CompensationTableProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm mt-8">
       <div className="p-6 border-b border-slate-100">
@@ -99,18 +45,18 @@ function CompensationTable() {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          <tr>
-            <td className="p-4 text-slate-900">NYU Langone</td>
-            <td className="p-4 text-slate-500">—</td>
-            <td className="p-4 text-slate-500">—</td>
-            <td className="p-4 text-slate-500">—</td>
-          </tr>
-          <tr>
-            <td className="p-4 text-slate-900">Columbia University Hospital</td>
-            <td className="p-4 text-slate-500">—</td>
-            <td className="p-4 text-slate-500">—</td>
-            <td className="p-4 text-slate-500">—</td>
-          </tr>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td className="p-4 text-slate-900">{item.hospital}</td>
+              <td className="p-4 text-slate-500">{item.specialty || '—'}</td>
+              <td className="p-4 text-slate-500">
+                {item.yearsOfExperience || '—'}
+              </td>
+              <td className="p-4 text-slate-500">
+                {item.totalCompensation || '—'}
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="p-8 text-center border-t border-slate-100 bg-slate-50">
@@ -121,7 +67,57 @@ function CompensationTable() {
     </div>
   );
 }
+
+interface NavLinkProps {
+  href: string;
+  children: React.ReactNode;
+}
+
+const NavLink: React.FC<NavLinkProps> = ({ href, children }) => (
+  <a
+    href={href}
+    className="text-slate-600 hover:text-slate-900 transition-colors"
+  >
+    {children}
+  </a>
+);
+
 export default function DashboardPage() {
+  const compensationData: CompensationDataPoint[] = [
+    { hourly: 30, concentration: 300, years: '4.8 yrs' },
+    { hourly: 35, concentration: 400, years: '5.1 yrs' },
+    { hourly: 40, concentration: 150, years: '4.4 yrs' },
+    { hourly: 45, concentration: 50, years: '6.2 yrs' },
+    { hourly: 50, concentration: 100, years: '5.0 yrs' },
+    { hourly: 55, concentration: 80, years: '5.2 yrs' },
+    { hourly: 60, concentration: 60, years: '4.4 yrs' },
+    { hourly: 65, concentration: 40, years: '5.1 yrs' },
+  ];
+
+  const hospitalData: HospitalCompensation[] = [
+    {
+      hospital: 'NYU Langone',
+      specialty: 'ICU',
+      yearsOfExperience: '5 years',
+      totalCompensation: '$85,000',
+    },
+    {
+      hospital: 'Columbia University Hospital',
+      specialty: 'Emergency',
+      yearsOfExperience: '7 years',
+      totalCompensation: '$92,000',
+    },
+  ];
+
+  const specialties = [
+    'Intensive Care Unit',
+    'Emergency Room',
+    'Pediatrics',
+    'Surgery',
+    'Oncology',
+    'Cardiology',
+  ];
+
   return (
     <main className="min-h-screen flex flex-col font-sans bg-slate-50">
       {/* Header */}
@@ -135,28 +131,13 @@ export default function DashboardPage() {
             <nav>
               <ul className="flex space-x-8 text-sm font-medium">
                 <li>
-                  <a
-                    href="#"
-                    className="text-slate-600 hover:text-slate-900 transition-colors"
-                  >
-                    프로필
-                  </a>
+                  <NavLink href="#">프로필</NavLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="text-slate-600 hover:text-slate-900 transition-colors"
-                  >
-                    알림
-                  </a>
+                  <NavLink href="#">알림</NavLink>
                 </li>
                 <li>
-                  <a
-                    href="#"
-                    className="text-slate-600 hover:text-slate-900 transition-colors"
-                  >
-                    설정
-                  </a>
+                  <NavLink href="#">설정</NavLink>
                 </li>
               </ul>
             </nav>
@@ -176,9 +157,12 @@ export default function DashboardPage() {
           <p className="text-xl text-gray-700 mb-8 leading-relaxed">
             We provide the data. You make the call.
             <br />
-            Let's make job searching smarter.
+            Let&apos;s make job searching smarter.
           </p>
-          <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center mx-auto">
+          <button
+            type="button"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center mx-auto"
+          >
             Start Onboarding
             <svg
               className="w-4 h-4 ml-2"
@@ -197,55 +181,30 @@ export default function DashboardPage() {
           </button>
         </section>
 
-        {/* Stats Section */}
-        <section className="mt-24">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="p-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg transform hover:scale-[1.02] transition-transform duration-200">
-              <h3 className="text-4xl text-white font-bold mb-4">10,000+</h3>
-              <p className="text-xl text-purple-100">
-                Data points from verified nurses
-              </p>
-            </div>
-            <div className="p-8 bg-white rounded-xl shadow-lg transform hover:scale-[1.02] transition-transform duration-200">
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                Median Compensation (NYC)
-              </h3>
-              <div className="text-4xl font-bold text-slate-900 mb-4">
-                $91,456
-              </div>
-              <p className="text-lg text-slate-600">
-                Includes base pay, differentials, and bonuses
-              </p>
-            </div>
-            <div className="p-8 bg-white rounded-xl shadow-lg transform hover:scale-[1.02] transition-transform duration-200">
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">
-                Compensation Growth (YoY)
-              </h3>
-              <div className="text-4xl font-bold text-slate-900 mb-4">4.8%</div>
-              <p className="text-lg text-slate-600">
-                Compared to 3.2% national average
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* NurseBoard */}
         <section className="mt-24">
           <NurseBoard />
         </section>
+
         {/* Data Visualization */}
         <section className="mt-24">
           <div className="flex space-x-4 mb-8 overflow-x-auto px-1">
-            <button className="bg-purple-100 text-purple-900 px-6 py-2.5 rounded-lg font-medium hover:bg-purple-200 transition-all duration-200 shadow-sm hover:shadow whitespace-nowrap">
-              Intensive Care Unit
-            </button>
-            <button className="bg-white hover:bg-slate-50 px-6 py-2.5 rounded-lg font-medium text-slate-600 transition-all duration-200 shadow-sm hover:shadow whitespace-nowrap">
-              Emergency Room
-            </button>
-            {/* Other buttons remain the same... */}
+            {specialties.map((specialty, index) => (
+              <button
+                type="button"
+                key={specialty}
+                className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow whitespace-nowrap ${
+                  index === 0
+                    ? 'bg-purple-100 text-purple-900 hover:bg-purple-200'
+                    : 'bg-white hover:bg-slate-50 text-slate-600'
+                }`}
+              >
+                {specialty}
+              </button>
+            ))}
           </div>
-          <CompensationGraph />
-          <CompensationTable />
+          <CompensationGraph data={compensationData} />
+          <CompensationTable data={hospitalData} />
         </section>
       </div>
     </main>
