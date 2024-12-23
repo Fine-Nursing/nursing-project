@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import React from 'react';
+import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import NurseBoard from 'src/components/NurseBoard';
 import type {
   CompensationDataPoint,
@@ -159,28 +160,10 @@ export default function DashboardPage() {
             <br />
             Let&apos;s make job searching smarter.
           </p>
-          <button
-            type="button"
-            className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center mx-auto"
-          >
-            Start Onboarding
-            <svg
-              className="w-4 h-4 ml-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
-          </button>
+          <div className="relative h-[48px] flex justify-center">
+            <FloatingOnboardButton />
+          </div>
         </section>
-
         {/* NurseBoard */}
         <section className="mt-24">
           <NurseBoard />
