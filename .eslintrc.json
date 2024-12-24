@@ -16,7 +16,11 @@
     // 일관된 타입 import 스타일
     "@typescript-eslint/consistent-type-imports": [
       "error",
-      { "prefer": "type-imports" }
+      {
+        "prefer": "type-imports",
+        "disallowTypeAnnotations": false,
+        "fixStyle": "separate-type-imports"
+      }
     ],
     "react/require-default-props": "off",
     // 함수 컴포넌트만 사용
