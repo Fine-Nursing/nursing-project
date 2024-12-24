@@ -22,76 +22,71 @@ $ yarn dev
 ```
 
 ---
+# Project Structure
 
-### Project Structure
+```
 .
 ├── README.md
-│
 ├── .env                  # API_KEY, API_URL 등 환경변수
 ├── next.config.js        # Next.js 설정
 ├── postcss.config.js
 ├── tailwind.config.js
-│
-├── src/
-│   ├── api/
-│   │   ├── index.ts     # API base functions (fetch wrappers, etc.)
-│   │   └── nurses.ts    # 예: 간호사 관련 API 호출 로직
-│   │
-│   ├── app/             # (Next.js 13이라면 이 디렉토리에 라우팅)
-│   │
-│   ├── components/
-│   │   ├── NurseCard/
-│   │   │   ├── NurseCard.tsx    # 간호사 카드 컴포넌트
-│   │   │   └── index.ts         # re-export
-│   │   ├── BoardLayout/
-│   │   │   ├── BoardLayout.tsx  # 게시판(보드) 레이아웃 컴포넌트
-│   │   │   └── index.ts
-│   │   ├── NavBar/
-│   │   │   ├── NavBar.tsx      # 상단 네비게이션
-│   │   │   └── index.ts
-│   │   ├── Footer/
-│   │   │   ├── Footer.tsx      # 하단 푸터
-│   │   │   └── index.ts
-│   │   └── ...                 # 기타 공용 컴포넌트
-│   │
-│   ├── constants/
-│   │   └── index.ts            # 상수 모음 (예: DEFAULT_REGION)
-│   │
-│   ├── fonts/
-│   │   └── index.ts            # 웹폰트 로드 로직, local fonts
-│   │
-│   ├── hooks/
-│   │   └── useNurses.ts        # Nurse 데이터 fetch용 custom hook
-│   │
-│   ├── lib/
-│   │   ├── react-query/
-│   │   │   └── queryClient.ts  # React Query Client 인스턴스
-│   │   └── ...                 # 기타 공용 라이브러리 초기화
-│   │
-│   ├── store/
-│   │   └── nurseAtoms.ts       # 예: jotai atoms
-│   │
-│   ├── styles/
-│   │   ├── globals.css         # 글로벌 CSS (Tailwind base import 등)
-│   │   ├── tailwind.css        # Tailwind utilities
-│   │   └── ...                 # component-level scss/css optional
-│   │
-│   ├── types/
-│   │   ├── nurse.d.ts          # Nurse 타입 정의
-│   │   ├── api.d.ts            # API Response/Request 타입 정의
-│   │   └── index.d.ts          # 공용 타입
-│   │
-│   └── utils/
-│       ├── format.ts           # 포맷 관련 유틸 (통화단위 변환 등)
-│       └── logger.ts           # 로깅용 유틸
-│
-└── pages/
-    ├── _app.tsx               # 글로벌 레이아웃, Provider 세팅
-    ├── _document.tsx          # HTML Document 구조
-    ├── index.tsx              # 홈 페이지
-    └── dashboard.tsx          # 대시보드 페이지
-
-
+└── src/
+    ├── api/
+    │   ├── index.ts     # API base functions (fetch wrappers, etc.)
+    │   └── nurses.ts    # 예: 간호사 관련 API 호출 로직
+    │
+    ├── app/             # Next.js 13 routing directory
+    │
+    ├── components/
+    │   ├── NurseCard/
+    │   │   ├── NurseCard.tsx
+    │   │   └── index.ts
+    │   ├── BoardLayout/
+    │   │   ├── BoardLayout.tsx
+    │   │   └── index.ts
+    │   ├── NavBar/
+    │   │   ├── NavBar.tsx
+    │   │   └── index.ts
+    │   └── Footer/
+    │       ├── Footer.tsx
+    │       └── index.ts
+    │
+    ├── constants/
+    │   └── index.ts     # 상수 모음
+    │
+    ├── fonts/
+    │   └── index.ts     # 웹폰트 로드 로직
+    │
+    ├── hooks/
+    │   └── useNurses.ts # Custom hooks
+    │
+    ├── lib/
+    │   └── react-query/
+    │       └── queryClient.ts
+    │
+    ├── store/
+    │   └── nurseAtoms.ts
+    │
+    ├── styles/
+    │   ├── globals.css
+    │   └── tailwind.css
+    │
+    ├── types/
+    │   ├── nurse.d.ts
+    │   ├── api.d.ts
+    │   └── index.d.ts
+    │
+    ├── utils/
+    │   ├── format.ts
+    │   └── logger.ts
+    │
+    └── pages/
+        ├── _app.tsx
+        ├── _document.tsx
+        ├── index.tsx
+        └── dashboard.tsx
+```
 
   
 ### 📁 Folder Details
