@@ -46,8 +46,8 @@ function CompensationTable({ data }: CompensationTableProps) {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
-          {data.map((item, index) => (
-            <tr key={index}>
+          {data.map((item) => (
+            <tr key={item.id}>
               <td className="p-4 text-slate-900">{item.hospital}</td>
               <td className="p-4 text-slate-500">{item.specialty || '—'}</td>
               <td className="p-4 text-slate-500">
@@ -69,20 +69,6 @@ function CompensationTable({ data }: CompensationTableProps) {
   );
 }
 
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-}
-
-const NavLink: React.FC<NavLinkProps> = ({ href, children }) => (
-  <a
-    href={href}
-    className="text-slate-600 hover:text-slate-900 transition-colors"
-  >
-    {children}
-  </a>
-);
-
 export default function DashboardPage() {
   const compensationData: CompensationDataPoint[] = [
     { hourly: 30, concentration: 300, years: '4.8 yrs' },
@@ -97,12 +83,14 @@ export default function DashboardPage() {
 
   const hospitalData: HospitalCompensation[] = [
     {
+      id: 'nyu-langone',
       hospital: 'NYU Langone',
       specialty: 'ICU',
       yearsOfExperience: '5 years',
       totalCompensation: '$85,000',
     },
     {
+      id: 'columbia-hospital',
       hospital: 'Columbia University Hospital',
       specialty: 'Emergency',
       yearsOfExperience: '7 years',
@@ -132,13 +120,7 @@ export default function DashboardPage() {
             <nav>
               <ul className="flex space-x-8 text-sm font-medium">
                 <li>
-                  <NavLink href="#">프로필</NavLink>
-                </li>
-                <li>
-                  <NavLink href="#">알림</NavLink>
-                </li>
-                <li>
-                  <NavLink href="#">설정</NavLink>
+                  <button type="button">프로필</button>
                 </li>
               </ul>
             </nav>

@@ -36,8 +36,10 @@ function NurseBoard() {
     setRotations([0.5, -0.3, 0.2, -0.4]);
   }, []);
 
+  // nurses 배열에 id 추가
   const nurses: NursePosition[] = [
     {
+      id: 'senior-icu-nurse', // 고유 ID 추가
       title: 'Senior Nurse',
       subtitle: 'Join our ICU team and make a difference in critical care',
       className: 'bg-emerald-300',
@@ -52,6 +54,7 @@ function NurseBoard() {
       },
     },
     {
+      id: 'specialist-emergency-nurse', // 고유 ID 추가
       title: 'Specialist Nurse',
       subtitle: 'Be part of our emergency response team',
       className: 'bg-blue-300',
@@ -66,6 +69,7 @@ function NurseBoard() {
       },
     },
     {
+      id: 'head-pediatrics-nurse', // 고유 ID 추가
       title: 'Head Nurse',
       subtitle: 'Lead our pediatrics department with care and compassion',
       className: 'bg-pink-300',
@@ -80,6 +84,7 @@ function NurseBoard() {
       },
     },
     {
+      id: 'staff-surgery-nurse', // 고유 ID 추가
       title: 'Staff Nurse',
       subtitle: 'Join our surgical team and grow your career',
       className: 'bg-yellow-300',
@@ -173,7 +178,7 @@ function NurseBoard() {
           <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {nurses.map((nurse, index) => (
               <div
-                key={index}
+                key={nurse.id}
                 className="transform transition-all duration-200"
                 style={{
                   transform: `rotate(${rotations[index] || 0}deg)`,

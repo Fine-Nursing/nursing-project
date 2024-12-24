@@ -26,6 +26,7 @@ export interface NurseInfo {
 }
 
 export interface NursePosition {
+  id: string;
   title: string;
   subtitle: string;
   className?: string;
@@ -39,6 +40,7 @@ export interface CompensationDataPoint {
 }
 
 export interface HospitalCompensation {
+  id: string;
   hospital: string;
   specialty?: string;
   yearsOfExperience?: string;
