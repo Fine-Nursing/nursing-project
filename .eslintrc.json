@@ -18,6 +18,7 @@
       "error",
       { "prefer": "type-imports" }
     ],
+    "react/require-default-props": "off",
     // 함수 컴포넌트만 사용
     "react/function-component-definition": [
       "error",
