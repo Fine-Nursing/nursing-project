@@ -1,5 +1,3 @@
-import NursingGraph from '../components/graph/NursingGraph';
-
 export default function HomePage() {
   return (
     <div>
@@ -11,9 +9,7 @@ export default function HomePage() {
           Explore our dashboard for personalized nursing positions and insights.
         </p>
 
-        <div className="w-full">
-          <NursingGraph />
-        </div>
+        <div className="w-full" />
       </main>
     </div>
   );
