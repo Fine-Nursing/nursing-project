@@ -1,6 +1,15 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
+import { useTable, useFilters, useSortBy, usePagination } from 'react-table';
+import {
+  Settings2,
+  Layout,
+  List,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+
 import type {
   Column,
   CellProps,
@@ -11,25 +20,16 @@ import type {
   UseSortByState,
   UsePaginationInstanceProps,
   UsePaginationState,
+
+  // ↓ 초기 상태를 캐스팅할 때 필요한 TableState
+  TableState,
 } from 'react-table';
-import { useTable, useFilters, useSortBy, usePagination } from 'react-table';
-import {
-  Settings2,
-  Layout,
-  List,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-react';
-
 import type { ColumnId } from './CustomizePanel';
-import CustomizePanel from './CustomizePanel';
 
+import CustomizePanel from './CustomizePanel';
 import TableView from './TableView';
 import CompactView from './CompactView';
 
-// --------------------
-// 1) Nurse 타입 정의
-// --------------------
 interface Nurse {
   user: string;
   specialty: string;
@@ -38,30 +38,21 @@ interface Nurse {
   shiftType: 'Day' | 'Night';
   basePay: number;
   differentials: number;
-  totalPay: number; // 계산된 값 포함
+  totalPay: number;
 }
 
 interface NursingCompensationTableProps {
-  initialData: Omit<Nurse, 'totalPay'>[]; // totalPay는 내부에서 계산
+  initialData: Omit<Nurse, 'totalPay'>[];
   pageSize?: number;
 }
 
-// --------------------
-// 2) 확장 타입 정의
-// --------------------
 type EnhancedTableInstance<T extends object> = TableInstance<T> &
   UseFiltersInstanceProps<T> &
   UseSortByInstanceProps<T> &
   UsePaginationInstanceProps<T> & {
     state: UseFiltersState<T> & UseSortByState<T> & UsePaginationState<T>;
-    initialState: {
-      pageSize: number;
-      sortBy: Array<{ id: string; desc: boolean }>;
-    };
   };
-// -------------------------------------------
-// 3) Cell 렌더 함수를 별도 컴포넌트로 분리
-// -------------------------------------------
+
 function UserCell({ value }: CellProps<Nurse, Nurse['user']>) {
   return <span className="font-medium">{value}</span>;
 }
@@ -71,7 +62,6 @@ function ShiftCell({ value }: CellProps<Nurse, Nurse['shiftType']>) {
   const bgColor = isDay
     ? 'bg-green-100 text-green-800'
     : 'bg-blue-100 text-blue-800';
-
   return (
     <span
       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor}`}
@@ -99,10 +89,7 @@ function TotalPayCell({ value }: CellProps<Nurse, Nurse['totalPay']>) {
   );
 }
 
-// -----------------------------------------------------
-// 4) 메인 NursingCompensationTable 컴포넌트
-// -----------------------------------------------------
-function NursingCompensationTable({
+export default function NursingCompensationTable({
   initialData,
   pageSize: initialPageSize = 10,
 }: NursingCompensationTableProps) {
@@ -119,7 +106,7 @@ function NursingCompensationTable({
     'totalPay',
   ]);
 
-  // totalPay를 미리 계산
+  // totalPay 미리 계산
   const data = useMemo<Nurse[]>(
     () =>
       initialData.map((nurse) => ({
@@ -129,9 +116,7 @@ function NursingCompensationTable({
     [initialData]
   );
 
-  // ---------------------------------------------
-  // 5) allColumns: Cell 부분을 모두 컴포넌트로 대체
-  // ---------------------------------------------
+  // 모든 컬럼 정의
   const allColumns = useMemo<Column<Nurse>[]>(
     () => [
       {
@@ -175,35 +160,31 @@ function NursingCompensationTable({
     []
   );
 
-  // 현재 활성화된 컬럼만 추출
+  // 현재 활성화된 컬럼만
   const columns = useMemo<Column<Nurse>[]>(
     () =>
       activeColumns
         .map((colId) => allColumns.find((col) => col.accessor === colId))
-        .filter(Boolean) as Column<Nurse>[], // null 제거
+        .filter(Boolean) as Column<Nurse>[],
     [allColumns, activeColumns]
   );
 
-  // -------------------------------
-  // 6) react-table 훅
-  //    => 확장 타입으로 캐스팅
-  // -------------------------------
+  // useTable 훅
   const instance = useTable<Nurse>(
     {
       columns,
       data,
+      // @ts-ignore 또는 as Partial<TableState<Nurse>>
       initialState: {
-        pageIndex: 0,
         pageSize: initialPageSize,
         sortBy: [{ id: 'totalPay', desc: true }],
-      },
+      } as Partial<TableState<Nurse>>,
     },
     useFilters,
     useSortBy,
     usePagination
   ) as EnhancedTableInstance<Nurse>;
 
-  // 확장 타입을 쓰면 페이지네이션 관련 메서드, 프로퍼티가 추론됨
   const {
     getTableProps,
     getTableBodyProps,
@@ -220,7 +201,7 @@ function NursingCompensationTable({
 
   return (
     <div className="space-y-4">
-      {/* 상단 버튼 */}
+      {/* 상단 버튼들 */}
       <div className="flex justify-between items-center">
         <div className="flex space-x-2">
           <button
@@ -247,7 +228,7 @@ function NursingCompensationTable({
             <button
               type="button"
               onClick={() => setViewMode('compact')}
-              className={`px-3 py-2 rounded-r-md border-t border-r border-b text-sm font-medium ${
+              className={`px-3 py-2 rounded-r-md border text-sm font-medium ${
                 viewMode === 'compact'
                   ? 'bg-purple-100 text-purple-700 border-purple-500'
                   : 'border-gray-300 text-gray-700 hover:bg-gray-50'
@@ -273,11 +254,11 @@ function NursingCompensationTable({
         />
       )}
 
-      {/* 테이블/콤팩트 뷰 */}
+      {/* 테이블 / 콤팩트 뷰 */}
       <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-hidden">
         {viewMode === 'table' ? (
           <TableView
-            headerGroups={headerGroups}
+            headerGroups={headerGroups} // <— HeaderGroup<Data>[]
             page={page}
             prepareRow={prepareRow}
             getTableProps={getTableProps}
@@ -318,5 +299,3 @@ function NursingCompensationTable({
     </div>
   );
 }
-
-export default NursingCompensationTable;
