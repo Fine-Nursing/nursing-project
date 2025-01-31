@@ -1,25 +1,14 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import React, { useState } from 'react';
+import React from 'react';
 import { nurseData } from 'src/api/mock-data';
 
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import NursingGraph from 'src/components/graph';
 import NurseBoard from 'src/components/NurseBoard';
-import NursingCompensationTable, {
-  SPECIALTY_OPTIONS,
-} from 'src/components/table/NursingCompensationTable';
+import NursingCompensationTable from 'src/components/table/NursingCompensationTable';
 
 export default function DashboardPage() {
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    null
-  );
-
-  const filteredData = selectedSpecialty
-    ? nurseData.filter((nurse) => nurse.specialty === selectedSpecialty)
-    : nurseData;
-
   return (
     <main className="min-h-screen flex flex-col font-sans bg-slate-50">
       {/* Header */}
@@ -71,10 +60,7 @@ export default function DashboardPage() {
             <NursingGraph />
           </div>
           <div className="bg-white rounded-xl shadow-sm p-8">
-            <NursingCompensationTable
-              initialData={filteredData}
-              pageSize={10}
-            />
+            <NursingCompensationTable initialData={nurseData} pageSize={10} />
           </div>
         </section>
       </div>
