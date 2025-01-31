@@ -5,12 +5,7 @@ import React from 'react';
 import { motion, MotionConfig } from 'framer-motion';
 import { MapPin, DollarSign, Activity, Calendar, Clock } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import type { NurseInfo, NursePosition } from 'src/types/nurse';
-
-interface NurseCardProps extends NursePosition {
-  className?: string;
-  nurseInfo: NurseInfo;
-}
+import type { BaseNurseInfo, NurseCardProps } from 'src/types/nurse';
 
 const colorStyles = {
   icu: 'bg-slate-50 hover:bg-slate-100',
@@ -96,7 +91,7 @@ function CardHeader({ avatar, title }: { avatar: string; title: string }) {
 
 // Card Infomation
 
-function CardInfo({ nurseInfo }: { nurseInfo: NurseInfo }) {
+function CardInfo({ nurseInfo }: { nurseInfo: BaseNurseInfo }) {
   const infoItems = [
     { id: 'location', icon: <MapPin size={16} />, text: nurseInfo.location },
     { id: 'salary', icon: <DollarSign size={16} />, text: nurseInfo.salary },
