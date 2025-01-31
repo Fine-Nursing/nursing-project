@@ -1,5 +1,3 @@
-import NursingGraph2 from 'src/components/graph';
-
 export default function HomePage() {
   return (
     <div>
@@ -10,7 +8,6 @@ export default function HomePage() {
         <p className="mb-8">
           Explore our dashboard for personalized nursing positions and insights.
         </p>
-        <NursingGraph2 />
         <div className="w-full" />
       </main>
     </div>

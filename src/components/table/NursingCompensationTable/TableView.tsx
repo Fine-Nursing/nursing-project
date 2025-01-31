@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-
 import type {
   ColumnInstance,
   HeaderGroup,
@@ -46,15 +45,15 @@ export default function TableView({
   };
 
   return (
-    <table {...getTableProps()}>
-      <thead>
+    <table {...getTableProps()} className="min-w-full divide-y divide-gray-300">
+      <thead className="bg-gray-50">
         {headerGroups.map((headerGroup) => {
           const { key: groupKey, ...restGroupProps } =
             headerGroup.getHeaderGroupProps();
           return (
             <tr key={groupKey} {...restGroupProps}>
               {headerGroup.headers.map((col) => {
-                // (1) col을 ColumnInstance<Data> & UseSortByColumnProps<Data> 로 캐스팅
+                // (1) col을 ColumnInstance<Data> & UseSortByColumnProps<Data>로 캐스팅
                 const column = col as unknown as ColumnInstance<Data> &
                   UseSortByColumnProps<Data>;
 
@@ -63,10 +62,13 @@ export default function TableView({
                   column.getHeaderProps(sortProps);
 
                 return (
-                  <th key={columnKey} {...restColumnProps}>
+                  <th
+                    key={columnKey}
+                    {...restColumnProps}
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
                     <div className="flex items-center space-x-2">
                       <span>{column.render('Header')}</span>
-                      {/* (2) canSort, isSorted 등도 여기서 정상 인식 */}
                       {column.canSort && renderSortIcon(column)}
                     </div>
                   </th>
@@ -76,16 +78,23 @@ export default function TableView({
           );
         })}
       </thead>
-      <tbody {...getTableBodyProps()}>
+      <tbody
+        {...getTableBodyProps()}
+        className="bg-white divide-y divide-gray-200"
+      >
         {page.map((row) => {
           prepareRow(row);
           const { key: rowKey, ...restRowProps } = row.getRowProps();
           return (
-            <tr key={rowKey} {...restRowProps}>
+            <tr key={rowKey} {...restRowProps} className="hover:bg-gray-50">
               {row.cells.map((cell) => {
                 const { key: cellKey, ...restCellProps } = cell.getCellProps();
                 return (
-                  <td key={cellKey} {...restCellProps}>
+                  <td
+                    key={cellKey}
+                    {...restCellProps}
+                    className="px-6 py-4 whitespace-nowrap"
+                  >
                     {cell.render('Cell')}
                   </td>
                 );
