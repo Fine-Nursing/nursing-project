@@ -2,12 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
-import nurseData from 'src/api/mock-data';
+import { nurseData } from 'src/api/mock-data';
+
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
-import NursingGraph from 'src/components/graph/NursingGraph';
+import NursingGraph from 'src/components/graph';
 import NurseBoard from 'src/components/NurseBoard';
-import {
-  NurseCompensationTable,
+import NursingCompensationTable, {
   SPECIALTY_OPTIONS,
 } from 'src/components/table/NursingCompensationTable';
 
@@ -71,7 +71,10 @@ export default function DashboardPage() {
             <NursingGraph />
           </div>
           <div className="bg-white rounded-xl shadow-sm p-8">
-            <NurseCompensationTable initialData={filteredData} pageSize={10} />
+            <NursingCompensationTable
+              initialData={filteredData}
+              pageSize={10}
+            />
           </div>
         </section>
       </div>

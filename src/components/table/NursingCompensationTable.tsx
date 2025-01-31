@@ -25,7 +25,7 @@ const arrayMove = (arr, oldIndex, newIndex) => {
   return newArr;
 };
 
-export function NurseCompensationTable({
+function NursingCompensationTable({
   initialData,
   pageSize: initialPageSize = 10,
 }) {
@@ -416,3 +416,5 @@ export function NurseCompensationTable({
     </div>
   );
 }
+
+export default NursingCompensationTable;
