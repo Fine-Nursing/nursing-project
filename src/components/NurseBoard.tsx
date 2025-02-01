@@ -39,11 +39,12 @@ function NurseBoard() {
   // nurses 배열에 id 추가
   const nurses: NursePosition[] = [
     {
-      id: 'senior-icu-nurse', // 고유 ID 추가
+      id: 'senior-icu-nurse',
       title: 'Senior Nurse',
       subtitle: 'Join our ICU team and make a difference in critical care',
       className: 'bg-emerald-300',
       nurseInfo: {
+        id: 'nurse-icu-1',
         role: 'Senior Nurse',
         location: 'ICU Ward',
         salary: '$75,000/year',
@@ -54,11 +55,12 @@ function NurseBoard() {
       },
     },
     {
-      id: 'specialist-emergency-nurse', // 고유 ID 추가
+      id: 'specialist-emergency-nurse',
       title: 'Specialist Nurse',
       subtitle: 'Be part of our emergency response team',
       className: 'bg-blue-300',
       nurseInfo: {
+        id: 'nurse-emergency-1',
         role: 'Specialist Nurse',
         location: 'Emergency',
         salary: '$82,000/year',
@@ -69,11 +71,12 @@ function NurseBoard() {
       },
     },
     {
-      id: 'head-pediatrics-nurse', // 고유 ID 추가
+      id: 'head-pediatrics-nurse',
       title: 'Head Nurse',
       subtitle: 'Lead our pediatrics department with care and compassion',
       className: 'bg-pink-300',
       nurseInfo: {
+        id: 'nurse-pediatrics-1',
         role: 'Head Nurse',
         location: 'Pediatrics',
         salary: '$88,000/year',
@@ -84,11 +87,12 @@ function NurseBoard() {
       },
     },
     {
-      id: 'staff-surgery-nurse', // 고유 ID 추가
+      id: 'staff-surgery-nurse',
       title: 'Staff Nurse',
       subtitle: 'Join our surgical team and grow your career',
       className: 'bg-yellow-300',
       nurseInfo: {
+        id: 'nurse-surgery-1',
         role: 'Staff Nurse',
         location: 'Surgery',
         salary: '$70,000/year',
