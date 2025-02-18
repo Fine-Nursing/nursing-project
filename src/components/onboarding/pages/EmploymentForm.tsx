@@ -1,15 +1,20 @@
 'use client';
 
+import React, { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useState, useCallback } from 'react';
-import ActionButton from 'src/components/button/ActionButton';
 import {
-  NURSE_PATIENT_RATIOS,
-  // NURSING_SPECIALTIES, // 기존 배열은 사용 안함
-} from 'src/constants/onbarding';
+  StandaloneSearchBox,
+  useJsApiLoader,
+  GoogleMap,
+} from '@react-google-maps/api';
+
+import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
-// Specialty 자동완성을 위해 사용할 전체 리스트
+// Nurse-Patient Ratio
+const NURSE_PATIENT_RATIOS = ['1:1', '1:2', '1:3', '1:4', '1:5+'];
+
+// Specialty 전체 목록 (검색/자동완성)
 const ALL_SPECIALTIES = [
   'Admin',
   'Aesthetics',
@@ -63,7 +68,7 @@ const ALL_SPECIALTIES = [
   'Wound Care',
 ];
 
-// Employment Type 옵션
+// Employment Types
 const EMPLOYMENT_TYPES = [
   'Full-time',
   'Part-time',
@@ -73,43 +78,161 @@ const EMPLOYMENT_TYPES = [
   'Agency Nursing',
 ];
 
-// Shift Type 옵션
 type ShiftType =
   | 'Day Shift'
   | 'Night Shift'
   | 'Evening Shift'
   | 'Rotating Shift';
 
-export default function EmploymentForm() {
-  const { formData, updateFormData, setStep } = useOnboardingStore();
+/** Specialty 검색/자동완성 커스텀 훅 */
+function useSpecialtyAutocomplete(initialValue: string) {
+  const [specialtyInput, setSpecialtyInput] = useState(initialValue);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Specialty 자동완성용 로컬 상태
-  const [specialtyInput, setSpecialtyInput] = useState(
-    formData.specialty || ''
-  );
-  const [showSpecialtySuggestions, setShowSpecialtySuggestions] =
-    useState(false);
-
-  // specialtyInput 기준으로 필터링된 목록
-  const filteredSpecialties = ALL_SPECIALTIES.filter((s) =>
+  const filteredList = ALL_SPECIALTIES.filter((s) =>
     s.toLowerCase().includes(specialtyInput.toLowerCase())
   );
 
+  const handleSelect = useCallback((selected: string) => {
+    setSpecialtyInput(selected);
+    setShowSuggestions(false);
+  }, []);
+
+  return {
+    specialtyInput,
+    setSpecialtyInput,
+    showSuggestions,
+    setShowSuggestions,
+    filteredList,
+    handleSelect,
+  };
+}
+
+/** 주소 컴포넌트에서 City와 State 추출 */
+function parseCityState(
+  addressComponents: google.maps.GeocoderAddressComponent[]
+) {
+  let city = '';
+  let state = '';
+
+  addressComponents.forEach((comp) => {
+    if (comp.types.includes('locality')) {
+      city = comp.long_name;
+    }
+    if (comp.types.includes('administrative_area_level_1')) {
+      state = comp.short_name;
+    }
+  });
+
+  return { city, state };
+}
+
+export default function EmploymentForm() {
+  const { formData, updateFormData, setStep } = useOnboardingStore();
+  // Specialty 자동완성
+  const {
+    specialtyInput,
+    setSpecialtyInput,
+    showSuggestions,
+    setShowSuggestions,
+    filteredList,
+    handleSelect,
+  } = useSpecialtyAutocomplete(formData.specialty || '');
+
+  // Specialty 변경 시 store 반영
+  const handleSpecialtyChange = (value: string) => {
+    setSpecialtyInput(value);
+    updateFormData({ specialty: value });
+    setShowSuggestions(true);
+  };
+
+  // 폼 제출
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep('culture');
   };
 
-  // Specialty를 직접 변경하고, store에도 저장
-  const handleSelectSpecialty = useCallback(
-    (selected: string) => {
-      setSpecialtyInput(selected);
-      updateFormData({ specialty: selected });
-      setShowSpecialtySuggestions(false);
-    },
-    [updateFormData]
-  );
+  // --------------------------------------------------
+  // 지도 검색 모달 관련
+  // --------------------------------------------------
+  const [showMapModal, setShowMapModal] = useState(false);
 
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+    libraries: ['places'],
+  });
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
+
+  // 검색 결과 목록
+  const [placesResult, setPlacesResult] = useState<
+    google.maps.places.PlaceResult[]
+  >([]);
+  // 클릭해서 선택된 인덱스
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Preview 표시를 위한 임시 상태
+  const [tempOrgName, setTempOrgName] = useState('');
+  const [tempCity, setTempCity] = useState('');
+  const [tempState, setTempState] = useState('');
+
+  const handleMapLoad = (map: google.maps.Map) => {
+    mapRef.current = map;
+  };
+
+  // 검색이 일어났을 때
+  const handlePlacesChanged = () => {
+    if (!searchBoxRef.current) return;
+    const places = searchBoxRef.current.getPlaces() || [];
+    setPlacesResult(places);
+    // 선택 인덱스/미리보기 초기화
+    setSelectedIndex(null);
+    setTempOrgName('');
+    setTempCity('');
+    setTempState('');
+  };
+
+  // 검색 결과 목록에서 클릭 시
+  const handlePlaceClick = (index: number) => {
+    setSelectedIndex(index);
+
+    const place = placesResult[index];
+    const orgName = place.name || '';
+
+    let city = '';
+    let state = '';
+    if (place.address_components) {
+      const parsed = parseCityState(place.address_components);
+      city = parsed.city;
+      state = parsed.state;
+    }
+
+    // 임시 Preview 업데이트
+    setTempOrgName(orgName);
+    setTempCity(city);
+    setTempState(state);
+
+    // 지도 이동
+    if (place.geometry && place.geometry.location && mapRef.current) {
+      const loc = place.geometry.location;
+      mapRef.current.panTo({ lat: loc.lat(), lng: loc.lng() });
+      mapRef.current.setZoom(14);
+    }
+  };
+
+  // "Select" 버튼
+  const handleSelectPlace = () => {
+    if (selectedIndex === null) return; // 아무 항목도 선택 안 한 경우
+    updateFormData({ organizationName: tempOrgName });
+    updateFormData({ organizationCity: tempCity });
+    updateFormData({ organizationState: tempState });
+    setShowMapModal(false);
+  };
+
+  // --------------------------------------------------
+  // 렌더
+  // --------------------------------------------------
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <motion.div
@@ -135,32 +258,32 @@ export default function EmploymentForm() {
               <span className="text-2xl">🏢</span> Your Workplace
             </h3>
 
+            {/* Specialty + Sub-specialty */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Specialty */}
+              {/* Specialty (검색/자동완성) */}
               <div className="space-y-2 relative">
                 <label className="block text-sm font-medium text-gray-700">
                   What's your specialty?
                 </label>
-                {/* 기존 select 대신 검색 가능 input */}
                 <input
                   type="text"
                   value={specialtyInput}
-                  onChange={(e) => {
-                    setSpecialtyInput(e.target.value);
-                    updateFormData({ specialty: e.target.value });
-                    setShowSpecialtySuggestions(true);
-                  }}
-                  onFocus={() => setShowSpecialtySuggestions(true)}
+                  onChange={(e) => handleSpecialtyChange(e.target.value)}
+                  onFocus={() => setShowSuggestions(true)}
                   placeholder="e.g., ICU, Pediatrics"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 />
-                {/* 자동완성 추천 목록 */}
-                {showSpecialtySuggestions && filteredSpecialties.length > 0 && (
+                {/* Specialty 자동완성 추천 목록 */}
+                {showSuggestions && filteredList.length > 0 && (
                   <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto">
-                    {filteredSpecialties.map((s) => (
+                    {filteredList.map((s) => (
                       <li
                         key={s}
-                        onClick={() => handleSelectSpecialty(s)}
+                        onClick={() => {
+                          handleSelect(s);
+                          updateFormData({ specialty: s });
+                        }}
                         className="cursor-pointer px-4 py-2 hover:bg-teal-100"
                       >
                         {s}
@@ -182,27 +305,51 @@ export default function EmploymentForm() {
                     updateFormData({ subSpecialty: e.target.value })
                   }
                   placeholder="E.g., Pediatric ICU"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 />
               </div>
             </div>
 
+            {/* Organization info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Organization Name */}
+              {/* Organization Name + 버튼(지도 검색) */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Where do you work?
                 </label>
-                {/* 여기서 나중에 구글 플레이스 등과 연동하여 병원 명/기관 명 자동 검색 가능 */}
-                <input
-                  type="text"
-                  value={formData.organizationName || ''}
-                  onChange={(e) =>
-                    updateFormData({ organizationName: e.target.value })
-                  }
-                  placeholder="Hospital or organization name"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
-                />
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={formData.organizationName || ''}
+                    onChange={(e) =>
+                      updateFormData({ organizationName: e.target.value })
+                    }
+                    placeholder="Hospital or Organization Name"
+                    className="flex-1 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                               focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  />
+                  {/* Search on Map 버튼 (크기/스타일 다운) */}
+                  <ActionButton
+                    type="button"
+                    onClick={() => {
+                      // 초기화 후 모달 열기
+                      setPlacesResult([]);
+                      setSelectedIndex(null);
+                      setTempOrgName('');
+                      setTempCity('');
+                      setTempState('');
+                      setShowMapModal(true);
+                    }}
+                    className="px-4 py-2 text-sm"
+                    style={{
+                      backgroundColor: '#14b8a6', // Tailwind teal-500
+                      color: 'white',
+                    }}
+                  >
+                    Map
+                  </ActionButton>
+                </div>
               </div>
 
               {/* Employment Start Year */}
@@ -221,12 +368,13 @@ export default function EmploymentForm() {
                     })
                   }
                   placeholder="Start year"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 />
               </div>
             </div>
 
-            {/* 구글 플레이스 API 등을 통한 위치 자동완성을 고려할 수 있음 */}
+            {/* City + State */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -239,10 +387,10 @@ export default function EmploymentForm() {
                     updateFormData({ organizationCity: e.target.value })
                   }
                   placeholder="City"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 />
               </div>
-
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   State
@@ -254,7 +402,8 @@ export default function EmploymentForm() {
                     updateFormData({ organizationState: e.target.value })
                   }
                   placeholder="State"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 />
               </div>
             </div>
@@ -267,7 +416,7 @@ export default function EmploymentForm() {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Employment Type 추가 */}
+              {/* Employment Type */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Employment Type
@@ -277,7 +426,8 @@ export default function EmploymentForm() {
                   onChange={(e) =>
                     updateFormData({ employmentType: e.target.value })
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map((type) => (
@@ -298,7 +448,8 @@ export default function EmploymentForm() {
                   onChange={(e) =>
                     updateFormData({ shiftType: e.target.value as ShiftType })
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 >
                   <option value="">Select your shift</option>
                   {[
@@ -315,7 +466,7 @@ export default function EmploymentForm() {
               </div>
             </div>
 
-            {/* Nurse to Patient Ratio */}
+            {/* Nurse to Patient Ratio + Pay */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
@@ -326,7 +477,8 @@ export default function EmploymentForm() {
                   onChange={(e) =>
                     updateFormData({ nurseToPatientRatio: e.target.value })
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                 >
                   <option value="">Select ratio</option>
                   {NURSE_PATIENT_RATIOS.map((ratio) => (
@@ -337,7 +489,6 @@ export default function EmploymentForm() {
                 </select>
               </div>
 
-              {/* Pay 정보 */}
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   What's your base pay?
@@ -355,7 +506,8 @@ export default function EmploymentForm() {
                       onChange={(e) =>
                         updateFormData({ basePay: parseFloat(e.target.value) })
                       }
-                      className="w-full p-3 pl-8 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                      className="w-full p-3 pl-8 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                                 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                     />
                   </div>
                   <select
@@ -365,7 +517,8 @@ export default function EmploymentForm() {
                         paymentFrequency: e.target.value as 'hourly' | 'yearly',
                       })
                     }
-                    className="w-32 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                    className="w-32 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                               focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
                   >
                     <option value="hourly">/ hour</option>
                     <option value="yearly">/ year</option>
@@ -406,6 +559,119 @@ export default function EmploymentForm() {
           </div>
         </form>
       </motion.div>
+
+      {/* ------------------------------------------------------------------
+          모달: 구글 맵 + SearchBox + 검색결과 목록
+      ------------------------------------------------------------------ */}
+      {showMapModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-2xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-auto p-4 relative">
+            <button
+              type="button"
+              onClick={() => setShowMapModal(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-2xl font-bold mb-4 text-teal-700">
+              Search on Map
+            </h3>
+
+            {!isLoaded ? (
+              <div className="text-center py-8">Loading map...</div>
+            ) : (
+              <div className="flex flex-col gap-4">
+                {/* 검색창 */}
+                <StandaloneSearchBox
+                  onLoad={(ref) => (searchBoxRef.current = ref)}
+                  onPlacesChanged={handlePlacesChanged}
+                >
+                  <input
+                    type="text"
+                    placeholder="Search your hospital or organization"
+                    className="w-full p-3 mb-2 text-lg border border-gray-200 rounded-xl
+                               focus:outline-none focus:border-teal-500"
+                  />
+                </StandaloneSearchBox>
+
+                {/* 검색 결과 목록 */}
+                {placesResult.length > 0 && (
+                  <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2">
+                    {placesResult.map((place, idx) => {
+                      const isActive = selectedIndex === idx;
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => handlePlaceClick(idx)}
+                          className={`px-3 py-2 rounded-md cursor-pointer mb-1 ${
+                            isActive
+                              ? 'bg-teal-100'
+                              : 'hover:bg-gray-100 transition-colors'
+                          }`}
+                        >
+                          <div className="text-base font-semibold">
+                            {place.name}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {place.formatted_address || place.vicinity}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* 지도 */}
+                <div className="relative w-full h-[400px]">
+                  <GoogleMap
+                    onLoad={handleMapLoad}
+                    mapContainerStyle={{ width: '100%', height: '100%' }}
+                    center={{ lat: 39.8283, lng: -98.5795 }} // 미국 중앙 정도
+                    zoom={4}
+                  />
+                </div>
+
+                {/* 선택된 곳 미리보기 */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="font-semibold mb-2 text-gray-700">Preview:</p>
+                  <ul className="text-gray-600 text-sm">
+                    <li>
+                      <span className="font-medium">Name:</span>{' '}
+                      {tempOrgName || 'N/A'}
+                    </li>
+                    <li>
+                      <span className="font-medium">City:</span>{' '}
+                      {tempCity || 'N/A'}
+                    </li>
+                    <li>
+                      <span className="font-medium">State:</span>{' '}
+                      {tempState || 'N/A'}
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="flex justify-end gap-2 mt-2">
+                  <ActionButton
+                    variant="outline"
+                    onClick={() => setShowMapModal(false)}
+                    className="px-6 py-2 text-sm"
+                  >
+                    Cancel
+                  </ActionButton>
+                  <ActionButton
+                    onClick={handleSelectPlace}
+                    disabled={selectedIndex === null}
+                    className="px-8 py-2 text-sm"
+                  >
+                    Select
+                  </ActionButton>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

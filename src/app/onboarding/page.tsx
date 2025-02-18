@@ -36,51 +36,89 @@ export default function OnboardingFlow() {
     }
   };
 
+  // 현재 스텝의 인덱스 (0, 1, 2...)
+  const currentStepIndex = ONBOARDING_STEPS.findIndex(
+    (s) => s.id === currentStep
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Progress Steps */}
-        <div className="py-8">
-          <nav aria-label="Progress">
-            <ol className="flex items-center justify-center space-x-8">
+        <div className="py-8 flex items-center justify-center">
+          <nav aria-label="Progress" className="w-full max-w-2xl">
+            <ol className="flex items-center justify-between">
               {ONBOARDING_STEPS.map((step, index) => {
-                const isActive =
-                  index <=
-                  ONBOARDING_STEPS.findIndex((s) => s.id === currentStep);
-                const isCurrent = step.id === currentStep;
+                // 단계 상태 계산
+                const isCompleted = index < currentStepIndex; // 이미 지난 단계
+                const isActive = index === currentStepIndex; // 현재 단계
+                const isPending = index > currentStepIndex; // 앞으로 올 단계
 
                 return (
-                  <li key={step.id} className="relative">
-                    <div className="flex items-center">
+                  <li
+                    key={step.id}
+                    className="relative flex-1 flex items-center"
+                  >
+                    {/* 선(Line) - 첫번째 원 이전에는 그리지 않음 */}
+                    {index > 0 && (
                       <div
+                        className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
+                          isCompleted ? 'bg-teal-600' : 'bg-gray-200'
+                        }`}
+                      />
+                    )}
+
+                    {/* 원형 아이콘 */}
+                    <div
+                      className={`
+                        relative z-10 flex h-8 w-8 items-center justify-center rounded-full
+                        ${
+                          isCompleted
+                            ? 'bg-teal-600 text-white'
+                            : isActive
+                              ? 'bg-teal-100 text-teal-800 border-2 border-teal-600'
+                              : 'bg-white border-2 border-gray-300 text-gray-400'
+                        }
+                      `}
+                    >
+                      {isCompleted ? (
+                        // 완료된 단계: 체크 아이콘
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      ) : (
+                        // 진행중/대기중 단계: 단계 번호
+                        <span className="text-sm font-medium">{index + 1}</span>
+                      )}
+                    </div>
+
+                    {/* 단계 타이틀 */}
+                    <div className="ml-3 text-left">
+                      <p
                         className={`
-                          flex h-6 w-6 items-center justify-center rounded-full
+                          text-sm font-semibold
                           ${
                             isActive
-                              ? 'bg-blue-600 text-white'
-                              : 'border-2 border-gray-300 bg-white text-gray-400'
+                              ? 'text-teal-700'
+                              : isCompleted
+                                ? 'text-teal-600'
+                                : 'text-gray-500'
                           }
                         `}
                       >
-                        <span className="text-sm">{index + 1}</span>
-                      </div>
-                      <span
-                        className={`
-                          ml-2 text-sm font-medium
-                          ${isCurrent ? 'text-blue-600' : 'text-gray-500'}
-                        `}
-                      >
                         {step.title}
-                      </span>
+                      </p>
                     </div>
-                    {index < ONBOARDING_STEPS.length - 1 && (
-                      <div
-                        className={`
-                          absolute top-3 left-0 -ml-px mt-0.5 h-0.5 w-full
-                          ${isActive ? 'bg-blue-600' : 'bg-gray-300'}
-                        `}
-                      />
-                    )}
                   </li>
                 );
               })}
