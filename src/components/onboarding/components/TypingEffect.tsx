@@ -18,7 +18,7 @@ export default function TypingEffect({ text, onComplete }: TypingEffectProps) {
     const interval = setInterval(() => {
       if (index < text.length) {
         setDisplayText(text.substring(0, index + 1));
-        index++;
+        index += 1;
       } else if (!completed.current) {
         completed.current = true;
         onComplete?.();

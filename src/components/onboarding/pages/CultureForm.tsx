@@ -76,7 +76,7 @@ export default function CultureForm() {
           htmlFor="unitStrengths"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          What's one thing your unit does well?
+          What&apos;s one thing your unit does well?
         </label>
         <textarea
           id="unitStrengths"
@@ -99,7 +99,7 @@ export default function CultureForm() {
           htmlFor="improvementAreas"
           className="block text-sm font-medium text-gray-700 mb-2"
         >
-          What's one thing that could be improved?
+          What&apos;s one thing that could be improved?
         </label>
         <textarea
           id="improvementAreas"

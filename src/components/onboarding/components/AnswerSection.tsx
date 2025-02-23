@@ -79,7 +79,6 @@ const AnswersSection = memo(
               }}
               placeholder={placeholder}
               className="w-full p-4 rounded-lg border-2 border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
-              autoFocus
             />
           </motion.div>
         )}

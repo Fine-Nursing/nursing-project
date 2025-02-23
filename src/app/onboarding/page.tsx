@@ -36,10 +36,34 @@ export default function OnboardingFlow() {
     }
   };
 
-  // 현재 스텝의 인덱스 (0, 1, 2...)
   const currentStepIndex = ONBOARDING_STEPS.findIndex(
     (s) => s.id === currentStep
   );
+
+  const getCircleClassName = (isCompleted: boolean, isActive: boolean) => {
+    const baseClasses =
+      'relative z-10 flex h-8 w-8 items-center justify-center rounded-full';
+
+    if (isCompleted) {
+      return `${baseClasses} bg-teal-600 text-white`;
+    }
+    if (isActive) {
+      return `${baseClasses} bg-teal-100 text-teal-800 border-2 border-teal-600`;
+    }
+    return `${baseClasses} bg-white border-2 border-gray-300 text-gray-400`;
+  };
+
+  const getTitleClassName = (isCompleted: boolean, isActive: boolean) => {
+    const baseClasses = 'text-sm font-semibold';
+
+    if (isActive) {
+      return `${baseClasses} text-teal-700`;
+    }
+    if (isCompleted) {
+      return `${baseClasses} text-teal-600`;
+    }
+    return `${baseClasses} text-gray-500`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -49,17 +73,14 @@ export default function OnboardingFlow() {
           <nav aria-label="Progress" className="w-full max-w-2xl">
             <ol className="flex items-center justify-between">
               {ONBOARDING_STEPS.map((step, index) => {
-                // 단계 상태 계산
-                const isCompleted = index < currentStepIndex; // 이미 지난 단계
-                const isActive = index === currentStepIndex; // 현재 단계
-                const isPending = index > currentStepIndex; // 앞으로 올 단계
+                const isCompleted = index < currentStepIndex;
+                const isActive = index === currentStepIndex;
 
                 return (
                   <li
                     key={step.id}
                     className="relative flex-1 flex items-center"
                   >
-                    {/* 선(Line) - 첫번째 원 이전에는 그리지 않음 */}
                     {index > 0 && (
                       <div
                         className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
@@ -68,21 +89,8 @@ export default function OnboardingFlow() {
                       />
                     )}
 
-                    {/* 원형 아이콘 */}
-                    <div
-                      className={`
-                        relative z-10 flex h-8 w-8 items-center justify-center rounded-full
-                        ${
-                          isCompleted
-                            ? 'bg-teal-600 text-white'
-                            : isActive
-                              ? 'bg-teal-100 text-teal-800 border-2 border-teal-600'
-                              : 'bg-white border-2 border-gray-300 text-gray-400'
-                        }
-                      `}
-                    >
+                    <div className={getCircleClassName(isCompleted, isActive)}>
                       {isCompleted ? (
-                        // 완료된 단계: 체크 아이콘
                         <svg
                           className="h-5 w-5"
                           fill="none"
@@ -97,25 +105,12 @@ export default function OnboardingFlow() {
                           />
                         </svg>
                       ) : (
-                        // 진행중/대기중 단계: 단계 번호
                         <span className="text-sm font-medium">{index + 1}</span>
                       )}
                     </div>
 
-                    {/* 단계 타이틀 */}
                     <div className="ml-3 text-left">
-                      <p
-                        className={`
-                          text-sm font-semibold
-                          ${
-                            isActive
-                              ? 'text-teal-700'
-                              : isCompleted
-                                ? 'text-teal-600'
-                                : 'text-gray-500'
-                          }
-                        `}
-                      >
+                      <p className={getTitleClassName(isCompleted, isActive)}>
                         {step.title}
                       </p>
                     </div>

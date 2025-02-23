@@ -12,6 +12,21 @@ import type {
 import QuestionContent from '../components/QuestionContent';
 import AnswersSection from '../components/AnswerSection';
 
+/**
+ * 1) 질문 객체가 가질 수 있는 속성을 정의합니다.
+ * - key: 'name' | 'education' | 'nursingRole' | 'experienceGroup'
+ * - title, subtitle: 문자열
+ * - validation?: (값) => boolean
+ * - options?: (값의 배열)
+ */
+type BasicQuestion = {
+  key: 'name' | 'education' | 'nursingRole' | 'experienceGroup';
+  title: string;
+  subtitle: string;
+  validation?: (value: string) => boolean;
+  options?: string[]; // EducationLevel | NursingRole | ExperienceGroup 등 문자열 유니온도 가능
+};
+
 export default function BasicInfoForm() {
   const { formData, updateFormData, setStep } = useOnboardingStore();
   const [isTypingComplete, setIsTypingComplete] = useState(false);
@@ -19,70 +34,73 @@ export default function BasicInfoForm() {
   const [showSummary, setShowSummary] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
 
-  const questions = useMemo(
-    () =>
-      [
-        {
-          key: 'name',
-          title:
-            "Hi there! I'm excited to get to know you better! What's your name?",
-          subtitle: 'Let me know what to call you',
-          validation: (value: string) => value.length > 0,
-        },
-        {
-          key: 'education',
-          title: 'Great! And what level of education have you completed?',
-          subtitle: 'This helps me understand your academic background',
-          options: [
-            'High School Diploma or Equivalent',
-            'Vocational/Technical Certificate',
-            "Associate's Degree",
-            "Bachelor's Degree",
-            "Master's Degree",
-            'Doctorate Degree',
-            "Post-Master's Certificate",
-            'Specialized Nursing Certification',
-          ] as EducationLevel[],
-        },
-        {
-          key: 'nursingRole',
-          title:
-            'Amazing! Now, could you tell me about your current nursing role?',
-          subtitle: 'Select the position that best describes your role',
-          options: [
-            'Certified Nursing Assistant (CNA)',
-            'Licensed Practical Nurse (LPN)',
-            'Registered Nurse (RN)',
-            'Nurse Practitioner (NP)',
-            'Clinical Nurse Specialist (CNS)',
-            'Certified Nurse Midwife (CNM)',
-            'Certified Registered Nurse Anesthetist (CRNA)',
-            'Nurse Administrator',
-            'Travel Nurse',
-            'Staff Nurse',
-            'Public Health Nurse',
-            'Emergency Room Nurse',
-            'Critical Care Nurse',
-            'Pediatric Nurse',
-            'Geriatric Nurse',
-            'Neonatal Nurse',
-            'Psychiatric Nurse',
-            'Hospice Nurse',
-            'Case Manager Nurse',
-          ] as NursingRole[],
-        },
-        {
-          key: 'experienceGroup',
-          title: 'And lastly, how many years of experience do you have?',
-          subtitle: 'Your experience is valuable to us',
-          options: [
-            '1-3 years',
-            '3-5 years',
-            '5-10 years',
-            '10+ years',
-          ] as ExperienceGroup[],
-        },
-      ] as const,
+  /**
+   * 2) questions 배열을 생성할 때, BasicQuestion[] 타입을 명시합니다.
+   *    첫 번째 질문에는 options가 없고, 그 밖의 질문에는 options가 있는 형태로 작성.
+   */
+  const questions = useMemo<BasicQuestion[]>(
+    () => [
+      {
+        key: 'name',
+        title:
+          "Hi there! I'm excited to get to know you better! What's your name?",
+        subtitle: 'Let me know what to call you',
+        validation: (value: string) => value.length > 0,
+      },
+      {
+        key: 'education',
+        title: 'Great! And what level of education have you completed?',
+        subtitle: 'This helps me understand your academic background',
+        options: [
+          'High School Diploma or Equivalent',
+          'Vocational/Technical Certificate',
+          "Associate's Degree",
+          "Bachelor's Degree",
+          "Master's Degree",
+          'Doctorate Degree',
+          "Post-Master's Certificate",
+          'Specialized Nursing Certification',
+        ] as EducationLevel[],
+      },
+      {
+        key: 'nursingRole',
+        title:
+          'Amazing! Now, could you tell me about your current nursing role?',
+        subtitle: 'Select the position that best describes your role',
+        options: [
+          'Certified Nursing Assistant (CNA)',
+          'Licensed Practical Nurse (LPN)',
+          'Registered Nurse (RN)',
+          'Nurse Practitioner (NP)',
+          'Clinical Nurse Specialist (CNS)',
+          'Certified Nurse Midwife (CNM)',
+          'Certified Registered Nurse Anesthetist (CRNA)',
+          'Nurse Administrator',
+          'Travel Nurse',
+          'Staff Nurse',
+          'Public Health Nurse',
+          'Emergency Room Nurse',
+          'Critical Care Nurse',
+          'Pediatric Nurse',
+          'Geriatric Nurse',
+          'Neonatal Nurse',
+          'Psychiatric Nurse',
+          'Hospice Nurse',
+          'Case Manager Nurse',
+        ] as NursingRole[],
+      },
+      {
+        key: 'experienceGroup',
+        title: 'And lastly, how many years of experience do you have?',
+        subtitle: 'Your experience is valuable to us',
+        options: [
+          '1-3 years',
+          '3-5 years',
+          '5-10 years',
+          '10+ years',
+        ] as ExperienceGroup[],
+      },
+    ],
     []
   );
 
@@ -121,6 +139,8 @@ export default function BasicInfoForm() {
     setIsTypingComplete(false);
     questions.forEach((q) => updateFormData({ [q.key]: '' }));
   }, [questions, updateFormData]);
+
+  // ---------- 요약 화면 ----------
   if (showSummary) {
     return (
       <motion.div
@@ -130,7 +150,7 @@ export default function BasicInfoForm() {
       >
         <div className="text-center mb-10">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Perfect! Let's Review Your Information
+            Perfect! Let&apos;s Review Your Information
           </h2>
           <p className="text-gray-500 text-lg">
             Please review your details and make any changes if needed.
@@ -185,7 +205,6 @@ export default function BasicInfoForm() {
                         setEditingField(null);
                       }}
                       className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
-                      autoFocus
                     >
                       {q.options.map((option) => (
                         <option key={option} value={option}>
@@ -202,7 +221,6 @@ export default function BasicInfoForm() {
                       }
                       onBlur={() => setEditingField(null)}
                       className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
-                      autoFocus
                     />
                   )}
                 </div>
@@ -244,6 +262,8 @@ export default function BasicInfoForm() {
       </motion.div>
     );
   }
+
+  // ---------- 질문 입력 화면 ----------
   return (
     <div className="max-w-3xl mx-auto px-4">
       <div className="mb-8">

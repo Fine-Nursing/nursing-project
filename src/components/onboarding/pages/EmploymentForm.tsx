@@ -129,6 +129,7 @@ function parseCityState(
 
 export default function EmploymentForm() {
   const { formData, updateFormData, setStep } = useOnboardingStore();
+
   // Specialty 자동완성
   const {
     specialtyInput,
@@ -152,9 +153,7 @@ export default function EmploymentForm() {
     setStep('culture');
   };
 
-  // --------------------------------------------------
   // 지도 검색 모달 관련
-  // --------------------------------------------------
   const [showMapModal, setShowMapModal] = useState(false);
 
   const { isLoaded } = useJsApiLoader({
@@ -230,9 +229,6 @@ export default function EmploymentForm() {
     setShowMapModal(false);
   };
 
-  // --------------------------------------------------
-  // 렌더
-  // --------------------------------------------------
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <motion.div
@@ -243,10 +239,11 @@ export default function EmploymentForm() {
         {/* 헤더 */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
-            Let's Talk About Your Work <span className="text-teal-600">👩‍⚕️</span>
+            Let&apos;s Talk About Your Work{' '}
+            <span className="text-teal-600">👩‍⚕️</span>
           </h2>
           <p className="text-gray-500 text-lg">
-            We'll keep this quick and simple!
+            We&apos;ll keep this quick and simple!
           </p>
         </div>
 
@@ -262,10 +259,14 @@ export default function EmploymentForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Specialty (검색/자동완성) */}
               <div className="space-y-2 relative">
-                <label className="block text-sm font-medium text-gray-700">
-                  What's your specialty?
+                <label
+                  htmlFor="specialty"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  What&apos;s your specialty?
                 </label>
                 <input
+                  id="specialty"
                   type="text"
                   value={specialtyInput}
                   onChange={(e) => handleSpecialtyChange(e.target.value)}
@@ -276,18 +277,31 @@ export default function EmploymentForm() {
                 />
                 {/* Specialty 자동완성 추천 목록 */}
                 {showSuggestions && filteredList.length > 0 && (
-                  <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto">
+                  <ul
+                    className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto"
+                    role="listbox"
+                  >
                     {filteredList.map((s) => (
-                      <li
+                      <button
                         key={s}
+                        type="button"
                         onClick={() => {
                           handleSelect(s);
                           updateFormData({ specialty: s });
                         }}
-                        className="cursor-pointer px-4 py-2 hover:bg-teal-100"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            handleSelect(s);
+                            updateFormData({ specialty: s });
+                          }
+                        }}
+                        role="option"
+                        aria-selected={false}
+                        tabIndex={0}
+                        className="w-full text-left px-4 py-2 hover:bg-teal-100"
                       >
                         {s}
-                      </li>
+                      </button>
                     ))}
                   </ul>
                 )}
@@ -295,10 +309,14 @@ export default function EmploymentForm() {
 
               {/* Sub-specialty */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="subSpecialty"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Have a sub-specialty? (Optional)
                 </label>
                 <input
+                  id="subSpecialty"
                   type="text"
                   value={formData.subSpecialty || ''}
                   onChange={(e) =>
@@ -315,11 +333,15 @@ export default function EmploymentForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Organization Name + 버튼(지도 검색) */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="organizationName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Where do you work?
                 </label>
                 <div className="flex gap-2">
                   <input
+                    id="organizationName"
                     type="text"
                     value={formData.organizationName || ''}
                     onChange={(e) =>
@@ -354,10 +376,14 @@ export default function EmploymentForm() {
 
               {/* Employment Start Year */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="employmentStartYear"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Since when?
                 </label>
                 <input
+                  id="employmentStartYear"
                   type="number"
                   min={1950}
                   max={new Date().getFullYear()}
@@ -377,10 +403,14 @@ export default function EmploymentForm() {
             {/* City + State */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="organizationCity"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   City
                 </label>
                 <input
+                  id="organizationCity"
                   type="text"
                   value={formData.organizationCity || ''}
                   onChange={(e) =>
@@ -392,10 +422,14 @@ export default function EmploymentForm() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="organizationState"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   State
                 </label>
                 <input
+                  id="organizationState"
                   type="text"
                   value={formData.organizationState || ''}
                   onChange={(e) =>
@@ -418,10 +452,14 @@ export default function EmploymentForm() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Employment Type */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="employmentType"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Employment Type
                 </label>
                 <select
+                  id="employmentType"
                   value={formData.employmentType || ''}
                   onChange={(e) =>
                     updateFormData({ employmentType: e.target.value })
@@ -440,10 +478,14 @@ export default function EmploymentForm() {
 
               {/* Shift Type */}
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  What's your shift type?
+                <label
+                  htmlFor="shiftType"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  What&apos;s your shift type?
                 </label>
                 <select
+                  id="shiftType"
                   value={formData.shiftType || ''}
                   onChange={(e) =>
                     updateFormData({ shiftType: e.target.value as ShiftType })
@@ -469,10 +511,14 @@ export default function EmploymentForm() {
             {/* Nurse to Patient Ratio + Pay */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="nurseToPatientRatio"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Nurse to Patient Ratio
                 </label>
                 <select
+                  id="nurseToPatientRatio"
                   value={formData.nurseToPatientRatio || ''}
                   onChange={(e) =>
                     updateFormData({ nurseToPatientRatio: e.target.value })
@@ -490,8 +536,11 @@ export default function EmploymentForm() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
-                  What's your base pay?
+                <label
+                  htmlFor="basePay"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  What&apos;s your base pay?
                 </label>
                 <div className="flex gap-4 items-center">
                   <div className="flex-1 relative">
@@ -499,6 +548,7 @@ export default function EmploymentForm() {
                       $
                     </span>
                     <input
+                      id="basePay"
                       type="number"
                       min={0}
                       step={0.01}
@@ -511,6 +561,7 @@ export default function EmploymentForm() {
                     />
                   </div>
                   <select
+                    id="paymentFrequency"
                     value={formData.paymentFrequency || 'hourly'}
                     onChange={(e) =>
                       updateFormData({
@@ -570,6 +621,7 @@ export default function EmploymentForm() {
               type="button"
               onClick={() => setShowMapModal(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+              aria-label="Close map modal"
             >
               ✕
             </button>
@@ -584,7 +636,9 @@ export default function EmploymentForm() {
               <div className="flex flex-col gap-4">
                 {/* 검색창 */}
                 <StandaloneSearchBox
-                  onLoad={(ref) => (searchBoxRef.current = ref)}
+                  onLoad={(ref) => {
+                    searchBoxRef.current = ref;
+                  }}
                   onPlacesChanged={handlePlacesChanged}
                 >
                   <input
@@ -597,14 +651,26 @@ export default function EmploymentForm() {
 
                 {/* 검색 결과 목록 */}
                 {placesResult.length > 0 && (
-                  <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2">
+                  <div
+                    className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2"
+                    role="listbox"
+                  >
                     {placesResult.map((place, idx) => {
                       const isActive = selectedIndex === idx;
                       return (
-                        <div
-                          key={idx}
+                        <button
+                          key={place.place_id ?? idx}
+                          type="button"
                           onClick={() => handlePlaceClick(idx)}
-                          className={`px-3 py-2 rounded-md cursor-pointer mb-1 ${
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              handlePlaceClick(idx);
+                            }
+                          }}
+                          role="option"
+                          aria-selected={isActive}
+                          tabIndex={0}
+                          className={`w-full text-left px-3 py-2 rounded-md cursor-pointer mb-1 ${
                             isActive
                               ? 'bg-teal-100'
                               : 'hover:bg-gray-100 transition-colors'
@@ -616,7 +682,7 @@ export default function EmploymentForm() {
                           <div className="text-sm text-gray-600">
                             {place.formatted_address || place.vicinity}
                           </div>
-                        </div>
+                        </button>
                       );
                     })}
                   </div>
