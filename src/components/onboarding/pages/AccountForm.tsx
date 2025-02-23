@@ -15,7 +15,9 @@ export default function AccountForm() {
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-2xl shadow-sm">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">You're all set! 🎉</h2>
+        <h2 className="text-2xl font-bold text-gray-900">
+          You&apos;re all set! 🎉
+        </h2>
         <p className="mt-2 text-gray-600">
           Just create a password to complete your account and access your
           personalized dashboard.
