@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Users } from 'lucide-react';
-import type { NursePosition } from 'src/types/nurse';
+import type { NurseJobInfo } from './card/NurseCard';
 import NurseCard from './card/NurseCard';
 
 function AnimatedCounter({ baseValue }: { baseValue: number }) {
@@ -35,23 +35,28 @@ function NurseBoard() {
     // 컴포넌트 마운트 시 한 번만 회전값 설정
     setRotations([0.5, -0.3, 0.2, -0.4]);
   }, []);
+  interface NursePosition {
+    id: string;
+    title: string;
+    subtitle: string;
+    className?: string;
+    jobInfo: NurseJobInfo;
+  }
 
-  // nurses 배열에 id 추가
   const nurses: NursePosition[] = [
     {
       id: 'senior-icu-nurse',
       title: 'Senior Nurse',
       subtitle: 'Join our ICU team and make a difference in critical care',
       className: 'bg-emerald-300',
-      nurseInfo: {
+      jobInfo: {
         id: 'nurse-icu-1',
-        role: 'Senior Nurse',
-        location: 'ICU Ward',
-        salary: '$75,000/year',
+        hospitalName: 'City General Hospital',
+        location: 'Manhattan, NY',
         specialty: 'Critical Care',
-        workDays: 'Mon-Thu',
-        experience: '5 years',
-        avatar: '👩‍⚕️',
+        totalPay: 52.75,
+        cultureRating: 8.5,
+        differentials: 7.55,
       },
     },
     {
@@ -59,15 +64,14 @@ function NurseBoard() {
       title: 'Specialist Nurse',
       subtitle: 'Be part of our emergency response team',
       className: 'bg-blue-300',
-      nurseInfo: {
+      jobInfo: {
         id: 'nurse-emergency-1',
-        role: 'Specialist Nurse',
-        location: 'Emergency',
-        salary: '$82,000/year',
+        hospitalName: 'Metro Medical Center',
+        location: 'Brooklyn, NY',
         specialty: 'Emergency Care',
-        workDays: 'Wed-Sun',
-        experience: '7 years',
-        avatar: '👨‍⚕️',
+        totalPay: 58.2,
+        cultureRating: 7.8,
+        differentials: 9.7,
       },
     },
     {
@@ -75,15 +79,14 @@ function NurseBoard() {
       title: 'Head Nurse',
       subtitle: 'Lead our pediatrics department with care and compassion',
       className: 'bg-pink-300',
-      nurseInfo: {
+      jobInfo: {
         id: 'nurse-pediatrics-1',
-        role: 'Head Nurse',
-        location: 'Pediatrics',
-        salary: '$88,000/year',
-        specialty: 'Child Care',
-        workDays: 'Mon-Fri',
-        experience: '8 years',
-        avatar: '👩‍⚕️',
+        hospitalName: "Children's Wellness Hospital",
+        location: 'Queens, NY',
+        specialty: 'Pediatrics',
+        totalPay: 62.3,
+        cultureRating: 9.2,
+        differentials: 9.55,
       },
     },
     {
@@ -91,15 +94,14 @@ function NurseBoard() {
       title: 'Staff Nurse',
       subtitle: 'Join our surgical team and grow your career',
       className: 'bg-yellow-300',
-      nurseInfo: {
+      jobInfo: {
         id: 'nurse-surgery-1',
-        role: 'Staff Nurse',
-        location: 'Surgery',
-        salary: '$70,000/year',
+        hospitalName: 'Riverside Surgical Center',
+        location: 'Bronx, NY',
         specialty: 'Surgical Care',
-        workDays: 'Tue-Sat',
-        experience: '3 years',
-        avatar: '👨‍⚕️',
+        totalPay: 47.8,
+        cultureRating: 7.2,
+        differentials: 5.3,
       },
     },
   ];
