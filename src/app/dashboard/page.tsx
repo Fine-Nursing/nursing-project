@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React from 'react';
 import { nurseData } from 'src/api/mock-data';
 
@@ -9,6 +10,12 @@ import NurseBoard from 'src/components/NurseBoard';
 import NursingCompensationTable from 'src/components/table/NursingCompensationTable';
 
 export default function DashboardPage() {
+  const router = useRouter();
+
+  const handleOnboardingClick = () => {
+    router.push('/onboarding');
+  };
+
   return (
     <main className="min-h-screen flex flex-col font-sans bg-slate-50">
       {/* Header */}
@@ -45,7 +52,7 @@ export default function DashboardPage() {
             Let&apos;s make job searching smarter.
           </p>
           <div className="relative h-[48px] flex justify-center">
-            <FloatingOnboardButton />
+            <FloatingOnboardButton onClick={handleOnboardingClick} />
           </div>
         </section>
 

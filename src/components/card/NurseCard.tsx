@@ -3,35 +3,64 @@
 import type { ReactNode } from 'react';
 import React from 'react';
 import { motion, MotionConfig } from 'framer-motion';
-import { MapPin, DollarSign, Activity, Calendar, Clock } from 'lucide-react';
+import { MapPin, DollarSign, Activity, Building, Star } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
-import type { BaseNurseInfo, NurseCardProps } from 'src/types/nurse';
 
-const colorStyles = {
-  icu: 'bg-slate-50 hover:bg-slate-100',
-  emergency: 'bg-purple-50 hover:bg-purple-100',
-  pediatrics: 'bg-blue-50 hover:bg-blue-100',
-  surgery: 'bg-gray-50 hover:bg-gray-100',
-} as const;
+// Types
+export interface NurseJobInfo {
+  id: string;
+  hospitalName: string;
+  location: string;
+  specialty: string;
+  totalPay: number;
+  cultureRating: number;
+  differentials?: number;
+}
 
-function InfoItem({ icon, text }: { icon: ReactNode; text: string }) {
+export interface NurseCardProps {
+  title: string; // Nurse's name or role
+  subtitle: string; // Brief description/tagline
+  className?: string;
+  jobInfo: NurseJobInfo;
+}
+
+// Soft gradient background (pastel rose/pink)
+const cardGradientClasses =
+  'bg-gradient-to-br from-pink-50 via-rose-50 to-rose-100 hover:from-pink-100 hover:to-rose-200';
+
+// "Bubble" style info item
+function InfoItem({
+  icon,
+  label,
+  text,
+}: {
+  icon: ReactNode;
+  label?: string;
+  text: string | number;
+}) {
   return (
-    <div className="flex items-center gap-2">
-      {icon}
-      <span className="text-sm text-slate-600">{text}</span>
+    <div className="flex items-center gap-2 rounded-lg bg-white/60 p-2 shadow-sm ring-1 ring-rose-100 backdrop-blur-sm">
+      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+        {icon}
+      </div>
+      {label ? (
+        <span className="text-sm font-medium text-rose-800">
+          {label} <span className="font-normal">{text}</span>
+        </span>
+      ) : (
+        <span className="text-sm font-medium text-rose-800">{text}</span>
+      )}
     </div>
   );
 }
 
-// 애니메이션 설정
-
+// Animation settings
 const cardAnimation = {
   initial: { x: 0, y: 0 },
   hovered: { x: -8, y: -8 },
 };
 
-// SVG Component
-
+// A rotating "Available Position" badge in the top-right corner
 function RotatingBadge() {
   return (
     <motion.svg
@@ -48,11 +77,11 @@ function RotatingBadge() {
         right: '0',
         x: '50%',
         y: '-50%',
-        scale: 0.4,
+        scale: 0.45,
       }}
       width="200"
       height="200"
-      className="pointer-events-none absolute z-10 rounded-full opacity-0 group-hover:opacity-20"
+      className="pointer-events-none absolute z-10 rounded-full opacity-0 hover:opacity-20"
     >
       <defs>
         <path
@@ -64,7 +93,7 @@ function RotatingBadge() {
       <text className="text-xs tracking-wider">
         <textPath
           href="#circlePath"
-          className="fill-slate-400 font-medium uppercase"
+          className="fill-rose-400 font-medium uppercase"
         >
           Available Position • Available Position •
         </textPath>
@@ -73,94 +102,96 @@ function RotatingBadge() {
   );
 }
 
-// Card Header
+// Culture rating bar
+function CultureRating({ rating }: { rating: number }) {
+  const maxRating = 10;
+  const percentage = (rating / maxRating) * 100;
 
-function CardHeader({ avatar, title }: { avatar: string; title: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-2xl">{avatar}</span>
-      <p className="flex items-center text-lg font-medium uppercase text-slate-800">
-        <span className="-ml-6 mr-1 opacity-0 transition-all duration-300 ease-in-out group-hover:ml-0 group-hover:opacity-100">
-          →
-        </span>
-        {title}
-      </p>
-    </div>
-  );
-}
-
-// Card Infomation
-
-function CardInfo({ nurseInfo }: { nurseInfo: BaseNurseInfo }) {
-  const infoItems = [
-    { id: 'location', icon: <MapPin size={16} />, text: nurseInfo.location },
-    { id: 'salary', icon: <DollarSign size={16} />, text: nurseInfo.salary },
-    {
-      id: 'specialty',
-      icon: <Activity size={16} />,
-      text: nurseInfo.specialty,
-    },
-    { id: 'workDays', icon: <Calendar size={16} />, text: nurseInfo.workDays },
-    { id: 'experience', icon: <Clock size={16} />, text: nurseInfo.experience },
-  ] as const;
-
-  return (
-    <div className="mt-4 space-y-2 flex-1">
-      {infoItems.map(({ id, icon, text }) => (
-        <InfoItem
-          key={id}
-          icon={<span className="text-slate-600">{icon}</span>}
-          text={text}
+      <div className="relative h-2 w-20 overflow-hidden rounded-full bg-rose-100">
+        <div
+          className="absolute left-0 top-0 h-full rounded-full bg-rose-400 transition-all"
+          style={{ width: `${percentage}%` }}
         />
-      ))}
+      </div>
+      <span className="text-xs font-medium text-rose-700">{rating}/10</span>
     </div>
   );
 }
 
-// Card Footer
+// Header with a nurse emoji
+function CardHeader({ title }: { title: string }) {
+  return (
+    <div className="mb-2 flex items-center gap-2">
+      {/* 👩‍⚕️, 🧑‍⚕️, or 👨‍⚕️ – pick the one you want */}
+      <span className="text-2xl">👩‍⚕️</span>
+      <h2 className="text-base font-semibold text-rose-800">{title}</h2>
+    </div>
+  );
+}
 
+// Info section: total pay only
+function CardInfo({ jobInfo }: { jobInfo: NurseJobInfo }) {
+  return (
+    <div className="flex-1 space-y-2">
+      <InfoItem icon={<Building size={16} />} text={jobInfo.hospitalName} />
+      <InfoItem icon={<MapPin size={16} />} text={jobInfo.location} />
+      <InfoItem icon={<Activity size={16} />} text={jobInfo.specialty} />
+
+      <InfoItem
+        icon={<DollarSign size={16} />}
+        label="Total Pay:"
+        text={`$${jobInfo.totalPay.toFixed(2)}/hr`}
+      />
+
+      <div className="flex items-center gap-2">
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+          <Star size={16} />
+        </div>
+        <span className="text-sm font-medium text-rose-800">Unit Culture:</span>
+        <CultureRating rating={jobInfo.cultureRating} />
+      </div>
+    </div>
+  );
+}
+
+// Footer: only subtitle, no button
 function CardFooter({ subtitle }: { subtitle: string }) {
   return (
-    <div>
-      <p className="text-xs text-slate-600 line-clamp-2 transition-[margin] duration-300 ease-in-out group-hover:mb-8">
-        {subtitle}
-      </p>
-      <button
-        type="button"
-        className="absolute bottom-2 left-2 right-2 translate-y-full border-[1px] border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-800 opacity-0 transition-all duration-300 ease-in-out group-hover:translate-y-0 group-hover:opacity-100"
-      >
-        APPLY NOW
-      </button>
+    <div className="mt-3">
+      <p className="text-xs text-rose-600 line-clamp-2">{subtitle}</p>
     </div>
   );
 }
 
-function NurseCard({ title, subtitle, className, nurseInfo }: NurseCardProps) {
+function NurseCard({ title, subtitle, className, jobInfo }: NurseCardProps) {
   return (
     <MotionConfig transition={{ type: 'spring', bounce: 0.5 }}>
       <motion.div
         whileHover="hovered"
         className={twMerge(
-          'group w-full border-[1px] border-slate-200',
-          className || colorStyles.icu
+          'relative w-full rounded-2xl border border-rose-200 shadow-md',
+          className || cardGradientClasses
         )}
       >
         <motion.div
           variants={cardAnimation}
           className={twMerge(
-            '-m-0.5 border-[1px] border-slate-200',
-            className || colorStyles.icu
+            '-m-0.5 rounded-2xl border border-rose-200',
+            className || cardGradientClasses
           )}
         >
           <motion.div
             variants={cardAnimation}
             className={twMerge(
-              'relative -m-0.5 flex h-[300px] flex-col overflow-hidden border-[1px] border-slate-200 p-4',
-              className || colorStyles.icu
+              // Use min-h so it can expand if needed
+              'relative -m-0.5 flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
+              className || cardGradientClasses
             )}
           >
-            <CardHeader avatar={nurseInfo.avatar} title={title} />
-            <CardInfo nurseInfo={nurseInfo} />
+            <CardHeader title={title} />
+            <CardInfo jobInfo={jobInfo} />
             <CardFooter subtitle={subtitle} />
             <RotatingBadge />
           </motion.div>

@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Rocket } from 'lucide-react';
 
-function FloatingOnboardButton() {
+interface FloatingOnboardButtonProps {
+  onClick?: () => void; // 선택적 onClick 함수 타입 정의
+}
+
+function FloatingOnboardButton({ onClick }: FloatingOnboardButtonProps) {
   const { scrollY } = useScroll();
   const [buttonRect, setButtonRect] = useState({ x: 0, y: 0 });
 
@@ -65,6 +69,7 @@ function FloatingOnboardButton() {
       "
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      onClick={onClick} // onClick prop 추가
     >
       <motion.div
         style={{ opacity: textOpacity }}
