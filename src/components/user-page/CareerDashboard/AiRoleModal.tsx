@@ -32,15 +32,13 @@ export default function AiRoleModal({
         >
           <CloseIcon className="w-5 h-5" />
         </button>
-        <h3 className="text-emerald-600 font-bold text-lg mb-2">
-          AI Suggestion
-        </h3>
+        <h3 className="text-slate-600 font-bold text-lg mb-2">AI Suggestion</h3>
         <p className={`text-sm ${textColor}`}>{reason}</p>
         <div className="mt-3 text-right">
           <button
             type="button"
             onClick={onClose}
-            className="bg-emerald-500 text-white px-3 py-1.5 rounded hover:bg-emerald-600"
+            className="bg-slate-500 text-white px-3 py-1.5 rounded hover:bg-slate-600"
           >
             OK
           </button>

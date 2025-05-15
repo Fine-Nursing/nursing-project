@@ -39,7 +39,7 @@ export default function AccountForm() {
             name="email"
             required
             autoComplete="email"
-            className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-slate-500 focus:ring-slate-500"
             value={formData.email || ''}
             onChange={(e) => updateFormData({ email: e.target.value })}
           />
@@ -60,7 +60,7 @@ export default function AccountForm() {
               name="password"
               required
               autoComplete="new-password"
-              className="block w-full rounded-md border border-gray-300 pr-10 focus:border-emerald-500 focus:ring-emerald-500"
+              className="block w-full rounded-md border border-gray-300 pr-10 focus:border-slate-500 focus:ring-slate-500"
               value={formData.password || ''}
               onChange={(e) => updateFormData({ password: e.target.value })}
             />
@@ -126,7 +126,7 @@ export default function AccountForm() {
         <button
           type="button"
           aria-label="Continue with Google"
-          className="w-full flex items-center justify-center space-x-2 rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+          className="w-full flex items-center justify-center space-x-2 rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2"
         >
           <img src="/api/placeholder/20/20" alt="" className="w-5 h-5" />
           <span>Continue with Google</span>
@@ -137,13 +137,13 @@ export default function AccountForm() {
           <button
             type="button"
             onClick={() => setStep('culture')}
-            className="text-emerald-600 px-6 py-2 rounded-lg border border-emerald-600 hover:bg-emerald-50 transition-colors"
+            className="text-slate-600 px-6 py-2 rounded-lg border border-slate-600 hover:bg-slate-50 transition-colors"
           >
             Back
           </button>
           <button
             type="submit"
-            className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+            className="bg-slate-600 text-white px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors"
           >
             Complete Setup
           </button>

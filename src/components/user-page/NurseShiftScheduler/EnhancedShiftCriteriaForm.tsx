@@ -169,18 +169,18 @@ export default function EnhancedShiftCriteriaForm({
     <div
       className={`${
         theme === 'light'
-          ? 'bg-emerald-50 border-emerald-100'
+          ? 'bg-slate-50 border-slate-100'
           : 'bg-slate-700 border-slate-600 text-white'
       } border rounded-lg p-4 mb-6`}
     >
       <h3
         className={`font-bold mb-3 flex items-center ${
-          theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
+          theme === 'light' ? 'text-slate-700' : 'text-slate-300'
         }`}
       >
         <CalendarIcon
           className={`w-5 h-5 mr-1 ${
-            theme === 'light' ? 'text-emerald-500' : 'text-emerald-300'
+            theme === 'light' ? 'text-slate-500' : 'text-slate-300'
           }`}
         />
         Nurse Scheduling Criteria
@@ -609,12 +609,12 @@ export default function EnhancedShiftCriteriaForm({
         {/* 5) ESTIMATED PAY PREVIEW */}
         <div
           className={`border-t pt-3 mt-3 ${
-            theme === 'light' ? 'border-emerald-200' : 'border-slate-500'
+            theme === 'light' ? 'border-slate-200' : 'border-slate-500'
           }`}
         >
           <h4
             className={`text-sm font-medium mb-2 ${
-              theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
+              theme === 'light' ? 'text-slate-700' : 'text-slate-300'
             }`}
           >
             Quick Pay Estimate
@@ -651,8 +651,8 @@ export default function EnhancedShiftCriteriaForm({
             type="submit"
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
               theme === 'light'
-                ? 'bg-emerald-500 text-white hover:bg-emerald-600'
-                : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                ? 'bg-slate-500 text-white hover:bg-slate-600'
+                : 'bg-slate-600 text-white hover:bg-slate-700'
             }`}
           >
             Generate Schedule

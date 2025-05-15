@@ -26,7 +26,7 @@ export default function CareerForm({
   onSalaryTrend,
 }: CareerFormProps) {
   return (
-    <div className="bg-mint-50 border border-emerald-100 rounded-lg p-4 space-y-4 shadow-sm mb-6">
+    <div className="bg-mint-50 border border-slate-100 rounded-lg p-4 space-y-4 shadow-sm mb-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Facility */}
         <div>
@@ -159,7 +159,7 @@ export default function CareerForm({
         <button
           type="button"
           onClick={onAdd}
-          className="rounded-full bg-emerald-500 text-white px-4 py-1.5 hover:bg-emerald-600 flex items-center"
+          className="rounded-full bg-slate-500 text-white px-4 py-1.5 hover:bg-slate-600 flex items-center"
         >
           <Plus className="w-4 h-4 mr-1" />
           Add Career
