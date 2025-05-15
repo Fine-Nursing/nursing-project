@@ -1,4 +1,3 @@
-// components/CareerDashboard/SalaryTrendModal.tsx
 import React from 'react';
 import {
   ResponsiveContainer,
@@ -20,18 +19,26 @@ interface SalaryTrendModalProps {
   visible: boolean;
   data: TrendData[];
   onClose: () => void;
+  theme: 'light' | 'dark'; // theme prop 추가
 }
 
 export default function SalaryTrendModal({
   visible,
   data,
   onClose,
+  theme, // theme 추가
 }: SalaryTrendModalProps) {
   if (!visible) return null;
 
+  // theme에 따른 동적 클래스 적용
+  const bgColor = theme === 'light' ? 'bg-white' : 'bg-slate-800';
+  const textColor = theme === 'light' ? 'text-gray-700' : 'text-gray-200';
+  const gridColor = theme === 'light' ? '#e2e8f0' : '#4a5568';
+  const axisTickColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-      <div className="bg-white p-4 rounded-lg shadow-md w-96 relative">
+      <div className={`${bgColor} p-4 rounded-lg shadow-md w-96 relative`}>
         <button
           type="button"
           onClick={onClose}
@@ -45,16 +52,19 @@ export default function SalaryTrendModal({
         <div className="w-full h-48">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="month" tick={{ fill: '#0f172a', fontSize: 11 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis
+                dataKey="month"
+                tick={{ fill: axisTickColor, fontSize: 11 }}
+              />
               <YAxis
                 label={{
                   value: 'Hourly Rate',
                   angle: -90,
                   position: 'insideLeft',
-                  style: { fill: '#0f172a', fontSize: 11 },
+                  style: { fill: axisTickColor, fontSize: 11 },
                 }}
-                tick={{ fill: '#0f172a', fontSize: 11 }}
+                tick={{ fill: axisTickColor, fontSize: 11 }}
               />
               <Tooltip />
               <Line
@@ -68,7 +78,7 @@ export default function SalaryTrendModal({
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <p className="text-xs text-gray-400 mt-2">
+        <p className={`text-xs text-gray-400 mt-2 ${textColor}`}>
           <em>Example AI prediction</em>
         </p>
         <div className="mt-3 text-right">

@@ -37,27 +37,26 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-        {/* Hero Section */}
-        <section className="text-center max-w-3xl mx-auto mb-32">
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 text-gray-900 tracking-tight">
-            Own Your{' '}
-            <span className="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Worth
-            </span>
-          </h1>
-          <p className="text-xl text-gray-700 mb-12 leading-relaxed">
-            We provide the data. You make the call.
-            <br />
-            Let&apos;s make job searching smarter.
-          </p>
-          <div className="relative h-[48px] flex justify-center">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        {/* Hero Section - 줄어든 상하 공간과 강조된 문구 */}
+        <section className="text-center max-w-3xl mx-auto mb-20">
+          <div className="relative h-[48px] flex justify-center mb-4">
             <FloatingOnboardButton onClick={handleOnboardingClick} />
+          </div>
+          {/* 강조된 문구 (색상/폰트 사이즈만 정돈) */}
+          <div className="text-gray-700">
+            <p className="text-lg font-semibold text-gray-800">
+              Start onboarding to see what&apos;s possible for your career.
+            </p>
+            <p className="mt-2 text-base text-gray-600">
+              We&apos;ll help you understand where you stand — and where you
+              could go.
+            </p>
           </div>
         </section>
 
         {/* NurseBoard */}
-        <section className="mb-32">
+        <section className="mb-20">
           <NurseBoard />
         </section>
 

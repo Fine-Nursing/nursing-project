@@ -4,9 +4,10 @@ import { useState, useMemo } from 'react';
 
 import { nursingSpecialtyData, statesData } from 'src/api/mock-data';
 import { Search, X } from 'lucide-react';
-import { Chart } from './Chart';
+
 import LocationSelector from './LocationSelector';
 import FilterSection from './FilterSections';
+import Chart from './Chart';
 
 export default function NursingGraph() {
   const [searchTerm, setSearchTerm] = useState('');

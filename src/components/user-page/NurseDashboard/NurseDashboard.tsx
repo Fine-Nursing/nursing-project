@@ -1,8 +1,4 @@
-// components/NurseDashboard/NurseDashboard.tsx
-
 'use client';
-
-// Next.js 13+ (app router)에서 클라이언트 컴포넌트
 
 import React, { useEffect, useState } from 'react';
 import { Stethoscope, RefreshCw, Moon, Sun } from 'lucide-react';
@@ -13,8 +9,6 @@ import RadarAnalytics from './RadarAnalytics';
 import PredictiveCompChart from './PredictiveCompChart';
 import AiCareerInsights from './AiCareerInsights';
 import NextSteps from './NextSteps';
-
-import NurseShiftScheduler from '../NurseShiftScheduler/NurseShiftScheduler';
 
 import { payDistributionData as originalPayData } from './mockData';
 import CareerDashboard from '../CareerDashboard/CareerDashboard';
@@ -208,7 +202,7 @@ export default function NurseDashboard() {
               theme={theme}
             />
 
-            <CareerDashboard />
+            <CareerDashboard theme={theme} />
           </div>
 
           {/* Bottom row: AI Career + Next Steps */}
@@ -218,7 +212,7 @@ export default function NurseDashboard() {
           </div>
 
           {/* NurseShiftScheduler */}
-          <NurseShiftScheduler />
+          {/* <NurseShiftScheduler /> */}
 
           {/* Footer */}
           <div

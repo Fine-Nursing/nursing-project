@@ -14,19 +14,37 @@ import {
 
 import type { CareerItem } from './types';
 
+interface ProgressionBarChartProps {
+  careerData: CareerItem[];
+  theme?: 'light' | 'dark';
+}
+
 /**
  * (A) 커스텀 Tooltip 컴포넌트
  * 렌더 함수 밖(또는 별도 파일)에서 정의 → ESLint 경고 해결
  */
-function CustomBracketTooltip({ active, payload }: TooltipProps<any, any>) {
+function CustomBracketTooltip({
+  active,
+  payload,
+  theme = 'light',
+}: TooltipProps<any, any> & { theme?: 'light' | 'dark' }) {
   if (!active || !payload || !payload.length) return null;
   const item = payload[0].payload;
   return (
-    <div className="p-2 bg-white border border-teal-100 text-gray-700 text-xs rounded shadow-sm">
+    <div
+      className={`p-2 ${theme === 'light' ? 'bg-white border-teal-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border text-xs rounded shadow-sm`}
+    >
       <p className="font-bold">{item.expBracket}</p>
       <p>
         Salary: ${item.salary.toLocaleString()}
-        {item.isUser && ' ← Your bracket'}
+        {item.isUser && (
+          <span
+            className={theme === 'light' ? 'text-teal-600' : 'text-teal-300'}
+          >
+            {' '}
+            ← Your bracket
+          </span>
+        )}
       </p>
     </div>
   );
@@ -37,12 +55,13 @@ function CustomBracketTooltip({ active, payload }: TooltipProps<any, any>) {
  * - shape={<CustomBouncingBar />} → shape={customBouncingBar} 로 변경
  * - TypeScript에서는 (props: BarProps) => ReactNode 형태를 맞춰줘야 함
  */
-const customBouncingBar = (props: any) => {
+const customBouncingBar = (props: any, theme = 'light') => {
   const { x, y, width, height, fill, payload } = props;
   if (!height || height <= 0) return null;
 
   const isUser = !!payload?.isUser;
   const barRadius = 4;
+  const userFill = theme === 'light' ? '#0d9488' : '#0f766e'; // teal-600 for light, teal-700 for dark
 
   // TypeScript 에러를 방지하기 위해 숫자 값을 보장
   const xValue = typeof x === 'number' ? x : parseFloat(x || '0');
@@ -59,7 +78,7 @@ const customBouncingBar = (props: any) => {
         y={yValue}
         width={widthValue}
         height={heightValue}
-        fill={isUser ? '#0d9488' : fill}
+        fill={isUser ? userFill : fill}
         rx={barRadius}
         ry={barRadius}
       />
@@ -68,7 +87,7 @@ const customBouncingBar = (props: any) => {
           cx={xValue + widthValue / 2}
           cy={yValue - 8}
           r={8}
-          fill="#0d9488"
+          fill={userFill}
           className="animate-bounce"
         />
       )}
@@ -76,23 +95,29 @@ const customBouncingBar = (props: any) => {
   );
 };
 
-interface ProgressionBarChartProps {
-  careerData: CareerItem[];
-}
-
 export default function ProgressionBarChart({
   careerData,
+  theme = 'light',
 }: ProgressionBarChartProps) {
+  const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
+  const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
+  const bgClass = theme === 'light' ? 'bg-mint-50 bg-white' : 'bg-slate-700';
+  const borderClass =
+    theme === 'light' ? 'border-teal-100' : 'border-slate-600';
+  const textClass = theme === 'light' ? 'text-teal-700' : 'text-teal-300';
+  const textGrayClass = theme === 'light' ? 'text-gray-400' : 'text-gray-500';
+  const barFillColor = theme === 'light' ? '#5eead4' : '#2dd4bf'; // teal-200 for light, teal-400 for dark
+
   if (!careerData.length) {
     return (
       <div
-        className="bg-mint-50 border border-teal-100 rounded-lg p-4 shadow-sm mb-6"
+        className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
         style={{ height: '320px' }}
       >
-        <h4 className="font-bold text-teal-700 text-sm mb-2">
+        <h4 className={`font-bold ${textClass} text-sm mb-2`}>
           Career Progression Chart
         </h4>
-        <div className="text-center text-gray-400 py-10 text-sm">
+        <div className={`text-center ${textGrayClass} py-10 text-sm`}>
           <AlertCircle className="w-6 h-6 inline-block mr-1" />
           No data to compute progression...
         </div>
@@ -140,12 +165,15 @@ export default function ProgressionBarChart({
     };
   });
 
+  // 4) Custom shape function with theme
+  const shapeWithTheme = (props: any) => customBouncingBar(props, theme);
+
   return (
     <div
-      className="bg-mint-50 border border-teal-100 rounded-lg p-4 shadow-sm mb-6"
+      className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
       style={{ height: '320px' }}
     >
-      <h4 className="font-bold text-teal-700 text-sm mb-2">
+      <h4 className={`font-bold ${textClass} text-sm mb-2`}>
         Career Progression Chart
       </h4>
       <div className="w-full h-full">
@@ -154,7 +182,7 @@ export default function ProgressionBarChart({
             data={data}
             margin={{ top: 20, right: 20, bottom: 30, left: 40 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
             <XAxis
               dataKey="expBracket"
               label={{
@@ -162,8 +190,9 @@ export default function ProgressionBarChart({
                 position: 'insideBottom',
                 offset: 0,
                 fontSize: 12,
+                fill: chartTextColor,
               }}
-              tick={{ fill: '#0f172a', fontSize: 11 }}
+              tick={{ fill: chartTextColor, fontSize: 11 }}
             />
             <YAxis
               domain={[60000, 90000]}
@@ -172,31 +201,33 @@ export default function ProgressionBarChart({
                 angle: -90,
                 position: 'insideLeft',
                 fontSize: 12,
-                fill: '#0f172a',
+                fill: chartTextColor,
               }}
-              tick={{ fill: '#0f172a', fontSize: 11 }}
+              tick={{ fill: chartTextColor, fontSize: 11 }}
             />
 
-            {/** (C) custom tooltip */}
-            <Tooltip content={<CustomBracketTooltip />} />
+            {/** (C) custom tooltip with theme */}
+            <Tooltip content={<CustomBracketTooltip theme={theme} />} />
 
             {/**
-              (D) shape={customBouncingBar}
-              - 'shape' expects a function type:
-                (props: BarProps) => ReactNode
+              (D) shape={shapeWithTheme}
             */}
             <Bar
               dataKey="salary"
-              fill="#5eead4"
-              shape={customBouncingBar as any}
+              fill={barFillColor}
+              shape={shapeWithTheme as any}
             />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 text-xs text-gray-600 flex flex-wrap gap-4">
+      <div
+        className={`mt-2 text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'} flex flex-wrap gap-4`}
+      >
         <div className="flex items-center">
-          <div className="w-3 h-3 bg-teal-600 rounded-sm mr-1" />
+          <div
+            className={`w-3 h-3 ${theme === 'light' ? 'bg-teal-600' : 'bg-teal-500'} rounded-sm mr-1`}
+          />
           <span>Your bracket</span>
         </div>
       </div>

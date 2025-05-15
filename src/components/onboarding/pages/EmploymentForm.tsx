@@ -243,7 +243,7 @@ export default function EmploymentForm() {
             <span className="text-teal-600">👩‍⚕️</span>
           </h2>
           <p className="text-gray-500 text-lg">
-            We&apos;ll keep this quick and simple!
+            Tell me about your current position
           </p>
         </div>
 
@@ -590,7 +590,7 @@ export default function EmploymentForm() {
                 className="w-5 h-5 rounded border-teal-300 text-teal-600 focus:ring-teal-500"
               />
               <label htmlFor="isUnionized" className="text-teal-900">
-                This is a unionized position
+                Unionized
               </label>
             </div>
           </div>
