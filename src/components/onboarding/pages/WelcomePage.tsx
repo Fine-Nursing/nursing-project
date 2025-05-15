@@ -9,12 +9,12 @@ export default function WelcomePage() {
   const { setStep } = useOnboardingStore();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Welcome to <span className="text-teal-600">Nurse Network</span>
+            Welcome to <span className="text-emerald-600">Nurse Network</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Connect, Share, and Grow with Our Healthcare Community
@@ -27,8 +27,8 @@ export default function WelcomePage() {
           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
             <div className="p-8">
               <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-teal-100 p-4 rounded-2xl">
-                  <Eye className="w-10 h-10 text-teal-600" />
+                <div className="bg-emerald-100 p-4 rounded-2xl">
+                  <Eye className="w-10 h-10 text-emerald-600" />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
@@ -37,7 +37,7 @@ export default function WelcomePage() {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     See how your pay compares in real time and drive
@@ -46,7 +46,7 @@ export default function WelcomePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Help build a pay dashboard that empowers nurses.
@@ -54,7 +54,7 @@ export default function WelcomePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Contribute to real-time insights for fair nurse
@@ -69,8 +69,8 @@ export default function WelcomePage() {
           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
             <div className="p-8">
               <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-teal-100 p-4 rounded-2xl">
-                  <Ear className="w-10 h-10 text-teal-600" />
+                <div className="bg-emerald-100 p-4 rounded-2xl">
+                  <Ear className="w-10 h-10 text-emerald-600" />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
@@ -79,7 +79,7 @@ export default function WelcomePage() {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Hear real stories from nurses about their workplaces and
@@ -88,7 +88,7 @@ export default function WelcomePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Join a community where experiences are shared and valued.
@@ -96,7 +96,7 @@ export default function WelcomePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Share your voice to shape a supportive network for nurses.
@@ -110,8 +110,8 @@ export default function WelcomePage() {
           <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
             <div className="p-8">
               <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-teal-100 p-4 rounded-2xl">
-                  <Handshake className="w-10 h-10 text-teal-600" />
+                <div className="bg-emerald-100 p-4 rounded-2xl">
+                  <Handshake className="w-10 h-10 text-emerald-600" />
                 </div>
               </div>
               <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
@@ -120,7 +120,7 @@ export default function WelcomePage() {
               <div className="space-y-4">
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Get personalized guidance for every step of your career.
@@ -128,7 +128,7 @@ export default function WelcomePage() {
                 </div>
                 <div className="flex items-start">
                   <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-teal-600" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                   </div>
                   <p className="text-gray-600 ml-2">
                     Access tailored insights to achieve your goals.

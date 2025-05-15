@@ -58,7 +58,7 @@ const AnswersSection = memo(
                 key={option}
                 variants={itemVariants}
                 onClick={() => onSubmit(option)}
-                className="p-4 text-left rounded-lg border-2 border-gray-200 hover:border-teal-500 hover:bg-teal-50 transition-all duration-300"
+                className="p-4 text-left rounded-lg border-2 border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all duration-300"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -80,7 +80,7 @@ const AnswersSection = memo(
                 }
               }}
               placeholder={placeholder}
-              className="w-full p-4 rounded-lg border-2 border-gray-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all duration-300"
+              className="w-full p-4 rounded-lg border-2 border-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all duration-300"
               // 숫자 입력 필드에 대한 추가 속성들
               min={inputType === 'number' ? 0 : undefined}
               max={inputType === 'number' ? 50 : undefined}
@@ -91,7 +91,7 @@ const AnswersSection = memo(
                   type="button"
                   onClick={() => currentValue && onSubmit(currentValue)}
                   disabled={!currentValue}
-                  className="px-5 py-2 bg-teal-500 hover:bg-teal-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:bg-gray-400"
+                  className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:bg-gray-400"
                 >
                   Continue
                 </button>

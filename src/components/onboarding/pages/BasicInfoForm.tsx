@@ -212,7 +212,7 @@ export default function BasicInfoForm() {
                   <button
                     type="button"
                     onClick={() => setEditingField(q.key)}
-                    className="text-sm text-teal-600 hover:text-teal-700 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-2"
+                    className="text-sm text-emerald-600 hover:text-emerald-700 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-2"
                   >
                     <span>Edit</span>
                     <svg
@@ -243,7 +243,7 @@ export default function BasicInfoForm() {
                         updateFormData({ [q.key]: e.target.value });
                         setEditingField(null);
                       }}
-                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                     >
                       {q.options.map((option) => (
                         <option key={option} value={option}>
@@ -259,7 +259,7 @@ export default function BasicInfoForm() {
                         updateFormData({ [q.key]: e.target.value })
                       }
                       onBlur={() => setEditingField(null)}
-                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-teal-500 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
+                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                       placeholder={
                         q.key === 'experienceGroup'
                           ? 'Enter years'
@@ -321,7 +321,7 @@ export default function BasicInfoForm() {
         </div>
         <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-teal-500"
+            className="h-full bg-emerald-500"
             initial={{ width: '0%' }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}

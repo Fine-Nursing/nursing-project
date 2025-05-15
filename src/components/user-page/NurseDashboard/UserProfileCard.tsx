@@ -26,11 +26,11 @@ export default function UserProfileCard({
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
       } rounded-2xl shadow-lg p-6 mb-6 relative border ${
-        theme === 'light' ? 'border-teal-100' : 'border-slate-600'
+        theme === 'light' ? 'border-emerald-100' : 'border-slate-600'
       }`}
     >
       {/* "AI Personalized" Ribbon */}
-      <div className="absolute top-0 right-0 bg-gradient-to-bl from-teal-400 to-cyan-500 text-white px-3 py-1 rounded-bl-lg flex items-center">
+      <div className="absolute top-0 right-0 bg-gradient-to-bl from-emerald-400 to-cyan-500 text-white px-3 py-1 rounded-bl-lg flex items-center">
         <Star className="w-4 h-4 mr-1" />
         <span className="text-xs font-medium">AI Personalized</span>
       </div>
@@ -38,9 +38,9 @@ export default function UserProfileCard({
       <div className="flex flex-wrap">
         {/* Profile Image */}
         <div className="w-full md:w-1/4 flex justify-center mb-4 md:mb-0">
-          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-teal-100 to-cyan-100 flex items-center justify-center relative">
-            <div className="absolute inset-0 rounded-full border-4 border-teal-200 border-t-teal-500 animate-spin-slow" />
-            <User className="w-16 h-16 text-teal-500" />
+          <div className="w-32 h-32 rounded-full bg-gradient-to-r from-emerald-100 to-cyan-100 flex items-center justify-center relative">
+            <div className="absolute inset-0 rounded-full border-4 border-emerald-200 border-t-emerald-500 animate-spin-slow" />
+            <User className="w-16 h-16 text-emerald-500" />
           </div>
         </div>
 
@@ -48,16 +48,16 @@ export default function UserProfileCard({
         <div className="w-full md:w-3/4 md:pl-6 space-y-2">
           <h2
             className={`text-2xl font-bold flex items-center ${
-              theme === 'light' ? 'text-teal-700' : ''
+              theme === 'light' ? 'text-emerald-700' : ''
             }`}
           >
             {userProfile.name}
             <div
               className={`ml-2 ${
-                theme === 'light' ? 'bg-teal-100' : 'bg-slate-600'
+                theme === 'light' ? 'bg-emerald-100' : 'bg-slate-600'
               } p-1 rounded-full`}
             >
-              <Award className="w-4 h-4 text-teal-500" />
+              <Award className="w-4 h-4 text-emerald-500" />
             </div>
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -66,7 +66,7 @@ export default function UserProfileCard({
                 <span className="font-semibold w-24">Role:</span>
                 <span className="flex items-center">
                   {userProfile.role}
-                  <Stethoscope className="w-4 h-4 ml-1 text-teal-500" />
+                  <Stethoscope className="w-4 h-4 ml-1 text-emerald-500" />
                 </span>
               </div>
               <div className="flex items-center">
@@ -100,7 +100,7 @@ export default function UserProfileCard({
           <div
             className={`${
               theme === 'light'
-                ? 'bg-teal-50 border-teal-100'
+                ? 'bg-emerald-50 border-emerald-100'
                 : 'bg-slate-600 border-slate-500'
             } border rounded-2xl p-4 text-sm flex items-start mt-2`}
           >
@@ -109,7 +109,7 @@ export default function UserProfileCard({
                 theme === 'light' ? '' : 'border border-slate-400'
               }`}
             >
-              <Smile className="w-5 h-5 text-teal-500" />
+              <Smile className="w-5 h-5 text-emerald-500" />
             </div>
             <div>
               <span className="font-medium">AI Advisor:</span> You’re on track

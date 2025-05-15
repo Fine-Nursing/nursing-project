@@ -117,14 +117,14 @@ export default function NurseDashboard() {
   return (
     <div
       className={`min-h-screen ${
-        theme === 'light' ? 'bg-teal-50' : 'bg-slate-800 text-white'
+        theme === 'light' ? 'bg-emerald-50' : 'bg-slate-800 text-white'
       } p-6`}
     >
       {loading ? (
         // Loading Overlay
         <div className="flex flex-col items-center justify-center min-h-screen">
-          <div className="w-16 h-16 border-t-4 border-teal-400 border-solid rounded-full animate-spin" />
-          <p className="mt-4 text-lg font-medium text-teal-600">
+          <div className="w-16 h-16 border-t-4 border-emerald-400 border-solid rounded-full animate-spin" />
+          <p className="mt-4 text-lg font-medium text-emerald-600">
             Analyzing your data...
           </p>
         </div>
@@ -135,14 +135,14 @@ export default function NurseDashboard() {
             <div className="flex items-center">
               <div
                 className={`${
-                  theme === 'light' ? 'bg-teal-100' : 'bg-slate-700'
+                  theme === 'light' ? 'bg-emerald-100' : 'bg-slate-700'
                 } p-2 rounded-full mr-3`}
               >
-                <Stethoscope className="w-6 h-6 text-teal-500" />
+                <Stethoscope className="w-6 h-6 text-emerald-500" />
               </div>
               <h1
                 className={`text-3xl font-bold ${
-                  theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+                  theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
                 }`}
               >
                 Nurse Pay Buddy
@@ -155,8 +155,8 @@ export default function NurseDashboard() {
                 onClick={toggleTheme}
                 className={`p-2 rounded-full ${
                   theme === 'light'
-                    ? 'bg-teal-100 text-teal-500'
-                    : 'bg-slate-700 text-teal-300'
+                    ? 'bg-emerald-100 text-emerald-500'
+                    : 'bg-slate-700 text-emerald-300'
                 }`}
               >
                 {theme === 'light' ? <Moon /> : <Sun />}
@@ -192,7 +192,7 @@ export default function NurseDashboard() {
             className={`${
               theme === 'light' ? 'bg-white' : 'bg-slate-700'
             } rounded-2xl shadow-lg p-6 mb-6 border ${
-              theme === 'light' ? 'border-teal-100' : 'border-slate-600'
+              theme === 'light' ? 'border-emerald-100' : 'border-slate-600'
             }`}
           >
             <PredictiveCompChart

@@ -32,14 +32,16 @@ function CustomBracketTooltip({
   const item = payload[0].payload;
   return (
     <div
-      className={`p-2 ${theme === 'light' ? 'bg-white border-teal-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border text-xs rounded shadow-sm`}
+      className={`p-2 ${theme === 'light' ? 'bg-white border-emerald-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border text-xs rounded shadow-sm`}
     >
       <p className="font-bold">{item.expBracket}</p>
       <p>
         Salary: ${item.salary.toLocaleString()}
         {item.isUser && (
           <span
-            className={theme === 'light' ? 'text-teal-600' : 'text-teal-300'}
+            className={
+              theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'
+            }
           >
             {' '}
             ← Your bracket
@@ -61,7 +63,7 @@ const customBouncingBar = (props: any, theme = 'light') => {
 
   const isUser = !!payload?.isUser;
   const barRadius = 4;
-  const userFill = theme === 'light' ? '#0d9488' : '#0f766e'; // teal-600 for light, teal-700 for dark
+  const userFill = theme === 'light' ? '#0d9488' : '#0f766e'; // emerald-600 for light, emerald-700 for dark
 
   // TypeScript 에러를 방지하기 위해 숫자 값을 보장
   const xValue = typeof x === 'number' ? x : parseFloat(x || '0');
@@ -103,10 +105,10 @@ export default function ProgressionBarChart({
   const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
   const bgClass = theme === 'light' ? 'bg-mint-50 bg-white' : 'bg-slate-700';
   const borderClass =
-    theme === 'light' ? 'border-teal-100' : 'border-slate-600';
-  const textClass = theme === 'light' ? 'text-teal-700' : 'text-teal-300';
+    theme === 'light' ? 'border-emerald-100' : 'border-slate-600';
+  const textClass = theme === 'light' ? 'text-emerald-700' : 'text-emerald-300';
   const textGrayClass = theme === 'light' ? 'text-gray-400' : 'text-gray-500';
-  const barFillColor = theme === 'light' ? '#5eead4' : '#2dd4bf'; // teal-200 for light, teal-400 for dark
+  const barFillColor = theme === 'light' ? '#5eead4' : '#2dd4bf'; // emerald-200 for light, emerald-400 for dark
 
   if (!careerData.length) {
     return (
@@ -226,7 +228,7 @@ export default function ProgressionBarChart({
       >
         <div className="flex items-center">
           <div
-            className={`w-3 h-3 ${theme === 'light' ? 'bg-teal-600' : 'bg-teal-500'} rounded-sm mr-1`}
+            className={`w-3 h-3 ${theme === 'light' ? 'bg-emerald-600' : 'bg-emerald-500'} rounded-sm mr-1`}
           />
           <span>Your bracket</span>
         </div>

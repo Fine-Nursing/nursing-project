@@ -50,10 +50,10 @@ function CustomLineTooltip({
   const data = payload[0].payload;
   return (
     <div
-      className={`${theme === 'light' ? 'bg-white border-teal-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border p-2 rounded-xl shadow-sm text-xs`}
+      className={`${theme === 'light' ? 'bg-white border-emerald-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border p-2 rounded-xl shadow-sm text-xs`}
     >
       <div
-        className={`font-bold ${theme === 'light' ? 'text-teal-600' : 'text-teal-300'}`}
+        className={`font-bold ${theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'}`}
       >
         {data.role} {data.specialty && `(${data.specialty})`}
       </div>
@@ -68,7 +68,7 @@ function CustomLineTooltip({
         End: {data.endDate ? dayjs(data.endDate).format('MMM YYYY') : 'Now'}
       </div>
       <div
-        className={`font-medium mt-1 ${theme === 'light' ? 'text-teal-700' : 'text-teal-300'}`}
+        className={`font-medium mt-1 ${theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'}`}
       >
         ${data.hourlyRate.toFixed(2)}/hr
       </div>
@@ -313,7 +313,7 @@ export default function CareerDashboard({
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-slate-700';
 
   const borderClass =
-    theme === 'light' ? 'border-teal-200' : 'border-slate-600';
+    theme === 'light' ? 'border-emerald-200' : 'border-slate-600';
 
   const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
   const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
@@ -336,10 +336,10 @@ export default function CareerDashboard({
       <div className="mb-8">
         <div className="flex items-center mb-3">
           <Briefcase
-            className={`${theme === 'light' ? 'text-teal-600' : 'text-teal-300'} w-7 h-7 mr-2`}
+            className={`${theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'} w-7 h-7 mr-2`}
           />
           <h2
-            className={`text-2xl font-bold ${theme === 'light' ? 'text-teal-700' : 'text-teal-300'}`}
+            className={`text-2xl font-bold ${theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'}`}
           >
             My Career Journey
           </h2>
@@ -347,19 +347,19 @@ export default function CareerDashboard({
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
           <div
-            className={`${theme === 'light' ? 'bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200' : 'bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600'} rounded-xl p-4 border flex flex-col`}
+            className={`${theme === 'light' ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200' : 'bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600'} rounded-xl p-4 border flex flex-col`}
           >
             <span
-              className={`${theme === 'light' ? 'text-teal-500' : 'text-teal-300'} text-sm font-medium`}
+              className={`${theme === 'light' ? 'text-emerald-500' : 'text-emerald-300'} text-sm font-medium`}
             >
               Total Experience
             </span>
             <div className="flex items-center mt-2">
               <Clock
-                className={`w-5 h-5 ${theme === 'light' ? 'text-teal-600' : 'text-teal-300'} mr-2`}
+                className={`w-5 h-5 ${theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'} mr-2`}
               />
               <span
-                className={`text-xl font-bold ${theme === 'light' ? 'text-teal-800' : 'text-teal-200'}`}
+                className={`text-xl font-bold ${theme === 'light' ? 'text-emerald-800' : 'text-emerald-200'}`}
               >
                 {totalYears} Year{totalYears !== 1 ? 's' : ''}{' '}
                 {remainingMonths > 0
@@ -439,7 +439,7 @@ export default function CareerDashboard({
           <button
             type="button"
             onClick={() => setFormVisible(true)}
-            className="bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-teal-700 transition shadow-sm"
+            className="bg-emerald-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-emerald-700 transition shadow-sm"
           >
             <Plus className="w-5 h-5 mr-2" />
             Add Career Entry
@@ -449,10 +449,10 @@ export default function CareerDashboard({
             className={`${bgClass} border ${borderClass} rounded-lg p-5 shadow-sm`}
           >
             <h3
-              className={`text-lg font-bold ${theme === 'light' ? 'text-teal-700' : 'text-teal-300'} mb-4 flex items-center`}
+              className={`text-lg font-bold ${theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'} mb-4 flex items-center`}
             >
               <Briefcase
-                className={`w-5 h-5 mr-2 ${theme === 'light' ? 'text-teal-500' : 'text-teal-300'}`}
+                className={`w-5 h-5 mr-2 ${theme === 'light' ? 'text-emerald-500' : 'text-emerald-300'}`}
               />
               {editingItemId ? 'Edit Career Entry' : 'Add New Career Entry'}
             </h3>
@@ -472,7 +472,7 @@ export default function CareerDashboard({
                   value={newItem.facility}
                   onChange={handleChangeText}
                   placeholder="e.g. NYU Langone"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                   required
                 />
               </div>
@@ -491,7 +491,7 @@ export default function CareerDashboard({
                   value={newItem.role}
                   onChange={handleChangeText}
                   placeholder="e.g. RN"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                   required
                 />
               </div>
@@ -510,7 +510,7 @@ export default function CareerDashboard({
                   value={newItem.specialty}
                   onChange={handleChangeText}
                   placeholder="e.g. ER, NICU"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                 />
               </div>
             </div>
@@ -530,7 +530,7 @@ export default function CareerDashboard({
                   onChange={handleChangeStartDate}
                   dateFormat="MMM yyyy"
                   showMonthYearPicker
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                   required
                 />
               </div>
@@ -557,7 +557,7 @@ export default function CareerDashboard({
                   dateFormat="MMM yyyy"
                   showMonthYearPicker
                   placeholderText="Ongoing"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                   isClearable
                 />
               </div>
@@ -578,7 +578,7 @@ export default function CareerDashboard({
                   value={newItem.hourlyRate}
                   onChange={handleChangeText}
                   placeholder="e.g. 35.5"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-teal-500 focus:ring-1 focus:ring-teal-500`}
+                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500`}
                   required
                 />
               </div>
@@ -615,7 +615,7 @@ export default function CareerDashboard({
                 <button
                   type="button"
                   onClick={editingItemId ? handleUpdate : handleAdd}
-                  className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 text-sm"
+                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm"
                 >
                   {editingItemId ? 'Update' : 'Add'} Career Entry
                 </button>
@@ -630,12 +630,12 @@ export default function CareerDashboard({
       <div
         className={`mb-8 ${bgClass} border ${borderClass} rounded-xl shadow-sm overflow-hidden`}
       >
-        <div className="p-4 bg-gradient-to-r from-teal-500 to-teal-600">
+        <div className="p-4 bg-gradient-to-r from-emerald-500 to-emerald-600">
           <h3 className="text-lg font-bold text-white mb-1 flex items-center">
             <History className="w-5 h-5 mr-2" />
             Career Journey Timeline
           </h3>
-          <p className="text-teal-100 text-sm">
+          <p className="text-emerald-100 text-sm">
             Your professional growth visualized
           </p>
         </div>
@@ -657,7 +657,7 @@ export default function CareerDashboard({
               className={`p-6 ${theme === 'light' ? 'border-r border-gray-100' : 'border-r border-slate-600'}`}
             >
               <div
-                className={`relative pl-8 space-y-8 before:absolute before:left-4 before:top-0 before:h-full before:w-0.5 ${theme === 'light' ? 'before:bg-teal-200' : 'before:bg-teal-700'}`}
+                className={`relative pl-8 space-y-8 before:absolute before:left-4 before:top-0 before:h-full before:w-0.5 ${theme === 'light' ? 'before:bg-emerald-200' : 'before:bg-emerald-700'}`}
               >
                 {sortedCareerData.map((item, index) => {
                   const startDate = dayjs(item.startDate);
@@ -669,7 +669,7 @@ export default function CareerDashboard({
 
                   // Determine marker color based on role level
                   let markerColor =
-                    theme === 'light' ? 'bg-teal-500' : 'bg-teal-600';
+                    theme === 'light' ? 'bg-emerald-500' : 'bg-emerald-600';
                   if (
                     item.role.toLowerCase().includes('senior') ||
                     item.role.toLowerCase().includes('director') ||
@@ -706,11 +706,11 @@ export default function CareerDashboard({
                           // eslint-disable-next-line no-nested-ternary
                           ongoing
                             ? theme === 'light'
-                              ? 'border-teal-200 bg-teal-50 shadow-sm'
-                              : 'border-teal-800 bg-slate-800 shadow-sm'
+                              ? 'border-emerald-200 bg-emerald-50 shadow-sm'
+                              : 'border-emerald-800 bg-slate-800 shadow-sm'
                             : theme === 'light'
-                              ? 'border-gray-100 hover:border-teal-200 hover:shadow-sm'
-                              : 'border-slate-600 hover:border-teal-700 hover:shadow-sm'
+                              ? 'border-gray-100 hover:border-emerald-200 hover:shadow-sm'
+                              : 'border-slate-600 hover:border-emerald-700 hover:shadow-sm'
                         }
                       `}
                       >
@@ -748,7 +748,7 @@ export default function CareerDashboard({
                             <button
                               type="button"
                               onClick={() => handleEdit(item.id)}
-                              className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-teal-600' : 'text-gray-500 hover:text-teal-300'} rounded`}
+                              className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-emerald-600' : 'text-gray-500 hover:text-emerald-300'} rounded`}
                             >
                               <Edit className="w-4 h-4" />
                             </button>
@@ -772,7 +772,7 @@ export default function CareerDashboard({
                             {startDate.format('MMM YYYY')} -{' '}
                             {ongoing ? 'Present' : endDate.format('MMM YYYY')}{' '}
                             <span
-                              className={`font-medium ${theme === 'light' ? 'text-teal-600' : 'text-teal-300'}`}
+                              className={`font-medium ${theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'}`}
                             >
                               (
                               {renderDuration(
@@ -786,10 +786,10 @@ export default function CareerDashboard({
 
                         <div className="mt-2 flex items-center">
                           <TrendingUp
-                            className={`w-3.5 h-3.5 mr-1 ${theme === 'light' ? 'text-teal-500' : 'text-teal-300'}`}
+                            className={`w-3.5 h-3.5 mr-1 ${theme === 'light' ? 'text-emerald-500' : 'text-emerald-300'}`}
                           />
                           <span
-                            className={`text-sm font-medium ${theme === 'light' ? 'text-teal-700' : 'text-teal-300'}`}
+                            className={`text-sm font-medium ${theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'}`}
                           >
                             ${item.hourlyRate.toFixed(2)}/hr
                           </span>
@@ -856,7 +856,7 @@ export default function CareerDashboard({
                   <Line
                     type="monotone"
                     dataKey="hourlyRate"
-                    stroke={theme === 'light' ? '#14b8a6' : '#2dd4bf'} // 라이트모드: teal-500, 다크모드: teal-400
+                    stroke={theme === 'light' ? '#14b8a6' : '#2dd4bf'} // 라이트모드: emerald-500, 다크모드: emerald-400
                     strokeWidth={3}
                     dot={{
                       r: 5,
