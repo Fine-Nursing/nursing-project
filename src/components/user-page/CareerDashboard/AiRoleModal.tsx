@@ -1,32 +1,46 @@
-// components/CareerDashboard/AiRoleModal.tsx
 import React from 'react';
 import { X as CloseIcon } from 'lucide-react';
 
 interface AiRoleModalProps {
-  reason: string | null; // "setAiReason"으로 관리
+  reason: string | null;
   onClose: () => void;
+  theme: 'light' | 'dark'; // theme prop 추가
 }
 
-export default function AiRoleModal({ reason, onClose }: AiRoleModalProps) {
-  if (!reason) return null; // 모달 표시 안 함
+export default function AiRoleModal({
+  reason,
+  onClose,
+  theme,
+}: AiRoleModalProps) {
+  if (!reason) return null;
+
+  // theme에 따른 동적 클래스 적용
+  const bgColor = theme === 'light' ? 'bg-white' : 'bg-slate-800';
+  const textColor = theme === 'light' ? 'text-gray-700' : 'text-gray-200';
+  const closeButtonColor =
+    theme === 'light'
+      ? 'text-gray-400 hover:text-gray-600'
+      : 'text-gray-500 hover:text-gray-300';
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 z-50">
-      <div className="bg-white p-4 rounded-lg shadow-md w-80 relative">
+      <div className={`${bgColor} p-4 rounded-lg shadow-md w-80 relative`}>
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className={`absolute top-2 right-2 ${closeButtonColor}`}
         >
           <CloseIcon className="w-5 h-5" />
         </button>
-        <h3 className="text-teal-600 font-bold text-lg mb-2">AI Suggestion</h3>
-        <p className="text-sm text-gray-700">{reason}</p>
+        <h3 className="text-emerald-600 font-bold text-lg mb-2">
+          AI Suggestion
+        </h3>
+        <p className={`text-sm ${textColor}`}>{reason}</p>
         <div className="mt-3 text-right">
           <button
             type="button"
             onClick={onClose}
-            className="bg-teal-500 text-white px-3 py-1.5 rounded hover:bg-teal-600"
+            className="bg-emerald-500 text-white px-3 py-1.5 rounded hover:bg-emerald-600"
           >
             OK
           </button>

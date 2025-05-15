@@ -32,7 +32,7 @@ export default function NurseShiftScheduler() {
     <div
       className={`min-h-screen p-5 relative transition-colors duration-300 ${
         theme === 'light'
-          ? 'bg-teal-50 text-teal-900'
+          ? 'bg-emerald-50 text-emerald-900'
           : 'bg-slate-800 text-white'
       }`}
     >
@@ -42,12 +42,12 @@ export default function NurseShiftScheduler() {
           <div>
             <div
               className={`animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-2 ${
-                theme === 'light' ? 'border-teal-600' : 'border-teal-300'
+                theme === 'light' ? 'border-emerald-600' : 'border-emerald-300'
               }`}
             />
             <p
               className={`text-sm font-medium ${
-                theme === 'light' ? 'text-teal-600' : 'text-teal-300'
+                theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'
               }`}
             >
               Generating Schedule...
@@ -61,12 +61,12 @@ export default function NurseShiftScheduler() {
         <div className="flex items-center">
           <CalendarIcon
             className={`w-6 h-6 mr-2 ${
-              theme === 'light' ? 'text-teal-500' : 'text-teal-300'
+              theme === 'light' ? 'text-emerald-500' : 'text-emerald-300'
             }`}
           />
           <h2
             className={`text-2xl font-bold ${
-              theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+              theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
             }`}
           >
             Nurse Shift Scheduler
@@ -78,8 +78,8 @@ export default function NurseShiftScheduler() {
           onClick={toggleTheme}
           className={`p-2 rounded-full border transition ${
             theme === 'light'
-              ? 'bg-white border-teal-200 text-teal-500 hover:bg-teal-100'
-              : 'bg-slate-700 border-slate-600 text-teal-300 hover:bg-slate-600'
+              ? 'bg-white border-emerald-200 text-emerald-500 hover:bg-emerald-100'
+              : 'bg-slate-700 border-slate-600 text-emerald-300 hover:bg-slate-600'
           }`}
         >
           {theme === 'light' ? <Moon /> : <Sun />}
@@ -90,7 +90,7 @@ export default function NurseShiftScheduler() {
       <div
         className={`rounded-xl shadow-lg border p-5 ${
           theme === 'light'
-            ? 'bg-white border-teal-100'
+            ? 'bg-white border-emerald-100'
             : 'bg-slate-700 border-slate-600'
         } relative`}
       >

@@ -45,11 +45,11 @@ function CustomTooltip(
         className={`p-3 ${
           themeMode === 'light' ? 'bg-white' : 'bg-slate-700'
         } shadow-lg rounded-2xl border ${
-          themeMode === 'light' ? 'border-teal-100' : 'border-slate-600'
+          themeMode === 'light' ? 'border-emerald-100' : 'border-slate-600'
         }`}
       >
         <p className="font-semibold">Wage: {label}</p>
-        <p className="text-teal-600 font-medium flex items-center">
+        <p className="text-emerald-600 font-medium flex items-center">
           <User className="w-3 h-3 mr-1" />
           Nurses: {count} {isUser && '← Your wage'}
         </p>
@@ -86,13 +86,13 @@ export default function PredictiveCompChart({
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
       } rounded-2xl shadow-lg p-6 mb-6 border ${
-        theme === 'light' ? 'border-teal-100' : 'border-slate-600'
+        theme === 'light' ? 'border-emerald-100' : 'border-slate-600'
       }`}
     >
       <h2 className="text-xl font-bold mb-4 flex items-center">
-        <TrendingUp className="w-5 h-5 mr-2 text-teal-500" />
+        <TrendingUp className="w-5 h-5 mr-2 text-emerald-500" />
         <span>Predictive Compensation Comparison</span>
-        <div className="ml-2 bg-teal-100 text-teal-600 text-xs px-2 py-0.5 rounded-full">
+        <div className="ml-2 bg-emerald-100 text-emerald-600 text-xs px-2 py-0.5 rounded-full">
           AI Powered
         </div>
       </h2>
@@ -100,10 +100,10 @@ export default function PredictiveCompChart({
       <div
         className={`mb-6 ${
           theme === 'light'
-            ? 'bg-gradient-to-r from-teal-50 to-cyan-50'
+            ? 'bg-gradient-to-r from-emerald-50 to-cyan-50'
             : 'bg-slate-600'
         } rounded-2xl shadow-md p-5 border ${
-          theme === 'light' ? 'border-teal-100' : 'border-slate-500'
+          theme === 'light' ? 'border-emerald-100' : 'border-slate-500'
         }`}
       >
         <div className="flex items-center justify-between mb-4">
@@ -114,7 +114,7 @@ export default function PredictiveCompChart({
           >
             ER Average Pay in New York City, NY
           </h3>
-          <div className="px-3 py-1 rounded-full bg-teal-100 text-teal-600 text-xs font-medium flex items-center">
+          <div className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-600 text-xs font-medium flex items-center">
             Live Data
           </div>
         </div>
@@ -198,11 +198,11 @@ export default function PredictiveCompChart({
 
         <div
           className={`mt-4 pt-4 border-t ${
-            theme === 'light' ? 'border-teal-100' : 'border-slate-500'
+            theme === 'light' ? 'border-emerald-100' : 'border-slate-500'
           } flex flex-col items-start sm:flex-row sm:justify-between sm:items-center`}
         >
           <div className="flex items-center text-sm mb-2 sm:mb-0">
-            <TrendingUp className="h-4 w-4 text-teal-600 mr-2" />
+            <TrendingUp className="h-4 w-4 text-emerald-600 mr-2" />
             <span>
               Your wage:{' '}
               <span className="font-semibold">${userHourlyRate}</span> (Top
@@ -211,11 +211,11 @@ export default function PredictiveCompChart({
           </div>
           <div className="flex flex-wrap items-center">
             <div className="flex mr-4 mb-2 sm:mb-0">
-              <div className="w-4 h-4 bg-teal-600 rounded-sm mr-1 mt-1" />
+              <div className="w-4 h-4 bg-emerald-600 rounded-sm mr-1 mt-1" />
               <span className="text-xs font-medium">Your wage</span>
             </div>
             <div className="flex mb-2 sm:mb-0">
-              <div className="w-8 border-t-2 border-dashed border-teal-500 mr-1 mt-2" />
+              <div className="w-8 border-t-2 border-dashed border-emerald-500 mr-1 mt-2" />
               <span className="text-xs font-medium">Regional avg wage</span>
             </div>
           </div>

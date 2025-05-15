@@ -32,13 +32,13 @@ export default function CompensationAnalysis({
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
       } rounded-2xl shadow-lg p-6 border ${
-        theme === 'light' ? 'border-teal-100' : 'border-slate-600'
+        theme === 'light' ? 'border-emerald-100' : 'border-slate-600'
       } space-y-4`}
     >
       <h2 className="text-xl font-bold flex items-center">
-        <Coffee className="w-5 h-5 mr-2 text-teal-500" />
+        <Coffee className="w-5 h-5 mr-2 text-emerald-500" />
         Compensation Analysis
-        <div className="ml-2 bg-teal-100 text-teal-600 text-xs px-2 py-0.5 rounded-full">
+        <div className="ml-2 bg-emerald-100 text-emerald-600 text-xs px-2 py-0.5 rounded-full">
           AI Powered
         </div>
       </h2>
@@ -53,10 +53,10 @@ export default function CompensationAnalysis({
           <div className="font-bold text-lg flex items-center">
             <span
               className={`${
-                theme === 'light' ? 'bg-teal-50' : 'bg-slate-600'
+                theme === 'light' ? 'bg-emerald-50' : 'bg-slate-600'
               } p-1 rounded-lg flex items-center mr-2`}
             >
-              <Gift className="w-4 h-4 mr-1 text-teal-500" />
+              <Gift className="w-4 h-4 mr-1 text-emerald-500" />
             </span>
             ${userProfile.hourlyRate.toFixed(2)}
           </div>
@@ -70,7 +70,7 @@ export default function CompensationAnalysis({
         <div
           className={`mt-2 text-sm ${
             theme === 'light'
-              ? 'bg-teal-50 border-teal-100'
+              ? 'bg-emerald-50 border-emerald-100'
               : 'bg-slate-600 border-slate-500'
           } border rounded-2xl p-3`}
         >
@@ -78,42 +78,42 @@ export default function CompensationAnalysis({
         </div>
       </div>
 
-      <h3 className="font-medium text-teal-600">Additional Differentials</h3>
+      <h3 className="font-medium text-emerald-600">Additional Differentials</h3>
       <div className="grid grid-cols-3 gap-3">
         <div
           className={`p-3 rounded-2xl text-center border ${
             theme === 'light'
-              ? 'bg-teal-50 border-teal-100'
+              ? 'bg-emerald-50 border-emerald-100'
               : 'bg-slate-600 border-slate-500'
           }`}
         >
           <div className="flex items-center justify-center mb-1 text-sm">
-            <Moon className="w-4 h-4 mr-1 text-teal-400" />
+            <Moon className="w-4 h-4 mr-1 text-emerald-400" />
             <span>Night</span>
           </div>
-          <div className="font-bold text-teal-700">
+          <div className="font-bold text-emerald-700">
             +${userProfile.differentials.night}/hr
           </div>
         </div>
         <div
           className={`p-3 rounded-2xl text-center border ${
             theme === 'light'
-              ? 'bg-teal-50 border-teal-100'
+              ? 'bg-emerald-50 border-emerald-100'
               : 'bg-slate-600 border-slate-500'
           }`}
         >
           <div className="flex items-center justify-center mb-1 text-sm">
-            <Calendar className="w-4 h-4 mr-1 text-teal-400" />
+            <Calendar className="w-4 h-4 mr-1 text-emerald-400" />
             <span>Weekend</span>
           </div>
-          <div className="font-bold text-teal-700">
+          <div className="font-bold text-emerald-700">
             +${userProfile.differentials.weekend}/hr
           </div>
         </div>
         <div
           className={`p-3 rounded-2xl text-center border ${
             theme === 'light'
-              ? 'bg-teal-50 border-teal-100'
+              ? 'bg-emerald-50 border-emerald-100'
               : 'bg-slate-600 border-slate-500'
           }`}
         >
@@ -121,7 +121,7 @@ export default function CompensationAnalysis({
             <Star className="w-4 h-4 mr-1 text-yellow-500" />
             <span>Other</span>
           </div>
-          <div className="font-bold text-teal-700">
+          <div className="font-bold text-emerald-700">
             +${userProfile.differentials.other}/hr
           </div>
         </div>
@@ -134,20 +134,20 @@ export default function CompensationAnalysis({
             : 'bg-slate-600 border-slate-500'
         }`}
       >
-        <div className="w-10 h-10 bg-gradient-to-r from-teal-300 to-cyan-300 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+        <div className="w-10 h-10 bg-gradient-to-r from-emerald-300 to-cyan-300 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
           <span className="text-white font-bold">AI</span>
         </div>
         <div>
           <span className="font-medium">
             Potential monthly additional earnings:
           </span>
-          <span className="font-bold text-teal-600 ml-1">
+          <span className="font-bold text-emerald-600 ml-1">
             ${calculatePotentialDifferentials()}
           </span>
         </div>
       </div>
 
-      <h3 className="font-medium text-teal-600">Suggested Actions</h3>
+      <h3 className="font-medium text-emerald-600">Suggested Actions</h3>
       <ul className="space-y-2 text-sm text-gray-700">
         <li className="flex items-start">
           <div className="bg-green-100 rounded-full p-1 mr-2 mt-0.5">

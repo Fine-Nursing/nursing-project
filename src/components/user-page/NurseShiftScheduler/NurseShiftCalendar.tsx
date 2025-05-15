@@ -106,7 +106,7 @@ export default function NurseShiftCalendar({
           <div
             className={`p-5 rounded-lg shadow-lg border w-80 relative ${
               theme === 'light'
-                ? 'bg-white border-teal-200'
+                ? 'bg-white border-emerald-200'
                 : 'bg-slate-700 border-slate-600 text-white'
             }`}
           >
@@ -119,7 +119,7 @@ export default function NurseShiftCalendar({
             </button>
             <h3
               className={`font-bold mb-2 ${
-                theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+                theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
               }`}
             >
               {selectedEvent.title}
@@ -166,13 +166,13 @@ export default function NurseShiftCalendar({
               <div
                 className={`mt-3 p-2 rounded ${
                   theme === 'light'
-                    ? 'bg-teal-50'
+                    ? 'bg-emerald-50'
                     : 'bg-slate-600 text-white border border-slate-500'
                 }`}
               >
                 <p
                   className={`font-medium ${
-                    theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+                    theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
                   }`}
                 >
                   Hourly Rate: ${selectedEvent.resource.hourlyRate.toFixed(2)}
@@ -180,7 +180,7 @@ export default function NurseShiftCalendar({
                 </p>
                 <p
                   className={`font-medium ${
-                    theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+                    theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
                   }`}
                 >
                   Shift Earnings: ${selectedEvent.resource.earning.toFixed(2)}
@@ -193,8 +193,8 @@ export default function NurseShiftCalendar({
                 onClick={handleCloseDetail}
                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
                   theme === 'light'
-                    ? 'bg-teal-500 text-white hover:bg-teal-600'
-                    : 'bg-teal-600 text-white hover:bg-teal-700'
+                    ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                    : 'bg-emerald-600 text-white hover:bg-emerald-700'
                 }`}
               >
                 Close
@@ -210,13 +210,13 @@ export default function NurseShiftCalendar({
       <div
         className={`text-sm p-3 rounded-md mb-3 ${
           theme === 'light'
-            ? 'bg-teal-50 border border-teal-100'
+            ? 'bg-emerald-50 border border-emerald-100'
             : 'bg-slate-700 border border-slate-600 text-white'
         }`}
       >
         <h4
           className={`font-bold mb-2 ${
-            theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+            theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
           }`}
         >
           Schedule Overview
@@ -312,8 +312,8 @@ export default function NurseShiftCalendar({
           <h4
             className={`text-sm font-medium mb-2 border-b pb-1 ${
               theme === 'light'
-                ? 'text-teal-700 border-teal-100'
-                : 'text-teal-300 border-slate-500'
+                ? 'text-emerald-700 border-emerald-100'
+                : 'text-emerald-300 border-slate-500'
             }`}
           >
             Day-of-Week Distribution
@@ -335,7 +335,7 @@ export default function NurseShiftCalendar({
               return (
                 <div key={`${day}-bar`} className="flex flex-col items-center">
                   <div
-                    className="w-full bg-teal-400 rounded-t"
+                    className="w-full bg-emerald-400 rounded-t"
                     style={{ height }}
                   />
                   <div>{count}</div>
@@ -356,8 +356,8 @@ export default function NurseShiftCalendar({
           <h4
             className={`text-sm font-medium mb-2 border-b pb-1 ${
               theme === 'light'
-                ? 'text-teal-700 border-teal-100'
-                : 'text-teal-300 border-slate-500'
+                ? 'text-emerald-700 border-emerald-100'
+                : 'text-emerald-300 border-slate-500'
             }`}
           >
             Pay Breakdown
@@ -399,7 +399,7 @@ export default function NurseShiftCalendar({
               <h5 className="font-medium">Differentials</h5>
               <p
                 className={`text-lg font-bold ${
-                  theme === 'light' ? 'text-teal-600' : 'text-teal-300'
+                  theme === 'light' ? 'text-emerald-600' : 'text-emerald-300'
                 }`}
               >
                 $
@@ -424,7 +424,7 @@ export default function NurseShiftCalendar({
               <h5 className="font-medium">Total Pay</h5>
               <p
                 className={`text-lg font-bold ${
-                  theme === 'light' ? 'text-teal-700' : 'text-teal-300'
+                  theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
                 }`}
               >
                 ${totalEarnings.toFixed(2)}
@@ -448,8 +448,8 @@ export default function NurseShiftCalendar({
           type="button"
           className={`border px-3 py-1.5 rounded-md text-sm font-medium mr-2 ${
             theme === 'light'
-              ? 'bg-white border-teal-500 text-teal-600 hover:bg-teal-50'
-              : 'bg-slate-700 border-slate-500 text-teal-300 hover:bg-slate-600'
+              ? 'bg-white border-emerald-500 text-emerald-600 hover:bg-emerald-50'
+              : 'bg-slate-700 border-slate-500 text-emerald-300 hover:bg-slate-600'
           }`}
         >
           Export Schedule
@@ -458,8 +458,8 @@ export default function NurseShiftCalendar({
           type="button"
           className={`px-3 py-1.5 rounded-md text-sm font-medium transition ${
             theme === 'light'
-              ? 'bg-teal-500 text-white hover:bg-teal-600'
-              : 'bg-teal-600 text-white hover:bg-teal-700'
+              ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+              : 'bg-emerald-600 text-white hover:bg-emerald-700'
           }`}
         >
           Save Schedule

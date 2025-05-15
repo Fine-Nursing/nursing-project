@@ -3,7 +3,7 @@ import cn from 'src/lib/utils';
 
 type ButtonSize = 'sm' | 'md' | 'lg';
 type ButtonVariant = 'invert' | 'solid' | 'outline';
-type ButtonColor = 'teal' | 'blue' | 'red' | 'green';
+type ButtonColor = 'emerald' | 'blue' | 'red' | 'green';
 
 interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
@@ -23,12 +23,13 @@ const colorVariantClasses: Record<
   ButtonColor,
   Record<ButtonVariant, string>
 > = {
-  teal: {
+  emerald: {
     invert:
-      'bg-teal-500 text-white hover:bg-white hover:text-black border-2 border-transparent hover:border-teal-500',
-    solid: 'bg-teal-500 text-white hover:bg-teal-600 border-2 border-teal-500',
+      'bg-emerald-500 text-white hover:bg-white hover:text-black border-2 border-transparent hover:border-emerald-500',
+    solid:
+      'bg-emerald-500 text-white hover:bg-emerald-600 border-2 border-emerald-500',
     outline:
-      'bg-white text-teal-500 border-2 border-teal-500 hover:bg-teal-500 hover:text-white',
+      'bg-white text-emerald-500 border-2 border-emerald-500 hover:bg-emerald-500 hover:text-white',
   },
   blue: {
     invert:
@@ -57,7 +58,7 @@ const colorVariantClasses: Record<
 export default function ActionButton({
   size = 'md',
   variant = 'invert',
-  color = 'teal',
+  color = 'emerald',
   className,
   children,
   ...props
