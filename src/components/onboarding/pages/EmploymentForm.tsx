@@ -240,7 +240,7 @@ export default function EmploymentForm() {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Let&apos;s Talk About Your Work{' '}
-            <span className="text-emerald-600">👩‍⚕️</span>
+            <span className="text-slate-600">👩‍⚕️</span>
           </h2>
           <p className="text-gray-500 text-lg">
             Tell me about your current position
@@ -273,7 +273,7 @@ export default function EmploymentForm() {
                   onFocus={() => setShowSuggestions(true)}
                   placeholder="e.g., ICU, Pediatrics"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
                 {/* Specialty 자동완성 추천 목록 */}
                 {showSuggestions && filteredList.length > 0 && (
@@ -298,7 +298,7 @@ export default function EmploymentForm() {
                         role="option"
                         aria-selected={false}
                         tabIndex={0}
-                        className="w-full text-left px-4 py-2 hover:bg-emerald-100"
+                        className="w-full text-left px-4 py-2 hover:bg-slate-100"
                       >
                         {s}
                       </button>
@@ -324,7 +324,7 @@ export default function EmploymentForm() {
                   }
                   placeholder="E.g., Pediatric ICU"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
@@ -349,7 +349,7 @@ export default function EmploymentForm() {
                     }
                     placeholder="Hospital or Organization Name"
                     className="flex-1 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                               focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                               focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   />
                   {/* Search on Map 버튼 (크기/스타일 다운) */}
                   <ActionButton
@@ -365,7 +365,7 @@ export default function EmploymentForm() {
                     }}
                     className="px-4 py-2 text-sm"
                     style={{
-                      backgroundColor: '#14b8a6', // Tailwind emerald-500
+                      backgroundColor: '#14b8a6', // Tailwind slate-500
                       color: 'white',
                     }}
                   >
@@ -395,7 +395,7 @@ export default function EmploymentForm() {
                   }
                   placeholder="Start year"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
@@ -418,7 +418,7 @@ export default function EmploymentForm() {
                   }
                   placeholder="City"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
               <div className="space-y-2">
@@ -437,7 +437,7 @@ export default function EmploymentForm() {
                   }
                   placeholder="State"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
@@ -465,7 +465,7 @@ export default function EmploymentForm() {
                     updateFormData({ employmentType: e.target.value })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map((type) => (
@@ -491,7 +491,7 @@ export default function EmploymentForm() {
                     updateFormData({ shiftType: e.target.value as ShiftType })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select your shift</option>
                   {[
@@ -524,7 +524,7 @@ export default function EmploymentForm() {
                     updateFormData({ nurseToPatientRatio: e.target.value })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select ratio</option>
                   {NURSE_PATIENT_RATIOS.map((ratio) => (
@@ -557,7 +557,7 @@ export default function EmploymentForm() {
                         updateFormData({ basePay: parseFloat(e.target.value) })
                       }
                       className="w-full p-3 pl-8 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                                 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                                 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                     />
                   </div>
                   <select
@@ -569,7 +569,7 @@ export default function EmploymentForm() {
                       })
                     }
                     className="w-32 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                               focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                               focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   >
                     <option value="hourly">/ hour</option>
                     <option value="yearly">/ year</option>
@@ -579,7 +579,7 @@ export default function EmploymentForm() {
             </div>
 
             {/* Union 체크박스 */}
-            <div className="flex items-center gap-2 bg-emerald-50 p-4 rounded-xl">
+            <div className="flex items-center gap-2 bg-slate-50 p-4 rounded-xl">
               <input
                 type="checkbox"
                 id="isUnionized"
@@ -587,9 +587,9 @@ export default function EmploymentForm() {
                 onChange={(e) =>
                   updateFormData({ isUnionized: e.target.checked })
                 }
-                className="w-5 h-5 rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500"
+                className="w-5 h-5 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
               />
-              <label htmlFor="isUnionized" className="text-emerald-900">
+              <label htmlFor="isUnionized" className="text-slate-900">
                 Unionized
               </label>
             </div>
@@ -626,7 +626,7 @@ export default function EmploymentForm() {
               ✕
             </button>
 
-            <h3 className="text-2xl font-bold mb-4 text-emerald-700">
+            <h3 className="text-2xl font-bold mb-4 text-slate-700">
               Search on Map
             </h3>
 
@@ -645,7 +645,7 @@ export default function EmploymentForm() {
                     type="text"
                     placeholder="Search your hospital or organization"
                     className="w-full p-3 mb-2 text-lg border border-gray-200 rounded-xl
-                               focus:outline-none focus:border-emerald-500"
+                               focus:outline-none focus:border-slate-500"
                   />
                 </StandaloneSearchBox>
 
@@ -672,7 +672,7 @@ export default function EmploymentForm() {
                           tabIndex={0}
                           className={`w-full text-left px-3 py-2 rounded-md cursor-pointer mb-1 ${
                             isActive
-                              ? 'bg-emerald-100'
+                              ? 'bg-slate-100'
                               : 'hover:bg-gray-100 transition-colors'
                           }`}
                         >

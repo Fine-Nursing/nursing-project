@@ -58,13 +58,13 @@ export default function RadarAnalytics({
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
       } rounded-2xl shadow-lg p-6 border ${
-        theme === 'light' ? 'border-emerald-100' : 'border-slate-600'
+        theme === 'light' ? 'border-slate-100' : 'border-slate-600'
       } space-y-3`}
     >
       <h2 className="text-xl font-bold flex items-center">
-        <Award className="w-5 h-5 mr-2 text-emerald-500" />
+        <Award className="w-5 h-5 mr-2 text-slate-500" />
         <span>Advanced Analytics</span>
-        <div className="ml-2 bg-emerald-100 text-emerald-600 text-xs px-2 py-0.5 rounded-full">
+        <div className="ml-2 bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">
           AI Powered
         </div>
       </h2>
@@ -167,11 +167,11 @@ export default function RadarAnalytics({
                   <div
                     className={`shadow-lg rounded-2xl p-3 text-xs border ${
                       theme === 'light'
-                        ? 'bg-white border-emerald-200 text-gray-800'
+                        ? 'bg-white border-slate-200 text-gray-800'
                         : 'bg-slate-700 border-slate-600 text-white'
                     }`}
                   >
-                    <div className="font-bold text-emerald-600 mb-1">
+                    <div className="font-bold text-slate-600 mb-1">
                       {pt.label}: {pt.value?.toFixed(1)}
                     </div>
                     <div>{pt.label && metricAnalysis[pt.label]}</div>
@@ -208,13 +208,13 @@ export default function RadarAnalytics({
       <div
         className={`p-3 rounded-2xl border text-sm ${
           theme === 'light'
-            ? 'bg-emerald-50 border-emerald-200'
+            ? 'bg-slate-50 border-slate-200'
             : 'bg-slate-600 border-slate-500 text-white'
         }`}
       >
         <p
           className={`font-medium mb-2 ${
-            theme === 'light' ? 'text-emerald-700' : 'text-emerald-300'
+            theme === 'light' ? 'text-slate-700' : 'text-slate-300'
           }`}
         >
           AI Observations for Each Metric

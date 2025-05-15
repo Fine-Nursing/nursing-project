@@ -14,15 +14,15 @@ export default function CareerHistoryList({
   onDelete,
 }: CareerHistoryListProps) {
   return (
-    <div className="bg-mint-50 border border-emerald-100 rounded-lg p-4 shadow-sm">
-      <h4 className="font-extrabold text-emerald-700 mb-3 flex items-center">
-        <Clipboard className="w-5 h-5 text-emerald-500 mr-1" />
+    <div className="bg-mint-50 border border-slate-100 rounded-lg p-4 shadow-sm">
+      <h4 className="font-extrabold text-slate-700 mb-3 flex items-center">
+        <Clipboard className="w-5 h-5 text-slate-500 mr-1" />
         Career History
       </h4>
       {careerData.length === 0 ? (
         <div className="text-sm text-gray-400">No history...</div>
       ) : (
-        <ul className="divide-y divide-emerald-100 text-sm">
+        <ul className="divide-y divide-slate-100 text-sm">
           {careerData
             .sort(
               (a, b) =>
@@ -38,7 +38,7 @@ export default function CareerHistoryList({
                   <div>
                     <div
                       className={`font-bold ${
-                        ongoing ? 'text-green-700' : 'text-emerald-700'
+                        ongoing ? 'text-green-700' : 'text-slate-700'
                       }`}
                     >
                       {item.role} {item.specialty && `(${item.specialty})`}
@@ -66,7 +66,7 @@ export default function CareerHistoryList({
                     <button
                       type="button"
                       onClick={() => alert('Edit not implemented.')}
-                      className="p-1 rounded text-emerald-600 hover:bg-emerald-100"
+                      className="p-1 rounded text-slate-600 hover:bg-slate-100"
                     >
                       <Edit className="w-4 h-4" />
                     </button>

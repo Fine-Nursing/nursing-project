@@ -45,10 +45,10 @@ export default function OnboardingFlow() {
       'relative z-10 flex h-8 w-8 items-center justify-center rounded-full';
 
     if (isCompleted) {
-      return `${baseClasses} bg-emerald-600 text-white`;
+      return `${baseClasses} bg-slate-600 text-white`;
     }
     if (isActive) {
-      return `${baseClasses} bg-emerald-100 text-emerald-800 border-2 border-emerald-600`;
+      return `${baseClasses} bg-slate-100 text-slate-800 border-2 border-slate-600`;
     }
     return `${baseClasses} bg-white border-2 border-gray-300 text-gray-400`;
   };
@@ -57,10 +57,10 @@ export default function OnboardingFlow() {
     const baseClasses = 'text-sm font-semibold';
 
     if (isActive) {
-      return `${baseClasses} text-emerald-700`;
+      return `${baseClasses} text-slate-700`;
     }
     if (isCompleted) {
-      return `${baseClasses} text-emerald-600`;
+      return `${baseClasses} text-slate-600`;
     }
     return `${baseClasses} text-gray-500`;
   };
@@ -84,7 +84,7 @@ export default function OnboardingFlow() {
                     {index > 0 && (
                       <div
                         className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
-                          isCompleted ? 'bg-emerald-600' : 'bg-gray-200'
+                          isCompleted ? 'bg-slate-600' : 'bg-gray-200'
                         }`}
                       />
                     )}

@@ -85,8 +85,8 @@ export default function CultureForm() {
                   className="
                     w-full h-2 rounded-full cursor-pointer appearance-none
                     bg-gray-200 
-                    focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:border-emerald-500
-                    accent-emerald-500
+                    focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-500
+                    accent-slate-500
                   "
                   value={formData.cultureRating || 5}
                   onChange={(e) =>
@@ -101,7 +101,7 @@ export default function CultureForm() {
                       key={num}
                       className={
                         formData.cultureRating === num
-                          ? 'font-bold text-emerald-600'
+                          ? 'font-bold text-slate-600'
                           : ''
                       }
                     >
@@ -136,7 +136,7 @@ export default function CultureForm() {
                 maxLength={500}
                 className="
                   mt-1 block w-full rounded-lg border border-gray-300
-                  shadow-sm focus:border-emerald-500 focus:ring-emerald-500
+                  shadow-sm focus:border-slate-500 focus:ring-slate-500
                   text-gray-900 text-sm p-3
                 "
                 value={formData.unitStrengths || ''}
@@ -167,7 +167,7 @@ export default function CultureForm() {
                 maxLength={500}
                 className="
                   mt-1 block w-full rounded-lg border border-gray-300
-                  shadow-sm focus:border-emerald-500 focus:ring-emerald-500
+                  shadow-sm focus:border-slate-500 focus:ring-slate-500
                   text-gray-900 text-sm p-3
                 "
                 value={formData.improvementAreas || ''}
@@ -184,9 +184,9 @@ export default function CultureForm() {
                 type="button"
                 onClick={() => setStep('employment')}
                 className="
-                  text-emerald-600 px-6 py-2 
-                  rounded-lg border border-emerald-600 
-                  transition-colors hover:bg-emerald-50
+                  text-slate-600 px-6 py-2 
+                  rounded-lg border border-slate-600 
+                  transition-colors hover:bg-slate-50
                 "
               >
                 Back
@@ -194,9 +194,9 @@ export default function CultureForm() {
               <button
                 type="submit"
                 className="
-                  bg-emerald-600 text-white px-6 py-2 
+                  bg-slate-600 text-white px-6 py-2 
                   rounded-lg shadow-sm 
-                  transition-colors hover:bg-emerald-700
+                  transition-colors hover:bg-slate-700
                 "
               >
                 Next
@@ -228,8 +228,8 @@ export default function CultureForm() {
                     p-4 rounded-xl border transition-all cursor-pointer
                     ${
                       selectedReview === review.id
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-gray-200 hover:border-emerald-200'
+                        ? 'border-slate-500 bg-slate-50'
+                        : 'border-gray-200 hover:border-slate-200'
                     }
                   `}
                   onClick={() =>
@@ -240,7 +240,7 @@ export default function CultureForm() {
                 >
                   <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-medium">
+                      <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-medium">
                         {review.name.charAt(0)}
                       </div>
                       <div>
@@ -253,7 +253,7 @@ export default function CultureForm() {
                       </div>
                     </div>
 
-                    <div className="flex items-center bg-emerald-50 px-2 py-1 rounded-lg">
+                    <div className="flex items-center bg-slate-50 px-2 py-1 rounded-lg">
                       <svg
                         className="w-4 h-4 text-yellow-500 mr-1"
                         fill="currentColor"
@@ -301,7 +301,7 @@ export default function CultureForm() {
 
                   {selectedReview !== review.id &&
                     review.id !== existingReviews[0].id && (
-                      <div className="mt-2 text-emerald-600 text-sm font-medium cursor-pointer">
+                      <div className="mt-2 text-slate-600 text-sm font-medium cursor-pointer">
                         Click to read more
                       </div>
                     )}
