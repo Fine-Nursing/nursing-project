@@ -70,14 +70,12 @@ function ShiftCell({ value }: CellProps<Nurse, Nurse['shiftType']>) {
   );
 }
 
-// 수정된 Combined Pay Cell 컴포넌트 - 스마트 포지셔닝
+// 수정된 Combined Pay Cell 컴포넌트 - 간단한 스마트 포지셔닝
 function CombinedPayCell({ row }: { row: Row<Nurse> }) {
   const { basePay } = row.original;
   const { differentials } = row.original;
   const { totalPay } = row.original;
-  const [tooltipPosition, setTooltipPosition] = React.useState<'top' | 'left'>(
-    'top'
-  );
+  const [isNearBottom, setIsNearBottom] = React.useState(false);
 
   // 실제 환경에서는 individualDifferentials 데이터를 받아야 합니다
   // 지금은 예시용으로 더미 데이터 사용
@@ -90,19 +88,9 @@ function CombinedPayCell({ row }: { row: Row<Nurse> }) {
   const handleMouseEnter = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
-    const viewportWidth = window.innerWidth;
 
-    // 화면 하단에 있으면 위쪽으로, 오른쪽에 있으면 왼쪽으로
-    const isNearBottom = rect.bottom > viewportHeight - 200;
-    const isNearRight = rect.right > viewportWidth - 250;
-
-    if (isNearBottom) {
-      setTooltipPosition('top');
-    } else if (isNearRight) {
-      setTooltipPosition('left');
-    } else {
-      setTooltipPosition('top');
-    }
+    // 화면 하단 300px 이내인지 체크 (아래 2줄까지 커버)
+    setIsNearBottom(rect.bottom > viewportHeight - 300);
   };
 
   return (
@@ -112,25 +100,25 @@ function CombinedPayCell({ row }: { row: Row<Nurse> }) {
         ${totalPay.toLocaleString()}
       </div>
 
-      {/* 동적 툴팁 */}
+      {/* 간단한 조건부 툴팁 */}
       <div
         className={`absolute z-[100] invisible group-hover:visible opacity-0 group-hover:opacity-100 
-                      transition-all duration-200 
-                      ${
-                        tooltipPosition === 'top'
-                          ? 'bottom-full left-1/2 transform -translate-x-1/2 mb-2'
-                          : 'top-0 right-full mr-2'
-                      }
-                      bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl min-w-[200px]`}
+                    transition-all duration-200 
+                    ${
+                      isNearBottom
+                        ? 'bottom-full right-0 mb-2'
+                        : 'top-0 right-full mr-2'
+                    }
+                    bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl min-w-[200px]`}
       >
-        {/* 동적 화살표 */}
+        {/* 간단한 화살표 */}
         <div
-          className={`absolute 
-                        ${
-                          tooltipPosition === 'top'
-                            ? 'top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900'
-                            : 'top-3 -right-1 border-4 border-transparent border-l-gray-900'
-                        }`}
+          className={`absolute border-4 border-transparent
+                      ${
+                        isNearBottom
+                          ? 'top-full right-4 border-t-gray-900'
+                          : 'top-3 -right-1 border-l-gray-900'
+                      }`}
         />
 
         {/* 내용 */}
@@ -334,19 +322,21 @@ export default function NursingCompensationTable({
         />
       )}
 
-      {/* 테이블 / 콤팩트 뷰 - overflow 원복 */}
-      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-hidden">
-        {viewMode === 'table' ? (
-          <TableView
-            headerGroups={headerGroups}
-            page={page}
-            prepareRow={prepareRow}
-            getTableProps={getTableProps}
-            getTableBodyProps={getTableBodyProps}
-          />
-        ) : (
-          <CompactView page={page} prepareRow={prepareRow} />
-        )}
+      {/* 테이블 / 콤팩트 뷰 - 최소 너비 추가 */}
+      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-x-auto">
+        <div style={{ minWidth: '1200px' }}>
+          {viewMode === 'table' ? (
+            <TableView
+              headerGroups={headerGroups}
+              page={page}
+              prepareRow={prepareRow}
+              getTableProps={getTableProps}
+              getTableBodyProps={getTableBodyProps}
+            />
+          ) : (
+            <CompactView page={page} prepareRow={prepareRow} />
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
