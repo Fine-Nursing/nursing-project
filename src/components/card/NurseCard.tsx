@@ -12,9 +12,10 @@ export interface NurseJobInfo {
   hospitalName: string;
   location: string;
   specialty: string;
+  basePay: number;
+  differentials: number;
   totalPay: number;
   cultureRating: number;
-  differentials?: number;
 }
 
 export interface NurseCardProps {
@@ -50,6 +51,77 @@ function InfoItem({
       ) : (
         <span className="text-sm font-medium text-rose-800">{text}</span>
       )}
+    </div>
+  );
+}
+
+// Enhanced Pay Breakdown Component - 크기 최적화
+function PayBreakdown({ jobInfo }: { jobInfo: NurseJobInfo }) {
+  const basePercentage = (jobInfo.basePay / jobInfo.totalPay) * 100;
+  const diffPercentage =
+    jobInfo.differentials > 0
+      ? (jobInfo.differentials / jobInfo.totalPay) * 100
+      : 0;
+
+  return (
+    <div className="rounded-xl bg-white/80 p-3 shadow-sm ring-1 ring-rose-200/50 backdrop-blur-sm border border-white/60">
+      {/* Total Pay Header */}
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-green-100 text-emerald-600 shadow-sm">
+            <DollarSign size={14} />
+          </div>
+          <span className="text-sm font-semibold text-gray-700">Total Pay</span>
+        </div>
+        <span className="text-lg font-bold text-emerald-600 tracking-tight">
+          ${jobInfo.totalPay.toLocaleString()}/hr
+        </span>
+      </div>
+
+      {/* 한 줄 비율 바 - 향상된 디자인 */}
+      <div className="space-y-2">
+        <div className="relative h-3 w-full overflow-hidden rounded-full bg-gray-100 shadow-inner">
+          {/* Base Pay 부분 - 그라데이션 */}
+          <div
+            className="absolute left-0 top-0 h-full bg-gradient-to-r from-rose-300 to-rose-400 transition-all duration-300 ease-out shadow-sm"
+            style={{ width: `${basePercentage}%` }}
+          />
+          {/* Differential Pay 부분 - 그라데이션 */}
+          {jobInfo.differentials > 0 && (
+            <div
+              className="absolute top-0 h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-300 ease-out shadow-sm"
+              style={{
+                left: `${basePercentage}%`,
+                width: `${diffPercentage}%`,
+              }}
+            />
+          )}
+          {/* 하이라이트 효과 */}
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 rounded-full" />
+        </div>
+
+        {/* 레이블과 금액 - 향상된 스타일 */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-rose-300 to-rose-400 shadow-sm ring-1 ring-white" />
+              <span className="text-xs font-medium text-gray-600">Base</span>
+              <span className="text-xs font-bold text-gray-800">
+                ${jobInfo.basePay.toLocaleString()}
+              </span>
+            </div>
+            {jobInfo.differentials > 0 && (
+              <div className="flex items-center gap-1.5">
+                <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm ring-1 ring-white" />
+                <span className="text-xs font-medium text-gray-600">Diff</span>
+                <span className="text-xs font-bold text-blue-600">
+                  +${jobInfo.differentials.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -124,14 +196,13 @@ function CultureRating({ rating }: { rating: number }) {
 function CardHeader({ title }: { title: string }) {
   return (
     <div className="mb-2 flex items-center gap-2">
-      {/* 👩‍⚕️, 🧑‍⚕️, or 👨‍⚕️ – pick the one you want */}
       <span className="text-2xl">👩‍⚕️</span>
       <h2 className="text-base font-semibold text-rose-800">{title}</h2>
     </div>
   );
 }
 
-// Info section: total pay only
+// Info section: enhanced with pay breakdown
 function CardInfo({ jobInfo }: { jobInfo: NurseJobInfo }) {
   return (
     <div className="flex-1 space-y-2">
@@ -139,11 +210,9 @@ function CardInfo({ jobInfo }: { jobInfo: NurseJobInfo }) {
       <InfoItem icon={<MapPin size={16} />} text={jobInfo.location} />
       <InfoItem icon={<Activity size={16} />} text={jobInfo.specialty} />
 
-      <InfoItem
-        icon={<DollarSign size={16} />}
-        label="Total Pay:"
-        text={`$${jobInfo.totalPay.toFixed(2)}/hr`}
-      />
+      {/* Enhanced Pay Display - Choose one of these two options */}
+      <PayBreakdown jobInfo={jobInfo} />
+      {/* Alternative: <CompactPayDisplay jobInfo={jobInfo} /> */}
 
       <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
@@ -185,8 +254,7 @@ function NurseCard({ title, subtitle, className, jobInfo }: NurseCardProps) {
           <motion.div
             variants={cardAnimation}
             className={twMerge(
-              // Use min-h so it can expand if needed
-              'relative -m-0.5 flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
+              'relative -m-0.5 flex min-h-[340px] flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
               className || cardGradientClasses
             )}
           >
