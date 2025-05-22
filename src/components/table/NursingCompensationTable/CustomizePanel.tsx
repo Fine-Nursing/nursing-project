@@ -4,16 +4,14 @@ import React from 'react';
 import { Save, RotateCcw, ChevronUp, ChevronDown } from 'lucide-react';
 import arrayMove from './utils/arrayMove';
 
-// 이 예시에서 사용할 ColumnId 타입 (실제 테이블에서 사용하는 accessor 키들을 정의)
+// 업데이트된 ColumnId 타입
 export type ColumnId =
   | 'user'
   | 'specialty'
   | 'location'
   | 'experience'
   | 'shiftType'
-  | 'basePay'
-  | 'differentials'
-  | 'totalPay';
+  | 'compensation'; // 통합된 compensation 컬럼
 
 interface ColumnInfo {
   Header: string;
@@ -56,9 +54,7 @@ function CustomizePanel({
                 'location',
                 'experience',
                 'shiftType',
-                'basePay',
-                'differentials',
-                'totalPay',
+                'compensation', // 통합된 컬럼
               ]);
             }}
             className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"

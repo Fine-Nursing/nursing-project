@@ -13,6 +13,7 @@ import {
 import type {
   Column,
   CellProps,
+  Row,
   TableInstance,
   UseFiltersInstanceProps,
   UseFiltersState,
@@ -20,8 +21,6 @@ import type {
   UseSortByState,
   UsePaginationInstanceProps,
   UsePaginationState,
-
-  // ↓ 초기 상태를 캐스팅할 때 필요한 TableState
   TableState,
 } from 'react-table';
 import type { ColumnId } from './CustomizePanel';
@@ -71,21 +70,96 @@ function ShiftCell({ value }: CellProps<Nurse, Nurse['shiftType']>) {
   );
 }
 
-function BasePayCell({ value }: CellProps<Nurse, Nurse['basePay']>) {
-  return <span className="font-medium">${value.toLocaleString()}</span>;
-}
+// 수정된 Combined Pay Cell 컴포넌트 - 간단한 스마트 포지셔닝
+function CombinedPayCell({ row }: { row: Row<Nurse> }) {
+  const { basePay } = row.original;
+  const { differentials } = row.original;
+  const { totalPay } = row.original;
+  const [isNearBottom, setIsNearBottom] = React.useState(false);
 
-function DifferentialsCell({
-  value,
-}: CellProps<Nurse, Nurse['differentials']>) {
-  return <span>${value.toLocaleString()}</span>;
-}
+  // 실제 환경에서는 individualDifferentials 데이터를 받아야 합니다
+  // 지금은 예시용으로 더미 데이터 사용
+  const differentialBreakdown = [
+    { type: 'Night Shift', amount: Math.floor(differentials * 0.5) },
+    { type: 'Weekend', amount: Math.floor(differentials * 0.3) },
+    { type: 'ICU', amount: Math.floor(differentials * 0.2) },
+  ].filter((diff) => diff.amount > 0);
 
-function TotalPayCell({ value }: CellProps<Nurse, Nurse['totalPay']>) {
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    // 화면 하단 300px 이내인지 체크 (아래 2줄까지 커버)
+    setIsNearBottom(rect.bottom > viewportHeight - 300);
+  };
+
   return (
-    <span className="font-medium text-green-600">
-      ${value.toLocaleString()}
-    </span>
+    <div className="relative group" onMouseEnter={handleMouseEnter}>
+      {/* 메인 표시 - 총액만 깔끔하게 */}
+      <div className="font-bold text-green-600 cursor-pointer">
+        ${totalPay.toLocaleString()}
+      </div>
+
+      {/* 간단한 조건부 툴팁 */}
+      <div
+        className={`absolute z-[100] invisible group-hover:visible opacity-0 group-hover:opacity-100 
+                    transition-all duration-200 
+                    ${
+                      isNearBottom
+                        ? 'bottom-full right-0 mb-2'
+                        : 'top-0 right-full mr-2'
+                    }
+                    bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl min-w-[200px]`}
+      >
+        {/* 간단한 화살표 */}
+        <div
+          className={`absolute border-4 border-transparent
+                      ${
+                        isNearBottom
+                          ? 'top-full right-4 border-t-gray-900'
+                          : 'top-3 -right-1 border-l-gray-900'
+                      }`}
+        />
+
+        {/* 내용 */}
+        <div className="space-y-2">
+          <div className="font-semibold text-sm border-b border-gray-700 pb-1">
+            Total: ${totalPay.toLocaleString()}
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <span>Base Pay:</span>
+              <span className="font-medium">${basePay.toLocaleString()}</span>
+            </div>
+
+            {differentials > 0 && (
+              <>
+                <div className="flex justify-between items-center text-blue-300">
+                  <span>Differentials:</span>
+                  <span className="font-medium">
+                    ${differentials.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Differential 종류별 상세 */}
+                <div className="ml-2 space-y-0.5 text-gray-300">
+                  {differentialBreakdown.map((diff) => (
+                    <div
+                      key={`${diff.type}-${diff.amount}`}
+                      className="flex justify-between items-center text-xs"
+                    >
+                      <span>• {diff.type}:</span>
+                      <span>+${diff.amount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -101,9 +175,7 @@ export default function NursingCompensationTable({
     'location',
     'experience',
     'shiftType',
-    'basePay',
-    'differentials',
-    'totalPay',
+    'compensation', // 통합된 컬럼
   ]);
 
   // totalPay 미리 계산
@@ -116,7 +188,7 @@ export default function NursingCompensationTable({
     [initialData]
   );
 
-  // 모든 컬럼 정의
+  // 모든 컬럼 정의 - 통합된 Compensation 컬럼
   const allColumns = useMemo<Column<Nurse>[]>(
     () => [
       {
@@ -142,39 +214,31 @@ export default function NursingCompensationTable({
         Cell: ShiftCell,
       },
       {
-        Header: 'Base Pay',
-        accessor: 'basePay',
-        Cell: BasePayCell,
-      },
-      {
-        Header: 'Differentials',
-        accessor: 'differentials',
-        Cell: DifferentialsCell,
-      },
-      {
-        Header: 'Total Pay',
-        accessor: 'totalPay',
-        Cell: TotalPayCell,
+        Header: 'Compensation',
+        accessor: 'totalPay', // accessor는 totalPay 사용 (정렬용)
+        Cell: CombinedPayCell,
       },
     ],
     []
   );
 
   // 현재 활성화된 컬럼만
-  const columns = useMemo<Column<Nurse>[]>(
-    () =>
-      activeColumns
-        .map((colId) => allColumns.find((col) => col.accessor === colId))
-        .filter(Boolean) as Column<Nurse>[],
-    [allColumns, activeColumns]
-  );
+  const columns = useMemo<Column<Nurse>[]>(() => {
+    // compensation을 totalPay로 매핑
+    const mappedActiveColumns = activeColumns.map((colId) =>
+      colId === 'compensation' ? 'totalPay' : colId
+    );
+
+    return mappedActiveColumns
+      .map((colId) => allColumns.find((col) => col.accessor === colId))
+      .filter(Boolean) as Column<Nurse>[];
+  }, [allColumns, activeColumns]);
 
   // useTable 훅
   const instance = useTable<Nurse>(
     {
       columns,
       data,
-      // @ts-ignore 또는 as Partial<TableState<Nurse>>
       initialState: {
         pageSize: initialPageSize,
         sortBy: [{ id: 'totalPay', desc: true }],
@@ -246,27 +310,33 @@ export default function NursingCompensationTable({
         <CustomizePanel
           activeColumns={activeColumns}
           setActiveColumns={setActiveColumns}
-          allColumns={allColumns.map((c) => ({
-            Header: String(c.Header),
-            accessor: c.accessor as ColumnId,
-          }))}
+          allColumns={[
+            { Header: 'User', accessor: 'user' },
+            { Header: 'Specialty', accessor: 'specialty' },
+            { Header: 'Location', accessor: 'location' },
+            { Header: 'Experience', accessor: 'experience' },
+            { Header: 'Shift', accessor: 'shiftType' },
+            { Header: 'Compensation', accessor: 'compensation' }, // 표시용
+          ]}
           setShowCustomize={setShowCustomize}
         />
       )}
 
-      {/* 테이블 / 콤팩트 뷰 */}
-      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-hidden">
-        {viewMode === 'table' ? (
-          <TableView
-            headerGroups={headerGroups} // <— HeaderGroup<Data>[]
-            page={page}
-            prepareRow={prepareRow}
-            getTableProps={getTableProps}
-            getTableBodyProps={getTableBodyProps}
-          />
-        ) : (
-          <CompactView page={page} prepareRow={prepareRow} />
-        )}
+      {/* 테이블 / 콤팩트 뷰 - 최소 너비 추가 */}
+      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-x-auto">
+        <div style={{ minWidth: '1200px' }}>
+          {viewMode === 'table' ? (
+            <TableView
+              headerGroups={headerGroups}
+              page={page}
+              prepareRow={prepareRow}
+              getTableProps={getTableProps}
+              getTableBodyProps={getTableBodyProps}
+            />
+          ) : (
+            <CompactView page={page} prepareRow={prepareRow} />
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
