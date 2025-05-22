@@ -1,4 +1,3 @@
-// src/store/onboardingStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { OnboardingFormData, OnboardingStep } from '../types/onboarding';
@@ -14,10 +13,13 @@ interface OnboardingStore {
 const initialFormData: Partial<OnboardingFormData> = {
   basePay: 0,
   paymentFrequency: 'hourly',
-  bonusesAndDifferentials: [],
   isUnionized: false,
   yearsAtOrganization: 0,
   cultureRating: 5,
+  // 새로운 differential 필드들 초기화
+  individualDifferentials: [],
+  totalDifferential: 0,
+  differentialsFreeText: '',
 };
 
 const useOnboardingStore = create<OnboardingStore>()(

@@ -54,6 +54,13 @@ export interface BasicInfoFormData {
   experienceGroup: ExperienceGroup;
 }
 
+export interface DifferentialPay {
+  group: string;
+  type: string;
+  amount: number;
+  unit: 'hourly' | 'annual';
+}
+
 export interface EmploymentFormData {
   employmentType: string;
   specialty: string;
@@ -67,11 +74,19 @@ export interface EmploymentFormData {
   basePay: number;
   paymentFrequency: 'hourly' | 'yearly';
   shiftType: ShiftType;
-  bonusesAndDifferentials: {
-    id: string;
-    type: string;
-    amount: number;
-  }[];
+
+  // 기존 필드 제거하고 새로운 구조로 교체
+  // bonusesAndDifferentials: {
+  //   id: string;
+  //   type: string;
+  //   amount: number;
+  // }[];
+
+  // 새로운 differential 구조
+  individualDifferentials: DifferentialPay[];
+  totalDifferential: number;
+  differentialsFreeText?: string;
+
   nurseToPatientRatio: string;
 }
 

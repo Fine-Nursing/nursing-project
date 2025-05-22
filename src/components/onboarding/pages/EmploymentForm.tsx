@@ -11,10 +11,17 @@ import {
 import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
-// Nurse-Patient Ratio
+// Types
+
+type ShiftType =
+  | 'Day Shift'
+  | 'Night Shift'
+  | 'Evening Shift'
+  | 'Rotating Shift';
+
+// Constants
 const NURSE_PATIENT_RATIOS = ['1:1', '1:2', '1:3', '1:4', '1:5+'];
 
-// Specialty 전체 목록 (검색/자동완성)
 const ALL_SPECIALTIES = [
   'Admin',
   'Aesthetics',
@@ -68,7 +75,6 @@ const ALL_SPECIALTIES = [
   'Wound Care',
 ];
 
-// Employment Types
 const EMPLOYMENT_TYPES = [
   'Full-time',
   'Part-time',
@@ -78,13 +84,82 @@ const EMPLOYMENT_TYPES = [
   'Agency Nursing',
 ];
 
-type ShiftType =
-  | 'Day Shift'
-  | 'Night Shift'
-  | 'Evening Shift'
-  | 'Rotating Shift';
+// Google Maps libraries - 상수로 분리 (성능 경고 해결)
+const GOOGLE_MAPS_LIBRARIES: 'places'[] = ['places'];
+const ALL_DIFFERENTIALS = [
+  // Shift-Based
+  { display: 'Night Shift', group: 'Shift-Based' },
+  { display: 'Weekend', group: 'Shift-Based' },
+  { display: 'Holiday', group: 'Shift-Based' },
+  { display: 'Evening Shift', group: 'Shift-Based' },
+  { display: 'Rotating Shift', group: 'Shift-Based' },
 
-/** Specialty 검색/자동완성 커스텀 훅 */
+  // Role-Based
+  { display: 'Charge Nurse', group: 'Role-Based' },
+  { display: 'Preceptor', group: 'Role-Based' },
+  { display: 'Team Lead', group: 'Role-Based' },
+  { display: 'Float Pool', group: 'Role-Based' },
+  { display: 'Resource Nurse', group: 'Role-Based' },
+
+  // Unit-Based
+  { display: 'ICU', group: 'Unit-Based' },
+  { display: 'ER', group: 'Unit-Based' },
+  { display: 'OR', group: 'Unit-Based' },
+  { display: 'NICU', group: 'Unit-Based' },
+  { display: 'Trauma', group: 'Unit-Based' },
+  { display: 'Cardiac', group: 'Unit-Based' },
+  { display: 'Critical Care', group: 'Unit-Based' },
+
+  // Certification
+  { display: 'ACLS/BLS/PALS', group: 'Certification' },
+  { display: 'Specialty Certification', group: 'Certification' },
+  { display: 'BSN Degree', group: 'Certification' },
+  { display: 'MSN Degree', group: 'Certification' },
+  { display: 'Advanced Certification', group: 'Certification' },
+
+  // Other
+  { display: 'On-call', group: 'Other' },
+  { display: 'Overtime Premium', group: 'Other' },
+  { display: 'Experience Bonus', group: 'Other' },
+  { display: 'Bilingual', group: 'Other' },
+];
+
+// 자주 사용되는 Differentials
+const POPULAR_DIFFERENTIALS = [
+  'Night Shift',
+  'Weekend',
+  'Holiday',
+  'Charge Nurse',
+  'ICU',
+  'On-call',
+];
+
+// Differential 자동완성 커스텀 훅
+function useDifferentialAutocomplete() {
+  const [differentialInput, setDifferentialInput] = useState('');
+  const [showDifferentialSuggestions, setShowDifferentialSuggestions] =
+    useState(false);
+
+  const differentialFilteredList = ALL_DIFFERENTIALS.filter((diff) =>
+    diff.display.toLowerCase().includes(differentialInput.toLowerCase())
+  );
+
+  const handleDifferentialSelect = useCallback((selected: string) => {
+    setDifferentialInput(selected);
+    setShowDifferentialSuggestions(false);
+  }, []);
+
+  return {
+    differentialInput,
+    setDifferentialInput,
+    showDifferentialSuggestions,
+    setShowDifferentialSuggestions,
+    differentialFilteredList,
+    handleDifferentialSelect,
+  };
+}
+
+// Specialty autocomplete hook
 function useSpecialtyAutocomplete(initialValue: string) {
   const [specialtyInput, setSpecialtyInput] = useState(initialValue);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -108,7 +183,6 @@ function useSpecialtyAutocomplete(initialValue: string) {
   };
 }
 
-/** 주소 컴포넌트에서 City와 State 추출 */
 function parseCityState(
   addressComponents: google.maps.GeocoderAddressComponent[]
 ) {
@@ -130,7 +204,7 @@ function parseCityState(
 export default function EmploymentForm() {
   const { formData, updateFormData, setStep } = useOnboardingStore();
 
-  // Specialty 자동완성
+  // Specialty autocomplete
   const {
     specialtyInput,
     setSpecialtyInput,
@@ -140,62 +214,161 @@ export default function EmploymentForm() {
     handleSelect,
   } = useSpecialtyAutocomplete(formData.specialty || '');
 
-  // Specialty 변경 시 store 반영
+  // Map modal state
+  const [showMapModal, setShowMapModal] = useState(false);
+
+  // Google Maps
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
+    libraries: GOOGLE_MAPS_LIBRARIES,
+  });
+
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
+  const [placesResult, setPlacesResult] = useState<
+    google.maps.places.PlaceResult[]
+  >([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [tempOrgName, setTempOrgName] = useState('');
+  const [tempCity, setTempCity] = useState('');
+  const [tempState, setTempState] = useState('');
+
+  // Differential autocomplete
+  const {
+    differentialInput,
+    setDifferentialInput,
+    showDifferentialSuggestions,
+    setShowDifferentialSuggestions,
+    differentialFilteredList,
+    handleDifferentialSelect,
+  } = useDifferentialAutocomplete();
+
+  // Custom differential state - 초기값 명시
+  const [customDiff, setCustomDiff] = useState<{
+    type: string;
+    amount: number;
+    unit: 'hourly' | 'annual';
+  }>({
+    type: '',
+    amount: 0,
+    unit: 'hourly',
+  });
+
+  // Specialty change handler
   const handleSpecialtyChange = (value: string) => {
     setSpecialtyInput(value);
     updateFormData({ specialty: value });
     setShowSuggestions(true);
   };
 
-  // 폼 제출
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep('culture');
+  // Differential handlers
+  const addPopularDifferential = useCallback(
+    (diffType: string) => {
+      const diffData = ALL_DIFFERENTIALS.find((d) => d.display === diffType);
+      if (!diffData) return;
+
+      const currentDifferentials = formData.individualDifferentials || [];
+
+      const exists = currentDifferentials.some(
+        (existing) => existing.type === diffType
+      );
+
+      if (!exists) {
+        // 금액 입력을 위해 customDiff에 설정
+        setCustomDiff({
+          type: diffType,
+          amount: 0,
+          unit: 'hourly',
+        });
+      }
+    },
+    [formData.individualDifferentials]
+  );
+
+  const addCustomDifferential = useCallback(() => {
+    if (!customDiff.type || customDiff.amount <= 0) {
+      return;
+    }
+
+    const currentDifferentials = formData.individualDifferentials || [];
+
+    const exists = currentDifferentials.some(
+      (existing) => existing.type === customDiff.type
+    );
+
+    if (!exists) {
+      // 해당 differential의 그룹 찾기
+      const diffData = ALL_DIFFERENTIALS.find(
+        (d) => d.display === customDiff.type
+      );
+      const group = diffData?.group || 'Other';
+
+      const newDifferentials = [
+        ...currentDifferentials,
+        {
+          ...customDiff,
+          group,
+        },
+      ];
+
+      updateFormData({
+        individualDifferentials: newDifferentials,
+        totalDifferential: newDifferentials
+          .filter((diff) => diff.unit !== 'annual')
+          .reduce((sum, diff) => sum + diff.amount, 0),
+      });
+
+      // Reset form
+      setCustomDiff({ type: '', amount: 0, unit: 'hourly' });
+      setDifferentialInput('');
+    }
+  }, [customDiff, formData.individualDifferentials, updateFormData]);
+
+  const handleDifferentialInputChange = (value: string) => {
+    setDifferentialInput(value);
+    setCustomDiff({ ...customDiff, type: value });
+    setShowDifferentialSuggestions(true);
   };
 
-  // 지도 검색 모달 관련
-  const [showMapModal, setShowMapModal] = useState(false);
+  const handleDifferentialSelectAndSet = (selected: string) => {
+    handleDifferentialSelect(selected);
+    setCustomDiff({ ...customDiff, type: selected });
+  };
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
-  });
+  const removeDifferential = useCallback(
+    (index: number) => {
+      const currentDifferentials = formData.individualDifferentials || [];
+      const newDifferentials = currentDifferentials.filter(
+        (_, i) => i !== index
+      );
 
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
+      updateFormData({
+        individualDifferentials: newDifferentials,
+        totalDifferential: newDifferentials
+          .filter((diff) => diff.unit !== 'annual')
+          .reduce((sum, diff) => sum + diff.amount, 0),
+      });
+    },
+    [formData.individualDifferentials, updateFormData]
+  );
 
-  // 검색 결과 목록
-  const [placesResult, setPlacesResult] = useState<
-    google.maps.places.PlaceResult[]
-  >([]);
-  // 클릭해서 선택된 인덱스
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  // Preview 표시를 위한 임시 상태
-  const [tempOrgName, setTempOrgName] = useState('');
-  const [tempCity, setTempCity] = useState('');
-  const [tempState, setTempState] = useState('');
-
+  // Map handlers
   const handleMapLoad = (map: google.maps.Map) => {
     mapRef.current = map;
   };
 
-  // 검색이 일어났을 때
   const handlePlacesChanged = () => {
     if (!searchBoxRef.current) return;
     const places = searchBoxRef.current.getPlaces() || [];
     setPlacesResult(places);
-    // 선택 인덱스/미리보기 초기화
     setSelectedIndex(null);
     setTempOrgName('');
     setTempCity('');
     setTempState('');
   };
 
-  // 검색 결과 목록에서 클릭 시
   const handlePlaceClick = (index: number) => {
     setSelectedIndex(index);
-
     const place = placesResult[index];
     const orgName = place.name || '';
 
@@ -207,12 +380,10 @@ export default function EmploymentForm() {
       state = parsed.state;
     }
 
-    // 임시 Preview 업데이트
     setTempOrgName(orgName);
     setTempCity(city);
     setTempState(state);
 
-    // 지도 이동
     if (place.geometry && place.geometry.location && mapRef.current) {
       const loc = place.geometry.location;
       mapRef.current.panTo({ lat: loc.lat(), lng: loc.lng() });
@@ -220,13 +391,29 @@ export default function EmploymentForm() {
     }
   };
 
-  // "Select" 버튼
   const handleSelectPlace = () => {
-    if (selectedIndex === null) return; // 아무 항목도 선택 안 한 경우
-    updateFormData({ organizationName: tempOrgName });
-    updateFormData({ organizationCity: tempCity });
-    updateFormData({ organizationState: tempState });
+    if (selectedIndex === null) return;
+    updateFormData({
+      organizationName: tempOrgName,
+      organizationCity: tempCity,
+      organizationState: tempState,
+    });
     setShowMapModal(false);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setStep('culture');
+  };
+
+  // Reset map modal state when opening
+  const openMapModal = () => {
+    setPlacesResult([]);
+    setSelectedIndex(null);
+    setTempOrgName('');
+    setTempCity('');
+    setTempState('');
+    setShowMapModal(true);
   };
 
   return (
@@ -236,7 +423,7 @@ export default function EmploymentForm() {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-10"
       >
-        {/* 헤더 */}
+        {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-3">
             Let&apos;s Talk About Your Work{' '}
@@ -247,9 +434,9 @@ export default function EmploymentForm() {
           </p>
         </div>
 
-        {/* 메인 폼 */}
+        {/* Main Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* 근무 기본 정보 섹션 */}
+          {/* Workplace Info Section */}
           <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
               <span className="text-2xl">🏢</span> Your Workplace
@@ -257,7 +444,6 @@ export default function EmploymentForm() {
 
             {/* Specialty + Sub-specialty */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Specialty (검색/자동완성) */}
               <div className="space-y-2 relative">
                 <label
                   htmlFor="specialty"
@@ -271,43 +457,33 @@ export default function EmploymentForm() {
                   value={specialtyInput}
                   onChange={(e) => handleSpecialtyChange(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions(false), 200)
+                  }
                   placeholder="e.g., ICU, Pediatrics"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
-                {/* Specialty 자동완성 추천 목록 */}
                 {showSuggestions && filteredList.length > 0 && (
-                  <ul
-                    className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto"
-                    role="listbox"
-                  >
-                    {filteredList.map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => {
-                          handleSelect(s);
-                          updateFormData({ specialty: s });
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            handleSelect(s);
-                            updateFormData({ specialty: s });
-                          }
-                        }}
-                        role="option"
-                        aria-selected={false}
-                        tabIndex={0}
-                        className="w-full text-left px-4 py-2 hover:bg-slate-100"
-                      >
-                        {s}
-                      </button>
+                  <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto">
+                    {filteredList.map((specialty) => (
+                      <li key={specialty}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleSelect(specialty);
+                            updateFormData({ specialty });
+                          }}
+                          className="w-full text-left px-4 py-2 hover:bg-slate-100 transition-colors"
+                        >
+                          {specialty}
+                        </button>
+                      </li>
                     ))}
                   </ul>
                 )}
               </div>
 
-              {/* Sub-specialty */}
               <div className="space-y-2">
                 <label
                   htmlFor="subSpecialty"
@@ -331,7 +507,6 @@ export default function EmploymentForm() {
 
             {/* Organization info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Organization Name + 버튼(지도 검색) */}
               <div className="space-y-2">
                 <label
                   htmlFor="organizationName"
@@ -351,30 +526,17 @@ export default function EmploymentForm() {
                     className="flex-1 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                                focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   />
-                  {/* Search on Map 버튼 (크기/스타일 다운) */}
                   <ActionButton
                     type="button"
-                    onClick={() => {
-                      // 초기화 후 모달 열기
-                      setPlacesResult([]);
-                      setSelectedIndex(null);
-                      setTempOrgName('');
-                      setTempCity('');
-                      setTempState('');
-                      setShowMapModal(true);
-                    }}
+                    onClick={openMapModal}
                     className="px-4 py-2 text-sm"
-                    style={{
-                      backgroundColor: '#14b8a6', // Tailwind slate-500
-                      color: 'white',
-                    }}
+                    style={{ backgroundColor: '#14b8a6', color: 'white' }}
                   >
                     Map
                   </ActionButton>
                 </div>
               </div>
 
-              {/* Employment Start Year */}
               <div className="space-y-2">
                 <label
                   htmlFor="employmentStartYear"
@@ -390,7 +552,8 @@ export default function EmploymentForm() {
                   value={formData.employmentStartYear || ''}
                   onChange={(e) =>
                     updateFormData({
-                      employmentStartYear: parseInt(e.target.value, 10),
+                      employmentStartYear:
+                        parseInt(e.target.value, 10) || undefined,
                     })
                   }
                   placeholder="Start year"
@@ -443,7 +606,7 @@ export default function EmploymentForm() {
             </div>
           </div>
 
-          {/* 근무 조건 섹션 */}
+          {/* Role Section */}
           <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
               <span className="text-2xl">🩺</span> Your Role
@@ -465,7 +628,7 @@ export default function EmploymentForm() {
                     updateFormData({ employmentType: e.target.value })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map((type) => (
@@ -491,7 +654,7 @@ export default function EmploymentForm() {
                     updateFormData({ shiftType: e.target.value as ShiftType })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select your shift</option>
                   {[
@@ -508,7 +671,7 @@ export default function EmploymentForm() {
               </div>
             </div>
 
-            {/* Nurse to Patient Ratio + Pay */}
+            {/* Nurse to Patient Ratio + Base Pay */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label
@@ -524,7 +687,7 @@ export default function EmploymentForm() {
                     updateFormData({ nurseToPatientRatio: e.target.value })
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select ratio</option>
                   {NURSE_PATIENT_RATIOS.map((ratio) => (
@@ -540,7 +703,7 @@ export default function EmploymentForm() {
                   htmlFor="basePay"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  What&apos;s your base pay?
+                  Base Pay
                 </label>
                 <div className="flex gap-4 items-center">
                   <div className="flex-1 relative">
@@ -554,10 +717,12 @@ export default function EmploymentForm() {
                       step={0.01}
                       value={formData.basePay || ''}
                       onChange={(e) =>
-                        updateFormData({ basePay: parseFloat(e.target.value) })
+                        updateFormData({
+                          basePay: parseFloat(e.target.value) || undefined,
+                        })
                       }
                       className="w-full p-3 pl-8 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                                 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                               focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                     />
                   </div>
                   <select
@@ -569,7 +734,7 @@ export default function EmploymentForm() {
                       })
                     }
                     className="w-32 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                               focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   >
                     <option value="hourly">/ hour</option>
                     <option value="yearly">/ year</option>
@@ -578,7 +743,264 @@ export default function EmploymentForm() {
               </div>
             </div>
 
-            {/* Union 체크박스 */}
+            {/* Differential Pay Section */}
+            <div className="bg-gray-50 rounded-xl p-5 space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <span className="text-xl">💰</span>
+                  Differential Pay
+                </h4>
+                <span className="text-sm text-gray-600">
+                  Optional but recommended
+                </span>
+              </div>
+
+              {/* Popular Differentials */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-gray-700">
+                  Quick add popular differentials:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {POPULAR_DIFFERENTIALS.map((diffType) => (
+                    <button
+                      key={diffType}
+                      type="button"
+                      onClick={() => addPopularDifferential(diffType)}
+                      className="px-3 py-2 text-sm bg-white border-2 border-gray-200 text-gray-700 rounded-lg
+                               hover:border-slate-400 hover:bg-slate-50 transition-colors font-medium"
+                    >
+                      {diffType}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Add Differential Form */}
+              <div className="space-y-4">
+                {/* Search Input */}
+                <div className="space-y-2 relative">
+                  <label
+                    htmlFor="differential-search-input"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Search for other differentials:
+                  </label>
+                  <input
+                    type="text"
+                    value={differentialInput}
+                    onChange={(e) =>
+                      handleDifferentialInputChange(e.target.value)
+                    }
+                    onFocus={() => setShowDifferentialSuggestions(true)}
+                    onBlur={() =>
+                      setTimeout(
+                        () => setShowDifferentialSuggestions(false),
+                        200
+                      )
+                    }
+                    placeholder="e.g., ER, Preceptor, Bilingual..."
+                    className="w-full p-3 text-lg bg-white border-2 border-gray-200 rounded-xl
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                  />
+
+                  {/* Suggestions dropdown */}
+                  {showDifferentialSuggestions &&
+                    differentialFilteredList.length > 0 && (
+                      <ul className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-auto">
+                        {differentialFilteredList.map((diff) => (
+                          <li
+                            key={`diff-suggestion-${diff.display}-${diff.group}`}
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleDifferentialSelectAndSet(diff.display)
+                              }
+                              className="w-full text-left px-4 py-2 hover:bg-slate-100 transition-colors"
+                            >
+                              {diff.display}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                </div>
+
+                {/* Amount and Unit - only show when type is selected */}
+                {customDiff.type && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-white rounded-xl border border-gray-200">
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Selected:{' '}
+                        <span className="font-semibold text-slate-600">
+                          {customDiff.type}
+                        </span>
+                      </label>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="differential-amount"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Amount
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                          $
+                        </span>
+                        <input
+                          type="number"
+                          placeholder="0.00"
+                          min="0"
+                          step="0.5"
+                          value={customDiff.amount || ''}
+                          onChange={(e) =>
+                            setCustomDiff({
+                              ...customDiff,
+                              amount: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                          className="w-full p-3 pl-8 text-lg bg-white border-2 border-gray-200 rounded-xl
+                                   focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label
+                        htmlFor="differential-unit-select"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Unit
+                      </label>
+                      <div className="flex gap-2">
+                        <select
+                          id="differential-unit-select"
+                          value={customDiff.unit}
+                          onChange={(e) =>
+                            setCustomDiff({
+                              ...customDiff,
+                              unit: e.target.value as 'hourly' | 'annual',
+                            })
+                          }
+                          className="flex-1 p-3 text-lg bg-white border-2 border-gray-200 rounded-xl
+                                   focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                        >
+                          <option value="hourly">per hour</option>
+                          <option value="annual">per year</option>
+                        </select>
+
+                        <ActionButton
+                          type="button"
+                          onClick={addCustomDifferential}
+                          disabled={!customDiff.type || customDiff.amount <= 0}
+                          className="px-4 py-3"
+                        >
+                          Add
+                        </ActionButton>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Current Differentials List */}
+              {formData.individualDifferentials &&
+                formData.individualDifferentials.length > 0 && (
+                  <div className="space-y-3">
+                    <h5 className="text-sm font-medium text-gray-700">
+                      Your Differentials:
+                    </h5>
+                    <div className="space-y-2">
+                      {formData.individualDifferentials.map((diff, index) => (
+                        <div
+                          key={`${diff.group}-${diff.type}-${diff.amount}-${diff.unit}`}
+                          className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xs px-2 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">
+                              {diff.group}
+                            </span>
+                            <span className="font-medium text-gray-900">
+                              {diff.type}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-green-600 font-semibold">
+                              +${diff.amount}/
+                              {diff.unit === 'annual' ? 'year' : 'hr'}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeDifferential(index)}
+                              className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
+                              aria-label={`Remove ${diff.type} differential`}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Total Display */}
+                    <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium text-green-800">
+                          Total Hourly Differentials:
+                        </span>
+                        <span className="text-lg font-bold text-green-600">
+                          +$
+                          {formData.individualDifferentials
+                            .filter((diff) => diff.unit !== 'annual')
+                            .reduce((sum, diff) => sum + diff.amount, 0)}
+                          /hr
+                        </span>
+                      </div>
+                      {formData.individualDifferentials.some(
+                        (diff) => diff.unit === 'annual'
+                      ) && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-green-200">
+                          <span className="font-medium text-green-800">
+                            Annual Bonuses:
+                          </span>
+                          <span className="text-lg font-bold text-green-600">
+                            +$
+                            {formData.individualDifferentials
+                              .filter((diff) => diff.unit === 'annual')
+                              .reduce((sum, diff) => sum + diff.amount, 0)}
+                            /year
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {/* Additional Notes */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="differential-notes-textarea"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Additional notes about your differentials (optional):
+                </label>
+                <textarea
+                  id="differential-notes-textarea"
+                  value={formData.differentialsFreeText || ''}
+                  onChange={(e) =>
+                    updateFormData({ differentialsFreeText: e.target.value })
+                  }
+                  placeholder="e.g., Specific conditions for bonuses, additional details, etc."
+                  className="w-full p-3 bg-white border-2 border-gray-200 rounded-xl text-sm resize-none
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                  rows={2}
+                />
+              </div>
+            </div>
+
+            {/* Union Checkbox */}
             <div className="flex items-center gap-2 bg-slate-50 p-4 rounded-xl">
               <input
                 type="checkbox"
@@ -590,12 +1012,12 @@ export default function EmploymentForm() {
                 className="w-5 h-5 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
               />
               <label htmlFor="isUnionized" className="text-slate-900">
-                Unionized
+                Unionized workplace
               </label>
             </div>
           </div>
 
-          {/* 네비게이션 버튼 */}
+          {/* Navigation Buttons */}
           <div className="flex justify-between pt-6">
             <ActionButton
               onClick={() => setStep('basicInfo')}
@@ -611,16 +1033,14 @@ export default function EmploymentForm() {
         </form>
       </motion.div>
 
-      {/* ------------------------------------------------------------------
-          모달: 구글 맵 + SearchBox + 검색결과 목록
-      ------------------------------------------------------------------ */}
+      {/* Google Maps Modal */}
       {showMapModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-white rounded-2xl shadow-lg max-w-4xl w-full max-h-[90vh] overflow-auto p-4 relative">
             <button
               type="button"
               onClick={() => setShowMapModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 z-10"
               aria-label="Close map modal"
             >
               ✕
@@ -634,7 +1054,7 @@ export default function EmploymentForm() {
               <div className="text-center py-8">Loading map...</div>
             ) : (
               <div className="flex flex-col gap-4">
-                {/* 검색창 */}
+                {/* Search Box */}
                 <StandaloneSearchBox
                   onLoad={(ref) => {
                     searchBoxRef.current = ref;
@@ -649,12 +1069,9 @@ export default function EmploymentForm() {
                   />
                 </StandaloneSearchBox>
 
-                {/* 검색 결과 목록 */}
+                {/* Search Results List */}
                 {placesResult.length > 0 && (
-                  <div
-                    className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2"
-                    role="listbox"
-                  >
+                  <div className="max-h-40 overflow-auto border border-gray-200 rounded-xl p-2">
                     {placesResult.map((place, idx) => {
                       const isActive = selectedIndex === idx;
                       return (
@@ -662,18 +1079,8 @@ export default function EmploymentForm() {
                           key={place.place_id ?? idx}
                           type="button"
                           onClick={() => handlePlaceClick(idx)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              handlePlaceClick(idx);
-                            }
-                          }}
-                          role="option"
-                          aria-selected={isActive}
-                          tabIndex={0}
-                          className={`w-full text-left px-3 py-2 rounded-md cursor-pointer mb-1 ${
-                            isActive
-                              ? 'bg-slate-100'
-                              : 'hover:bg-gray-100 transition-colors'
+                          className={`w-full text-left px-3 py-2 rounded-md cursor-pointer mb-1 transition-colors ${
+                            isActive ? 'bg-slate-100' : 'hover:bg-gray-100'
                           }`}
                         >
                           <div className="text-base font-semibold">
@@ -688,20 +1095,20 @@ export default function EmploymentForm() {
                   </div>
                 )}
 
-                {/* 지도 */}
+                {/* Google Map */}
                 <div className="relative w-full h-[400px]">
                   <GoogleMap
                     onLoad={handleMapLoad}
                     mapContainerStyle={{ width: '100%', height: '100%' }}
-                    center={{ lat: 39.8283, lng: -98.5795 }} // 미국 중앙 정도
+                    center={{ lat: 39.8283, lng: -98.5795 }}
                     zoom={4}
                   />
                 </div>
 
-                {/* 선택된 곳 미리보기 */}
+                {/* Preview Selected Place */}
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <p className="font-semibold mb-2 text-gray-700">Preview:</p>
-                  <ul className="text-gray-600 text-sm">
+                  <ul className="text-gray-600 text-sm space-y-1">
                     <li>
                       <span className="font-medium">Name:</span>{' '}
                       {tempOrgName || 'N/A'}
@@ -717,6 +1124,7 @@ export default function EmploymentForm() {
                   </ul>
                 </div>
 
+                {/* Modal Action Buttons */}
                 <div className="flex justify-end gap-2 mt-2">
                   <ActionButton
                     variant="outline"
