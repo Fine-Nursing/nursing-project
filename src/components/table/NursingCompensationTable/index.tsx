@@ -70,11 +70,14 @@ function ShiftCell({ value }: CellProps<Nurse, Nurse['shiftType']>) {
   );
 }
 
-// 새로운 Combined Pay Cell 컴포넌트 - Tooltip 방식
+// 수정된 Combined Pay Cell 컴포넌트 - 스마트 포지셔닝
 function CombinedPayCell({ row }: { row: Row<Nurse> }) {
   const { basePay } = row.original;
   const { differentials } = row.original;
   const { totalPay } = row.original;
+  const [tooltipPosition, setTooltipPosition] = React.useState<'top' | 'left'>(
+    'top'
+  );
 
   // 실제 환경에서는 individualDifferentials 데이터를 받아야 합니다
   // 지금은 예시용으로 더미 데이터 사용
@@ -84,23 +87,50 @@ function CombinedPayCell({ row }: { row: Row<Nurse> }) {
     { type: 'ICU', amount: Math.floor(differentials * 0.2) },
   ].filter((diff) => diff.amount > 0);
 
+  const handleMouseEnter = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const viewportWidth = window.innerWidth;
+
+    // 화면 하단에 있으면 위쪽으로, 오른쪽에 있으면 왼쪽으로
+    const isNearBottom = rect.bottom > viewportHeight - 200;
+    const isNearRight = rect.right > viewportWidth - 250;
+
+    if (isNearBottom) {
+      setTooltipPosition('top');
+    } else if (isNearRight) {
+      setTooltipPosition('left');
+    } else {
+      setTooltipPosition('top');
+    }
+  };
+
   return (
-    <div className="relative group">
+    <div className="relative group" onMouseEnter={handleMouseEnter}>
       {/* 메인 표시 - 총액만 깔끔하게 */}
       <div className="font-bold text-green-600 cursor-pointer">
         ${totalPay.toLocaleString()}
       </div>
 
-      {/* Hover Tooltip */}
+      {/* 동적 툴팁 */}
       <div
-        className="absolute z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
-                      transition-all duration-200 bottom-full left-1/2 transform -translate-x-1/2 mb-2
-                      bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg min-w-[200px]"
+        className={`absolute z-[100] invisible group-hover:visible opacity-0 group-hover:opacity-100 
+                      transition-all duration-200 
+                      ${
+                        tooltipPosition === 'top'
+                          ? 'bottom-full left-1/2 transform -translate-x-1/2 mb-2'
+                          : 'top-0 right-full mr-2'
+                      }
+                      bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl min-w-[200px]`}
       >
-        {/* 화살표 */}
+        {/* 동적 화살표 */}
         <div
-          className="absolute top-full left-1/2 transform -translate-x-1/2 
-                        border-4 border-transparent border-t-gray-900"
+          className={`absolute 
+                        ${
+                          tooltipPosition === 'top'
+                            ? 'top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900'
+                            : 'top-3 -right-1 border-4 border-transparent border-l-gray-900'
+                        }`}
         />
 
         {/* 내용 */}
@@ -304,8 +334,8 @@ export default function NursingCompensationTable({
         />
       )}
 
-      {/* 테이블 / 콤팩트 뷰 */}
-      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg ">
+      {/* 테이블 / 콤팩트 뷰 - overflow 원복 */}
+      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-hidden">
         {viewMode === 'table' ? (
           <TableView
             headerGroups={headerGroups}
