@@ -129,9 +129,7 @@ function Chart({ data }: ChartProps) {
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={['#7986cb', '#a4b0f5']}
-        // NOTE: nivo에서는 borderRadius에 "단일 숫자"만 허용합니다.
-        //       상하좌우 모서리를 다르게 라운딩하려면 custom bar shape 필요.
-        borderRadius={8}
+        borderRadius={0}
         borderWidth={0}
         enableLabel={false}
         animate

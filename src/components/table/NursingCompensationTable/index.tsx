@@ -13,6 +13,7 @@ import {
 import type {
   Column,
   CellProps,
+  Row,
   TableInstance,
   UseFiltersInstanceProps,
   UseFiltersState,
@@ -20,8 +21,6 @@ import type {
   UseSortByState,
   UsePaginationInstanceProps,
   UsePaginationState,
-
-  // ↓ 초기 상태를 캐스팅할 때 필요한 TableState
   TableState,
 } from 'react-table';
 import type { ColumnId } from './CustomizePanel';
@@ -71,21 +70,78 @@ function ShiftCell({ value }: CellProps<Nurse, Nurse['shiftType']>) {
   );
 }
 
-function BasePayCell({ value }: CellProps<Nurse, Nurse['basePay']>) {
-  return <span className="font-medium">${value.toLocaleString()}</span>;
-}
+// 새로운 Combined Pay Cell 컴포넌트 - Tooltip 방식
+function CombinedPayCell({ row }: { row: Row<Nurse> }) {
+  const { basePay } = row.original;
+  const { differentials } = row.original;
+  const { totalPay } = row.original;
 
-function DifferentialsCell({
-  value,
-}: CellProps<Nurse, Nurse['differentials']>) {
-  return <span>${value.toLocaleString()}</span>;
-}
+  // 실제 환경에서는 individualDifferentials 데이터를 받아야 합니다
+  // 지금은 예시용으로 더미 데이터 사용
+  const differentialBreakdown = [
+    { type: 'Night Shift', amount: Math.floor(differentials * 0.5) },
+    { type: 'Weekend', amount: Math.floor(differentials * 0.3) },
+    { type: 'ICU', amount: Math.floor(differentials * 0.2) },
+  ].filter((diff) => diff.amount > 0);
 
-function TotalPayCell({ value }: CellProps<Nurse, Nurse['totalPay']>) {
   return (
-    <span className="font-medium text-green-600">
-      ${value.toLocaleString()}
-    </span>
+    <div className="relative group">
+      {/* 메인 표시 - 총액만 깔끔하게 */}
+      <div className="font-bold text-green-600 cursor-pointer">
+        ${totalPay.toLocaleString()}
+      </div>
+
+      {/* Hover Tooltip */}
+      <div
+        className="absolute z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 
+                      transition-all duration-200 bottom-full left-1/2 transform -translate-x-1/2 mb-2
+                      bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg min-w-[200px]"
+      >
+        {/* 화살표 */}
+        <div
+          className="absolute top-full left-1/2 transform -translate-x-1/2 
+                        border-4 border-transparent border-t-gray-900"
+        />
+
+        {/* 내용 */}
+        <div className="space-y-2">
+          <div className="font-semibold text-sm border-b border-gray-700 pb-1">
+            Total: ${totalPay.toLocaleString()}
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex justify-between items-center">
+              <span>Base Pay:</span>
+              <span className="font-medium">${basePay.toLocaleString()}</span>
+            </div>
+
+            {differentials > 0 && (
+              <>
+                <div className="flex justify-between items-center text-blue-300">
+                  <span>Differentials:</span>
+                  <span className="font-medium">
+                    ${differentials.toLocaleString()}
+                  </span>
+                </div>
+
+                {/* Differential 종류별 상세 */}
+                <div className="ml-2 space-y-0.5 text-gray-300">
+                  {differentialBreakdown.map((diff) => (
+                    <div
+                      key={`${diff.type}-${diff.amount}`}
+                      className="flex justify-between items-center text-xs"
+                    >
+                      <span>• {diff.type}:</span>
+                      <span>+${diff.amount.toLocaleString()}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -101,9 +157,7 @@ export default function NursingCompensationTable({
     'location',
     'experience',
     'shiftType',
-    'basePay',
-    'differentials',
-    'totalPay',
+    'compensation', // 통합된 컬럼
   ]);
 
   // totalPay 미리 계산
@@ -116,7 +170,7 @@ export default function NursingCompensationTable({
     [initialData]
   );
 
-  // 모든 컬럼 정의
+  // 모든 컬럼 정의 - 통합된 Compensation 컬럼
   const allColumns = useMemo<Column<Nurse>[]>(
     () => [
       {
@@ -142,39 +196,31 @@ export default function NursingCompensationTable({
         Cell: ShiftCell,
       },
       {
-        Header: 'Base Pay',
-        accessor: 'basePay',
-        Cell: BasePayCell,
-      },
-      {
-        Header: 'Differentials',
-        accessor: 'differentials',
-        Cell: DifferentialsCell,
-      },
-      {
-        Header: 'Total Pay',
-        accessor: 'totalPay',
-        Cell: TotalPayCell,
+        Header: 'Compensation',
+        accessor: 'totalPay', // accessor는 totalPay 사용 (정렬용)
+        Cell: CombinedPayCell,
       },
     ],
     []
   );
 
   // 현재 활성화된 컬럼만
-  const columns = useMemo<Column<Nurse>[]>(
-    () =>
-      activeColumns
-        .map((colId) => allColumns.find((col) => col.accessor === colId))
-        .filter(Boolean) as Column<Nurse>[],
-    [allColumns, activeColumns]
-  );
+  const columns = useMemo<Column<Nurse>[]>(() => {
+    // compensation을 totalPay로 매핑
+    const mappedActiveColumns = activeColumns.map((colId) =>
+      colId === 'compensation' ? 'totalPay' : colId
+    );
+
+    return mappedActiveColumns
+      .map((colId) => allColumns.find((col) => col.accessor === colId))
+      .filter(Boolean) as Column<Nurse>[];
+  }, [allColumns, activeColumns]);
 
   // useTable 훅
   const instance = useTable<Nurse>(
     {
       columns,
       data,
-      // @ts-ignore 또는 as Partial<TableState<Nurse>>
       initialState: {
         pageSize: initialPageSize,
         sortBy: [{ id: 'totalPay', desc: true }],
@@ -246,19 +292,23 @@ export default function NursingCompensationTable({
         <CustomizePanel
           activeColumns={activeColumns}
           setActiveColumns={setActiveColumns}
-          allColumns={allColumns.map((c) => ({
-            Header: String(c.Header),
-            accessor: c.accessor as ColumnId,
-          }))}
+          allColumns={[
+            { Header: 'User', accessor: 'user' },
+            { Header: 'Specialty', accessor: 'specialty' },
+            { Header: 'Location', accessor: 'location' },
+            { Header: 'Experience', accessor: 'experience' },
+            { Header: 'Shift', accessor: 'shiftType' },
+            { Header: 'Compensation', accessor: 'compensation' }, // 표시용
+          ]}
           setShowCustomize={setShowCustomize}
         />
       )}
 
       {/* 테이블 / 콤팩트 뷰 */}
-      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-hidden">
+      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg ">
         {viewMode === 'table' ? (
           <TableView
-            headerGroups={headerGroups} // <— HeaderGroup<Data>[]
+            headerGroups={headerGroups}
             page={page}
             prepareRow={prepareRow}
             getTableProps={getTableProps}

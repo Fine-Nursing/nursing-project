@@ -24,7 +24,7 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center h-16">
             <div className="text-xl tracking-tight font-semibold">
               <span className="text-slate-900">Nurse</span>
-              <span className="text-purple-600">Insights</span>
+              <span className="text-purple-600"> Journey</span>
             </div>
             <nav>
               <ul className="flex space-x-8 text-sm font-medium">
