@@ -7,8 +7,9 @@ import { nurseData } from 'src/api/mock-data';
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import NursingGraph from 'src/components/graph';
 import { LoginModal, SignUpModal } from 'src/components/modal/Modal';
-import NurseBoard from 'src/components/NurseBoard';
+
 import NursingCompensationTable from 'src/components/table/NursingCompensationTable';
+import CardBoard from 'src/components/CardBoard';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function DashboardPage() {
 
         {/* NurseBoard */}
         <section className="mb-20">
-          <NurseBoard />
+          <CardBoard />
         </section>
 
         {/* Data Visualization */}

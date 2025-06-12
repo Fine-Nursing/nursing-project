@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import type { CompensationCard } from 'src/types/dashboard';
 import queryKeys from 'src/constants/queryKeys';
+import type { CompensationCard } from 'src/types/dashboard';
 
 // API Base URL - 환경변수로 관리하는 것을 추천
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -13,6 +13,13 @@ const apiClient = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
 
 // Query parameters interface
 interface CompensationCardsParams {
@@ -40,12 +47,13 @@ const fetchCompensationCards = async (
       city: params?.city,
     },
   });
-  return data;
+  // 배열을 직접 반환
+  return Array.isArray(data) ? data : data.data || [];
 };
 
 const fetchCompensationCardsByLevel = async (
   params: CompensationCardsByLevelParams
-): Promise<CompensationCard[]> => {
+): Promise<PaginatedResponse<CompensationCard>> => {
   const { experienceLevel, ...queryParams } = params;
   const { data } = await apiClient.get(
     `/api/dashboard/compensation-cards/${experienceLevel}`,
@@ -53,9 +61,9 @@ const fetchCompensationCardsByLevel = async (
       params: {
         page: queryParams.page || 1,
         limit: queryParams.limit || 20,
-        specialty: params?.specialty,
-        state: params?.state,
-        city: params?.city,
+        specialty: queryParams.specialty,
+        state: queryParams.state,
+        city: queryParams.city,
       },
     }
   );
@@ -86,13 +94,14 @@ export const useCompensationCardsByLevel = (
     gcTime: 1000 * 60 * 10, // 10 minutes
   });
 };
+
 // Optional: Prefetch functions for SSR/SSG
 export const prefetchCompensationCards = async (
   queryClient: any,
   params?: CompensationCardsParams
 ) => {
   await queryClient.prefetchQuery({
-    queryKey: ['compensationCards', params],
+    queryKey: queryKeys.compensation.cards(params),
     queryFn: () => fetchCompensationCards(params),
   });
 };
@@ -101,8 +110,9 @@ export const prefetchCompensationCardsByLevel = async (
   queryClient: any,
   params: CompensationCardsByLevelParams
 ) => {
+  const { experienceLevel, ...filterParams } = params;
   await queryClient.prefetchQuery({
-    queryKey: ['compensationCards', 'byLevel', params],
+    queryKey: queryKeys.compensation.byLevel(experienceLevel, filterParams),
     queryFn: () => fetchCompensationCardsByLevel(params),
   });
 };

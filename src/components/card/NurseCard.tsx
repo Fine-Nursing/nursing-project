@@ -5,28 +5,9 @@ import React from 'react';
 import { motion, MotionConfig } from 'framer-motion';
 import { MapPin, DollarSign, Activity, Building, Star } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
+import type { CompensationCard } from 'src/types/dashboard';
 
 // Import from your types file
-// import type { CompensationCard } from '@/types/dashboard';
-
-// For this component, defining the type directly
-export interface CompensationCard {
-  id: string;
-  hospital: string;
-  state: string;
-  city: string;
-  specialty: string;
-  totalPay: number;
-  basePay: number;
-  differentialPay: number;
-  unitCulture: number;
-  unitFeedback: string;
-  experienceLevel: 'beginner' | 'junior' | 'experienced' | 'senior';
-  nursingRole: string;
-  shiftType: string;
-  employmentType: string;
-  yearsOfExperience: number;
-}
 
 export interface NurseCardProps {
   card: CompensationCard;
@@ -244,13 +225,18 @@ function CardInfo({ card }: { card: CompensationCard }) {
       {/* Enhanced Pay Display */}
       <PayBreakdown card={card} />
 
-      <div className="flex items-center gap-2">
-        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
-          <Star size={16} />
+      {/* Unit Culture - null 체크 추가 */}
+      {card.unitCulture != null && (
+        <div className="flex items-center gap-2">
+          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+            <Star size={16} />
+          </div>
+          <span className="text-sm font-medium text-rose-800">
+            Unit Culture:
+          </span>
+          <CultureRating rating={card.unitCulture} />
         </div>
-        <span className="text-sm font-medium text-rose-800">Unit Culture:</span>
-        <CultureRating rating={card.unitCulture} />
-      </div>
+      )}
     </div>
   );
 }
@@ -260,7 +246,9 @@ function CardFooter({ card }: { card: CompensationCard }) {
   return (
     <div className="mt-3 space-y-1">
       <p className="text-xs text-rose-600">
-        {card.nursingRole} • {card.employmentType} • {card.shiftType} Shift
+        {card.nursingRole}
+        {card.employmentType && ` • ${card.employmentType}`}
+        {card.shiftType && ` • ${card.shiftType} Shift`}
       </p>
       {card.unitFeedback && (
         <p className="text-xs text-rose-500 line-clamp-2 italic">
@@ -284,7 +272,7 @@ function NurseCard({ card, className }: NurseCardProps) {
       <motion.div
         whileHover="hovered"
         className={twMerge(
-          'relative w-full rounded-2xl border border-rose-200 shadow-md',
+          'relative w-full h-full rounded-2xl border border-rose-200 shadow-md',
           className ||
             experienceLevelColors[card.experienceLevel] ||
             cardGradientClasses
@@ -293,7 +281,7 @@ function NurseCard({ card, className }: NurseCardProps) {
         <motion.div
           variants={cardAnimation}
           className={twMerge(
-            '-m-0.5 rounded-2xl border border-rose-200',
+            '-m-0.5 w-full h-full rounded-2xl border border-rose-200',
             className ||
               experienceLevelColors[card.experienceLevel] ||
               cardGradientClasses
@@ -302,7 +290,7 @@ function NurseCard({ card, className }: NurseCardProps) {
           <motion.div
             variants={cardAnimation}
             className={twMerge(
-              'relative -m-0.5 flex min-h-[340px] flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
+              'relative -m-0.5 flex w-full h-full flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
               className ||
                 experienceLevelColors[card.experienceLevel] ||
                 cardGradientClasses
