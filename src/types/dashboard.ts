@@ -1,4 +1,3 @@
-// Compensation Board의 카드
 export interface CompensationCard {
   id: string;
   hospital: string;
