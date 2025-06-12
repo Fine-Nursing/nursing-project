@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users } from 'lucide-react';
 
 import NurseCard from './card/NurseCard';
-import type { NurseJobInfo } from './card/NurseCard';
+import type { CompensationCard } from './card/NurseCard';
 
 // -----------------------------------------
 // 1) AnimatedCounter
@@ -32,162 +32,152 @@ function AnimatedCounter({ baseValue }: { baseValue: number }) {
 }
 
 // -----------------------------------------
-// 2) Nurse 데이터 타입
-// -----------------------------------------
-interface NurseDataItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  className?: string;
-  jobInfo: NurseJobInfo;
-}
-
-// -----------------------------------------
 // 3) 전체 Nurse 데이터
 // -----------------------------------------
-const allNurseData: NurseDataItem[] = [
-  // Senior Nurse
+// CompensationCard 타입에 맞춘 데이터
+const allNurseData: CompensationCard[] = [
+  // Senior Nurses (10+ years)
   {
     id: 'senior-1',
-    title: 'Senior Nurse',
-    subtitle: 'Join our ICU team (Critical Care)',
-    className: 'bg-emerald-300',
-    jobInfo: {
-      id: 'icu-1',
-      hospitalName: 'City General Hospital',
-      location: 'Manhattan, NY',
-      specialty: 'Critical Care',
-      basePay: 45.2,
-      differentials: 7.55,
-      totalPay: 52.75,
-      cultureRating: 8.5,
-    },
+    hospital: 'City General Hospital',
+    state: 'NY',
+    city: 'Manhattan',
+    specialty: 'Critical Care',
+    totalPay: 52.75,
+    basePay: 45.2,
+    differentialPay: 7.55,
+    unitCulture: 8.5,
+    unitFeedback: 'Join our ICU team - excellent mentorship program',
+    experienceLevel: 'senior',
+    nursingRole: 'Senior Nurse',
+    shiftType: 'Night',
+    employmentType: 'Full-time',
+    yearsOfExperience: 12.5,
   },
   {
     id: 'senior-2',
-    title: 'Senior Nurse',
-    subtitle: 'Leadership in Long-term Care',
-    className: 'bg-emerald-300',
-    jobInfo: {
-      id: 'long-term-1',
-      hospitalName: 'Green Valley Nursing Home',
-      location: 'Brooklyn, NY',
-      specialty: 'Geriatrics',
-      basePay: 44.8,
-      differentials: 5.0,
-      totalPay: 49.8,
-      cultureRating: 8.1,
-    },
+    hospital: 'Green Valley Nursing Home',
+    state: 'NY',
+    city: 'Brooklyn',
+    specialty: 'Geriatrics',
+    totalPay: 49.8,
+    basePay: 44.8,
+    differentialPay: 5.0,
+    unitCulture: 8.1,
+    unitFeedback: 'Leadership opportunities in long-term care',
+    experienceLevel: 'senior',
+    nursingRole: 'Senior Nurse',
+    shiftType: 'Day',
+    employmentType: 'Full-time',
+    yearsOfExperience: 15.0,
   },
-  // Specialist Nurse
+
+  // Experienced Nurses (5-10 years)
   {
-    id: 'specialist-1',
-    title: 'Specialist Nurse',
-    subtitle: 'Emergency response team - triage focus',
-    className: 'bg-blue-300',
-    jobInfo: {
-      id: 'er-1',
-      hospitalName: 'Metro Medical Center',
-      location: 'Brooklyn, NY',
-      specialty: 'Emergency Care',
-      basePay: 48.5,
-      differentials: 9.7,
-      totalPay: 58.2,
-      cultureRating: 7.8,
-    },
-  },
-  {
-    id: 'specialist-2',
-    title: 'Specialist Nurse',
-    subtitle: 'OR Specialist - advanced surgical procedures',
-    className: 'bg-blue-300',
-    jobInfo: {
-      id: 'or-1',
-      hospitalName: 'Riverside Surgical Center',
-      location: 'Bronx, NY',
-      specialty: 'Surgical Care',
-      basePay: 49.3,
-      differentials: 5.3,
-      totalPay: 54.6,
-      cultureRating: 7.9,
-    },
-  },
-  // Head Nurse
-  {
-    id: 'head-1',
-    title: 'Head Nurse',
-    subtitle: 'Lead our pediatrics department',
-    className: 'bg-pink-300',
-    jobInfo: {
-      id: 'pediatrics-1',
-      hospitalName: "Children's Wellness Hospital",
-      location: 'Queens, NY',
-      specialty: 'Pediatrics',
-      basePay: 52.75,
-      differentials: 9.55,
-      totalPay: 62.3,
-      cultureRating: 9.2,
-    },
+    id: 'experienced-1',
+    hospital: 'Metro Medical Center',
+    state: 'NY',
+    city: 'Brooklyn',
+    specialty: 'Emergency Care',
+    totalPay: 58.2,
+    basePay: 48.5,
+    differentialPay: 9.7,
+    unitCulture: 7.8,
+    unitFeedback: 'Fast-paced ER environment with great team support',
+    experienceLevel: 'experienced',
+    nursingRole: 'ER Specialist',
+    shiftType: 'Rotating',
+    employmentType: 'Full-time',
+    yearsOfExperience: 7.5,
   },
   {
-    id: 'head-2',
-    title: 'Head Nurse',
-    subtitle: 'Administration & policy setting',
-    className: 'bg-pink-300',
-    jobInfo: {
-      id: 'head-admin-1',
-      hospitalName: 'Citywide Health HQ',
-      location: 'Manhattan, NY',
-      specialty: 'Administration',
-      basePay: 64.1,
-      differentials: 0,
-      totalPay: 64.1,
-      cultureRating: 9.0,
-    },
-  },
-  // Staff Nurse
-  {
-    id: 'staff-1',
-    title: 'Staff Nurse',
-    subtitle: 'Med-Surg unit - daily care',
-    className: 'bg-yellow-300',
-    jobInfo: {
-      id: 'med-surg-1',
-      hospitalName: 'General Healthcare Center',
-      location: 'Bronx, NY',
-      specialty: 'Medical-Surgical',
-      basePay: 45.6,
-      differentials: 0,
-      totalPay: 45.6,
-      cultureRating: 7.3,
-    },
+    id: 'experienced-2',
+    hospital: 'Riverside Surgical Center',
+    state: 'NY',
+    city: 'Bronx',
+    specialty: 'Surgical Care',
+    totalPay: 54.6,
+    basePay: 49.3,
+    differentialPay: 5.3,
+    unitCulture: 7.9,
+    unitFeedback: 'Advanced surgical procedures with cutting-edge technology',
+    experienceLevel: 'experienced',
+    nursingRole: 'OR Specialist',
+    shiftType: 'Day',
+    employmentType: 'Full-time',
+    yearsOfExperience: 8.0,
   },
   {
-    id: 'staff-2',
-    title: 'Staff Nurse',
-    subtitle: 'Join our surgical team and grow your career',
-    className: 'bg-yellow-300',
-    jobInfo: {
-      id: 'surgery-1',
-      hospitalName: 'Riverside Surgical Center',
-      location: 'Bronx, NY',
-      specialty: 'Surgical Care',
-      basePay: 42.5,
-      differentials: 5.3,
-      totalPay: 47.8,
-      cultureRating: 7.2,
-    },
+    id: 'experienced-3',
+    hospital: "Children's Wellness Hospital",
+    state: 'NY',
+    city: 'Queens',
+    specialty: 'Pediatrics',
+    totalPay: 62.3,
+    basePay: 52.75,
+    differentialPay: 9.55,
+    unitCulture: 9.2,
+    unitFeedback: 'Lead our caring pediatrics department',
+    experienceLevel: 'experienced',
+    nursingRole: 'Head Nurse',
+    shiftType: 'Day',
+    employmentType: 'Full-time',
+    yearsOfExperience: 9.5,
+  },
+
+  // Junior Nurses (2-5 years)
+  {
+    id: 'junior-1',
+    hospital: 'General Healthcare Center',
+    state: 'NY',
+    city: 'Bronx',
+    specialty: 'Medical-Surgical',
+    totalPay: 45.6,
+    basePay: 45.6,
+    differentialPay: 0,
+    unitCulture: 7.3,
+    unitFeedback: 'Great learning environment for Med-Surg experience',
+    experienceLevel: 'junior',
+    nursingRole: 'Staff Nurse',
+    shiftType: 'Day',
+    employmentType: 'Full-time',
+    yearsOfExperience: 3.5,
+  },
+
+  // Beginner Nurses (< 2 years)
+  {
+    id: 'beginner-1',
+    hospital: 'Riverside Surgical Center',
+    state: 'NY',
+    city: 'Bronx',
+    specialty: 'Surgical Care',
+    totalPay: 47.8,
+    basePay: 42.5,
+    differentialPay: 5.3,
+    unitCulture: 7.2,
+    unitFeedback: 'Join our surgical team and grow your career',
+    experienceLevel: 'beginner',
+    nursingRole: 'Staff Nurse',
+    shiftType: 'Night',
+    employmentType: 'Full-time',
+    yearsOfExperience: 1.5,
   },
 ];
 
 // -----------------------------------------
 // 대표 카드(Title별 1장) 필터
 // -----------------------------------------
-function getRepresentativeCards(data: NurseDataItem[]): NurseDataItem[] {
-  const uniqueTitles = Array.from(new Set(data.map((d) => d.title)));
-  return uniqueTitles
-    .map((title) => data.find((d) => d.title === title))
-    .filter(Boolean) as NurseDataItem[];
+function getRepresentativeCards(data: CompensationCard[]): CompensationCard[] {
+  const uniqueExperienceLevels = [
+    'beginner',
+    'junior',
+    'experienced',
+    'senior',
+  ] as const;
+
+  return uniqueExperienceLevels
+    .map((level) => data.find((card) => card.experienceLevel === level))
+    .filter(Boolean) as CompensationCard[];
 }
 
 // -----------------------------------------
@@ -203,7 +193,9 @@ export default function NurseBoard() {
   );
   const currentList = useMemo(() => {
     if (!selectedTitle) return representativeCards;
-    return allNurseData.filter((item) => item.title === selectedTitle);
+    return allNurseData.filter(
+      (item) => item.experienceLevel === selectedTitle
+    );
   }, [selectedTitle, representativeCards]);
 
   // 열, 행 간격 (카드 폭+여백 고려)
@@ -394,7 +386,7 @@ export default function NurseBoard() {
                 <motion.button
                   key={nurse.id}
                   type="button"
-                  onClick={() => handleCardClick(nurse.title)}
+                  onClick={() => handleCardClick(nurse.experienceLevel)}
                   variants={cardVariants}
                   custom={index}
                   style={{
@@ -404,7 +396,7 @@ export default function NurseBoard() {
                   }}
                   className="cursor-pointer focus:outline-none"
                 >
-                  <NurseCard {...nurse} />
+                  <NurseCard card={nurse} />
                 </motion.button>
               ))}
             </motion.div>

@@ -6,23 +6,31 @@ import { motion, MotionConfig } from 'framer-motion';
 import { MapPin, DollarSign, Activity, Building, Star } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
-// Types
-export interface NurseJobInfo {
+// Import from your types file
+// import type { CompensationCard } from '@/types/dashboard';
+
+// For this component, defining the type directly
+export interface CompensationCard {
   id: string;
-  hospitalName: string;
-  location: string;
+  hospital: string;
+  state: string;
+  city: string;
   specialty: string;
-  basePay: number;
-  differentials: number;
   totalPay: number;
-  cultureRating: number;
+  basePay: number;
+  differentialPay: number;
+  unitCulture: number;
+  unitFeedback: string;
+  experienceLevel: 'beginner' | 'junior' | 'experienced' | 'senior';
+  nursingRole: string;
+  shiftType: string;
+  employmentType: string;
+  yearsOfExperience: number;
 }
 
 export interface NurseCardProps {
-  title: string; // Nurse's name or role
-  subtitle: string; // Brief description/tagline
+  card: CompensationCard;
   className?: string;
-  jobInfo: NurseJobInfo;
 }
 
 // Soft gradient background (pastel rose/pink)
@@ -56,12 +64,10 @@ function InfoItem({
 }
 
 // Enhanced Pay Breakdown Component - 크기 최적화
-function PayBreakdown({ jobInfo }: { jobInfo: NurseJobInfo }) {
-  const basePercentage = (jobInfo.basePay / jobInfo.totalPay) * 100;
+function PayBreakdown({ card }: { card: CompensationCard }) {
+  const basePercentage = (card.basePay / card.totalPay) * 100;
   const diffPercentage =
-    jobInfo.differentials > 0
-      ? (jobInfo.differentials / jobInfo.totalPay) * 100
-      : 0;
+    card.differentialPay > 0 ? (card.differentialPay / card.totalPay) * 100 : 0;
 
   return (
     <div className="rounded-xl bg-white/80 p-3 shadow-sm ring-1 ring-rose-200/50 backdrop-blur-sm border border-white/60">
@@ -74,7 +80,7 @@ function PayBreakdown({ jobInfo }: { jobInfo: NurseJobInfo }) {
           <span className="text-sm font-semibold text-gray-700">Total Pay</span>
         </div>
         <span className="text-lg font-bold text-emerald-600 tracking-tight">
-          ${jobInfo.totalPay.toLocaleString()}/hr
+          ${card.totalPay.toLocaleString()}/hr
         </span>
       </div>
 
@@ -87,7 +93,7 @@ function PayBreakdown({ jobInfo }: { jobInfo: NurseJobInfo }) {
             style={{ width: `${basePercentage}%` }}
           />
           {/* Differential Pay 부분 - 그라데이션 */}
-          {jobInfo.differentials > 0 && (
+          {card.differentialPay > 0 && (
             <div
               className="absolute top-0 h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-300 ease-out shadow-sm"
               style={{
@@ -107,15 +113,15 @@ function PayBreakdown({ jobInfo }: { jobInfo: NurseJobInfo }) {
               <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-rose-300 to-rose-400 shadow-sm ring-1 ring-white" />
               <span className="text-xs font-medium text-gray-600">Base</span>
               <span className="text-xs font-bold text-gray-800">
-                ${jobInfo.basePay.toLocaleString()}
+                ${card.basePay.toLocaleString()}
               </span>
             </div>
-            {jobInfo.differentials > 0 && (
+            {card.differentialPay > 0 && (
               <div className="flex items-center gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm ring-1 ring-white" />
                 <span className="text-xs font-medium text-gray-600">Diff</span>
                 <span className="text-xs font-bold text-blue-600">
-                  +${jobInfo.differentials.toLocaleString()}
+                  +${card.differentialPay.toLocaleString()}
                 </span>
               </div>
             )}
@@ -192,75 +198,119 @@ function CultureRating({ rating }: { rating: number }) {
   );
 }
 
-// Header with a nurse emoji
-function CardHeader({ title }: { title: string }) {
+// Header with experience level badge
+function CardHeader({ card }: { card: CompensationCard }) {
+  const experienceLevelEmoji = {
+    beginner: '🌱',
+    junior: '🌿',
+    experienced: '🌸',
+    senior: '🌲',
+  };
+
+  const experienceLevelText = {
+    beginner: 'Beginner Nurse',
+    junior: 'Junior Nurse',
+    experienced: 'Experienced Nurse',
+    senior: 'Senior Nurse',
+  };
+
   return (
-    <div className="mb-2 flex items-center gap-2">
-      <span className="text-2xl">👩‍⚕️</span>
-      <h2 className="text-base font-semibold text-rose-800">{title}</h2>
+    <div className="mb-2 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl">
+          {experienceLevelEmoji[card.experienceLevel]}
+        </span>
+        <h2 className="text-base font-semibold text-rose-800">
+          {experienceLevelText[card.experienceLevel]}
+        </h2>
+      </div>
+      <span className="text-xs text-rose-600">
+        {card.yearsOfExperience} years
+      </span>
     </div>
   );
 }
 
 // Info section: enhanced with pay breakdown
-function CardInfo({ jobInfo }: { jobInfo: NurseJobInfo }) {
+function CardInfo({ card }: { card: CompensationCard }) {
+  const location = `${card.city}, ${card.state}`;
+
   return (
     <div className="flex-1 space-y-2">
-      <InfoItem icon={<Building size={16} />} text={jobInfo.hospitalName} />
-      <InfoItem icon={<MapPin size={16} />} text={jobInfo.location} />
-      <InfoItem icon={<Activity size={16} />} text={jobInfo.specialty} />
+      <InfoItem icon={<Building size={16} />} text={card.hospital} />
+      <InfoItem icon={<MapPin size={16} />} text={location} />
+      <InfoItem icon={<Activity size={16} />} text={card.specialty} />
 
-      {/* Enhanced Pay Display - Choose one of these two options */}
-      <PayBreakdown jobInfo={jobInfo} />
-      {/* Alternative: <CompactPayDisplay jobInfo={jobInfo} /> */}
+      {/* Enhanced Pay Display */}
+      <PayBreakdown card={card} />
 
       <div className="flex items-center gap-2">
         <div className="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-rose-600">
           <Star size={16} />
         </div>
         <span className="text-sm font-medium text-rose-800">Unit Culture:</span>
-        <CultureRating rating={jobInfo.cultureRating} />
+        <CultureRating rating={card.unitCulture} />
       </div>
     </div>
   );
 }
 
-// Footer: only subtitle, no button
-function CardFooter({ subtitle }: { subtitle: string }) {
+// Footer: showing role and shift info
+function CardFooter({ card }: { card: CompensationCard }) {
   return (
-    <div className="mt-3">
-      <p className="text-xs text-rose-600 line-clamp-2">{subtitle}</p>
+    <div className="mt-3 space-y-1">
+      <p className="text-xs text-rose-600">
+        {card.nursingRole} • {card.employmentType} • {card.shiftType} Shift
+      </p>
+      {card.unitFeedback && (
+        <p className="text-xs text-rose-500 line-clamp-2 italic">
+          {card.unitFeedback}
+        </p>
+      )}
     </div>
   );
 }
 
-function NurseCard({ title, subtitle, className, jobInfo }: NurseCardProps) {
+function NurseCard({ card, className }: NurseCardProps) {
+  const experienceLevelColors = {
+    beginner: 'bg-yellow-300 hover:bg-yellow-400',
+    junior: 'bg-blue-300 hover:bg-blue-400',
+    experienced: 'bg-pink-300 hover:bg-pink-400',
+    senior: 'bg-emerald-300 hover:bg-emerald-400',
+  };
+
   return (
     <MotionConfig transition={{ type: 'spring', bounce: 0.5 }}>
       <motion.div
         whileHover="hovered"
         className={twMerge(
           'relative w-full rounded-2xl border border-rose-200 shadow-md',
-          className || cardGradientClasses
+          className ||
+            experienceLevelColors[card.experienceLevel] ||
+            cardGradientClasses
         )}
       >
         <motion.div
           variants={cardAnimation}
           className={twMerge(
             '-m-0.5 rounded-2xl border border-rose-200',
-            className || cardGradientClasses
+            className ||
+              experienceLevelColors[card.experienceLevel] ||
+              cardGradientClasses
           )}
         >
           <motion.div
             variants={cardAnimation}
             className={twMerge(
               'relative -m-0.5 flex min-h-[340px] flex-col overflow-hidden rounded-2xl border border-rose-200 p-4',
-              className || cardGradientClasses
+              className ||
+                experienceLevelColors[card.experienceLevel] ||
+                cardGradientClasses
             )}
           >
-            <CardHeader title={title} />
-            <CardInfo jobInfo={jobInfo} />
-            <CardFooter subtitle={subtitle} />
+            <CardHeader card={card} />
+            <CardInfo card={card} />
+            <CardFooter card={card} />
             <RotatingBadge />
           </motion.div>
         </motion.div>
