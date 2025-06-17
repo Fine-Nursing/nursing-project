@@ -1,8 +1,10 @@
-function arrayMove<T>(arr: T[], oldIndex: number, newIndex: number): T[] {
-  const newArr = [...arr];
-  const [movedItem] = newArr.splice(oldIndex, 1);
-  newArr.splice(newIndex, 0, movedItem);
-  return newArr;
+export default function arrayMove<T>(
+  array: T[],
+  fromIndex: number,
+  toIndex: number
+): T[] {
+  const newArray = [...array];
+  const [movedItem] = newArray.splice(fromIndex, 1);
+  newArray.splice(toIndex, 0, movedItem);
+  return newArray;
 }
-
-export default arrayMove;

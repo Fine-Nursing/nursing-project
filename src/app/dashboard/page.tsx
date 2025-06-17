@@ -2,20 +2,35 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
-import { nurseData } from 'src/api/mock-data';
 
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import NursingGraph from 'src/components/graph';
 import { LoginModal, SignUpModal } from 'src/components/modal/Modal';
-
 import NursingCompensationTable from 'src/components/table/NursingCompensationTable';
 import CardBoard from 'src/components/CardBoard';
+import type { NursingTableParams } from 'src/api/useNursingTable';
+import { useNursingTable } from 'src/api/useNursingTable';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
   const [user] = useState(null); // TODO: 실제 사용자 상태 관리로 교체
+
+  // API 필터 상태
+  const [tableFilters, setTableFilters] = useState<NursingTableParams>({
+    page: 1,
+    limit: 10,
+    sortBy: 'compensation',
+    sortOrder: 'desc',
+  });
+
+  // API 데이터 가져오기
+  const {
+    data: nursingData,
+    isLoading,
+    isError,
+  } = useNursingTable(tableFilters);
 
   const handleOnboardingClick = () => {
     router.push('/onboarding');
@@ -29,6 +44,11 @@ export default function DashboardPage() {
   const handleSwitchToSignUp = () => {
     setShowLoginModal(false);
     setShowSignUpModal(true);
+  };
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage: number) => {
+    setTableFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   return (
@@ -107,8 +127,44 @@ export default function DashboardPage() {
           <div className="bg-white rounded-xl shadow-sm p-8">
             <NursingGraph />
           </div>
+
+          {/* Nursing Compensation Table with API Data */}
           <div className="bg-white rounded-xl shadow-sm p-8">
-            <NursingCompensationTable initialData={nurseData} pageSize={10} />
+            <h2 className="text-2xl font-bold mb-6">
+              Nursing Compensation Data
+            </h2>
+
+            {isLoading && (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-gray-500">
+                  Loading compensation data...
+                </div>
+              </div>
+            )}
+
+            {isError && (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-red-500">
+                  Error loading data. Please try again later.
+                </div>
+              </div>
+            )}
+
+            {!isLoading && !isError && nursingData && (
+              <>
+                <NursingCompensationTable
+                  data={nursingData.data}
+                  meta={nursingData.meta}
+                  onPageChange={handlePageChange}
+                />
+
+                {/* 추가 정보 표시 */}
+                <div className="mt-4 text-sm text-gray-600 text-right">
+                  Total nursing positions:{' '}
+                  {nursingData.meta.total.toLocaleString()}
+                </div>
+              </>
+            )}
           </div>
         </section>
       </div>

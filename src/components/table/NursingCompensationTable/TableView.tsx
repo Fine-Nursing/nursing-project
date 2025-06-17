@@ -8,22 +8,12 @@ import type {
   Row,
   UseSortByColumnProps,
 } from 'react-table';
-
-type Data = {
-  user: string;
-  specialty: string;
-  location: string;
-  experience: number | string;
-  shiftType: 'Day' | 'Night';
-  basePay: number;
-  differentials: number;
-  totalPay: number;
-};
+import type { NursingPosition } from 'src/types/nursing';
 
 interface TableViewProps {
-  headerGroups: HeaderGroup<Data>[];
-  page: Row<Data>[];
-  prepareRow: (row: Row<Data>) => void;
+  headerGroups: HeaderGroup<NursingPosition>[];
+  page: Row<NursingPosition>[];
+  prepareRow: (row: Row<NursingPosition>) => void;
   getTableProps: () => any;
   getTableBodyProps: () => any;
 }
@@ -53,9 +43,10 @@ export default function TableView({
           return (
             <tr key={groupKey} {...restGroupProps}>
               {headerGroup.headers.map((col) => {
-                // (1) col을 ColumnInstance<Data> & UseSortByColumnProps<Data>로 캐스팅
-                const column = col as unknown as ColumnInstance<Data> &
-                  UseSortByColumnProps<Data>;
+                // col을 ColumnInstance<NursingPosition> & UseSortByColumnProps<NursingPosition>로 캐스팅
+                const column =
+                  col as unknown as ColumnInstance<NursingPosition> &
+                    UseSortByColumnProps<NursingPosition>;
 
                 const sortProps = column.getSortByToggleProps?.() || {};
                 const { key: columnKey, ...restColumnProps } =
