@@ -5,7 +5,24 @@ const queryKeys = {
     byLevel: (level: string, params?: any) =>
       ['compensation', 'cards', level, params] as const,
   },
+  specialty: {
+    all: ['specialty'] as const,
 
+    averageCompensation: (params?: {
+      states?: string[];
+      experienceGroups?: string[];
+      search?: string;
+      limit?: number;
+      sortBy?: string;
+      sortOrder?: string;
+    }) => ['specialty', 'averageCompensation', params] as const,
+    list: (search?: string) => ['specialty', 'list', search] as const,
+  },
+
+  location: {
+    all: ['location'] as const,
+    states: () => ['location', 'states'] as const,
+  },
   user: {
     all: ['user'] as const,
     profile: (id: string) => ['user', 'profile', id] as const,
