@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import useInitializeOnboarding from 'src/api/onboarding/useInitializeOnboarding';
 import AccountForm from 'src/components/onboarding/pages/AccountForm';
 import BasicInfoForm from 'src/components/onboarding/pages/BasicInfoForm';
 import CultureForm from 'src/components/onboarding/pages/CultureForm';
@@ -18,6 +19,7 @@ const pageVariants = {
 
 export default function OnboardingFlow() {
   const { currentStep } = useOnboardingStore();
+  const { isLoading, error } = useInitializeOnboarding();
 
   const renderStep = (step: OnboardingStep) => {
     switch (step) {
@@ -65,61 +67,103 @@ export default function OnboardingFlow() {
     return `${baseClasses} text-gray-500`;
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto" />
+          <p className="mt-4 text-gray-600">Preparing your onboarding...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 에러 발생 시
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error.message}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Progress Steps */}
-        <div className="py-8 flex items-center justify-center">
-          <nav aria-label="Progress" className="w-full max-w-2xl">
-            <ol className="flex items-center justify-between">
-              {ONBOARDING_STEPS.map((step, index) => {
-                const isCompleted = index < currentStepIndex;
-                const isActive = index === currentStepIndex;
+        {/* Progress Steps - Welcome 단계일 때는 숨김 */}
+        {currentStep !== 'welcome' && (
+          <div className="py-8 flex items-center justify-center">
+            <nav aria-label="Progress" className="w-full max-w-2xl">
+              <ol className="flex items-center justify-between">
+                {ONBOARDING_STEPS.filter((step) => step.id !== 'welcome').map(
+                  (step, index) => {
+                    const actualIndex = ONBOARDING_STEPS.findIndex(
+                      (s) => s.id === step.id
+                    );
+                    const isCompleted = actualIndex < currentStepIndex;
+                    const isActive = actualIndex === currentStepIndex;
 
-                return (
-                  <li
-                    key={step.id}
-                    className="relative flex-1 flex items-center"
-                  >
-                    {index > 0 && (
-                      <div
-                        className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
-                          isCompleted ? 'bg-slate-600' : 'bg-gray-200'
-                        }`}
-                      />
-                    )}
-
-                    <div className={getCircleClassName(isCompleted, isActive)}>
-                      {isCompleted ? (
-                        <svg
-                          className="h-5 w-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={3}
-                            d="M5 13l4 4L19 7"
+                    return (
+                      <li
+                        key={step.id}
+                        className="relative flex-1 flex items-center"
+                      >
+                        {index > 0 && (
+                          <div
+                            className={`absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
+                              isCompleted ? 'bg-slate-600' : 'bg-gray-200'
+                            }`}
                           />
-                        </svg>
-                      ) : (
-                        <span className="text-sm font-medium">{index + 1}</span>
-                      )}
-                    </div>
+                        )}
 
-                    <div className="ml-3 text-left">
-                      <p className={getTitleClassName(isCompleted, isActive)}>
-                        {step.title}
-                      </p>
-                    </div>
-                  </li>
-                );
-              })}
-            </ol>
-          </nav>
-        </div>
+                        <div
+                          className={getCircleClassName(isCompleted, isActive)}
+                        >
+                          {isCompleted ? (
+                            <svg
+                              className="h-5 w-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={3}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          ) : (
+                            <span className="text-sm font-medium">
+                              {index + 1}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="ml-3 text-left">
+                          <p
+                            className={getTitleClassName(isCompleted, isActive)}
+                          >
+                            {step.title}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  }
+                )}
+              </ol>
+            </nav>
+          </div>
+        )}
 
         {/* Form Content */}
         <AnimatePresence mode="wait">

@@ -11,13 +11,15 @@ import {
 import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
-// Types
+import useEmploymentMutation from 'src/api/onboarding/useEmploymentMutation';
+import toast from 'react-hot-toast';
+import type {
+  ShiftType,
+  DifferentialPay,
+  EmploymentType,
+} from 'src/types/onboarding';
 
-type ShiftType =
-  | 'Day Shift'
-  | 'Night Shift'
-  | 'Evening Shift'
-  | 'Rotating Shift';
+// Types
 
 // Constants
 const NURSE_PATIENT_RATIOS = ['1:1', '1:2', '1:3', '1:4', '1:5+'];
@@ -80,8 +82,15 @@ const EMPLOYMENT_TYPES = [
   'Part-time',
   'Per Diem/PRN',
   'Temporary/Contract',
-  'TravelNursing',
+  'Travel Nursing', // 띄어쓰기 수정
   'Agency Nursing',
+];
+
+const SHIFT_TYPES: ShiftType[] = [
+  'Day Shift',
+  'Night Shift',
+  'Evening Shift',
+  'Rotating Shift',
 ];
 
 // Google Maps libraries - 상수로 분리 (성능 경고 해결)
@@ -159,6 +168,17 @@ function useDifferentialAutocomplete() {
   };
 }
 
+const calculateTotalDifferentials = (
+  differentials: DifferentialPay[] = []
+) => ({
+  hourly: differentials
+    .filter((diff) => diff.unit === 'hourly')
+    .reduce((sum, diff) => sum + diff.amount, 0),
+  annual: differentials
+    .filter((diff) => diff.unit === 'annual')
+    .reduce((sum, diff) => sum + diff.amount, 0),
+});
+
 // Specialty autocomplete hook
 function useSpecialtyAutocomplete(initialValue: string) {
   const [specialtyInput, setSpecialtyInput] = useState(initialValue);
@@ -203,6 +223,7 @@ function parseCityState(
 
 export default function EmploymentForm() {
   const { formData, updateFormData, setStep } = useOnboardingStore();
+  const employmentMutation = useEmploymentMutation();
 
   // Specialty autocomplete
   const {
@@ -313,9 +334,6 @@ export default function EmploymentForm() {
 
       updateFormData({
         individualDifferentials: newDifferentials,
-        totalDifferential: newDifferentials
-          .filter((diff) => diff.unit !== 'annual')
-          .reduce((sum, diff) => sum + diff.amount, 0),
       });
 
       // Reset form
@@ -344,9 +362,6 @@ export default function EmploymentForm() {
 
       updateFormData({
         individualDifferentials: newDifferentials,
-        totalDifferential: newDifferentials
-          .filter((diff) => diff.unit !== 'annual')
-          .reduce((sum, diff) => sum + diff.amount, 0),
       });
     },
     [formData.individualDifferentials, updateFormData]
@@ -401,9 +416,53 @@ export default function EmploymentForm() {
     setShowMapModal(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setStep('culture');
+
+    try {
+      // 유효성 검사
+      if (
+        !formData.specialty ||
+        !formData.organizationName ||
+        !formData.organizationCity ||
+        !formData.organizationState ||
+        !formData.employmentStartYear ||
+        !formData.employmentType ||
+        !formData.shiftType ||
+        !formData.nurseToPatientRatio ||
+        formData.basePay === undefined ||
+        formData.basePay <= 0
+      ) {
+        toast.error('Please fill in all required fields');
+        return;
+      }
+
+      const payload = {
+        specialty: formData.specialty,
+        subSpecialty: formData.subSpecialty || undefined,
+        organizationName: formData.organizationName,
+        organizationCity: formData.organizationCity,
+        organizationState: formData.organizationState, // 2자리 코드여야 함
+        employmentStartYear: formData.employmentStartYear,
+        employmentType: formData.employmentType,
+        shiftType: formData.shiftType,
+        nurseToPatientRatio: formData.nurseToPatientRatio,
+        basePay: formData.basePay,
+        paymentFrequency: formData.paymentFrequency || 'hourly',
+        isUnionized: formData.isUnionized || false,
+        individualDifferentials: formData.individualDifferentials || [],
+        differentialsFreeText: formData.differentialsFreeText || undefined,
+      };
+
+      await employmentMutation.mutateAsync(payload);
+      // 성공 시 자동으로 culture 단계로 이동 (onSuccess에서 처리)
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to save employment information'
+      );
+    }
   };
 
   // Reset map modal state when opening
@@ -589,18 +648,21 @@ export default function EmploymentForm() {
                   htmlFor="organizationState"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  State
+                  State (2-letter code)
                 </label>
                 <input
                   id="organizationState"
                   type="text"
+                  maxLength={2}
                   value={formData.organizationState || ''}
                   onChange={(e) =>
-                    updateFormData({ organizationState: e.target.value })
+                    updateFormData({
+                      organizationState: e.target.value.toUpperCase(),
+                    })
                   }
-                  placeholder="State"
+                  placeholder="e.g., NY, CA"
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+               focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
@@ -624,8 +686,11 @@ export default function EmploymentForm() {
                 <select
                   id="employmentType"
                   value={formData.employmentType || ''}
-                  onChange={(e) =>
-                    updateFormData({ employmentType: e.target.value })
+                  onChange={
+                    (e) =>
+                      updateFormData({
+                        employmentType: e.target.value as EmploymentType,
+                      }) // 타입 캐스팅 추가
                   }
                   className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                            focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
@@ -657,12 +722,7 @@ export default function EmploymentForm() {
                            focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 >
                   <option value="">Select your shift</option>
-                  {[
-                    'Day Shift',
-                    'Night Shift',
-                    'Evening Shift',
-                    'Rotating Shift',
-                  ].map((type) => (
+                  {SHIFT_TYPES.map((type) => (
                     <option key={type} value={type}>
                       {type}
                     </option>
@@ -945,36 +1005,38 @@ export default function EmploymentForm() {
                     </div>
 
                     {/* Total Display */}
-                    <div className="bg-green-50 p-4 rounded-xl border border-green-200">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-green-800">
-                          Total Hourly Differentials:
-                        </span>
-                        <span className="text-lg font-bold text-green-600">
-                          +$
-                          {formData.individualDifferentials
-                            .filter((diff) => diff.unit !== 'annual')
-                            .reduce((sum, diff) => sum + diff.amount, 0)}
-                          /hr
-                        </span>
-                      </div>
-                      {formData.individualDifferentials.some(
-                        (diff) => diff.unit === 'annual'
-                      ) && (
-                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-green-200">
-                          <span className="font-medium text-green-800">
-                            Annual Bonuses:
-                          </span>
-                          <span className="text-lg font-bold text-green-600">
-                            +$
-                            {formData.individualDifferentials
-                              .filter((diff) => diff.unit === 'annual')
-                              .reduce((sum, diff) => sum + diff.amount, 0)}
-                            /year
-                          </span>
+                    {formData.individualDifferentials &&
+                      formData.individualDifferentials.length > 0 && (
+                        <div className="bg-green-50 p-4 rounded-xl border border-green-200">
+                          {(() => {
+                            const totals = calculateTotalDifferentials(
+                              formData.individualDifferentials
+                            );
+                            return (
+                              <>
+                                <div className="flex justify-between items-center">
+                                  <span className="font-medium text-green-800">
+                                    Total Hourly Differentials:
+                                  </span>
+                                  <span className="text-lg font-bold text-green-600">
+                                    +${totals.hourly.toFixed(2)}/hr
+                                  </span>
+                                </div>
+                                {totals.annual > 0 && (
+                                  <div className="flex justify-between items-center mt-2 pt-2 border-t border-green-200">
+                                    <span className="font-medium text-green-800">
+                                      Annual Bonuses:
+                                    </span>
+                                    <span className="text-lg font-bold text-green-600">
+                                      +${totals.annual.toLocaleString()}/year
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
-                    </div>
                   </div>
                 )}
 
@@ -1026,8 +1088,19 @@ export default function EmploymentForm() {
             >
               ← Back
             </ActionButton>
-            <ActionButton type="submit" className="px-8 py-3">
-              Continue →
+            <ActionButton
+              type="submit"
+              className="px-8 py-3"
+              disabled={employmentMutation.isPending}
+            >
+              {employmentMutation.isPending ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                  Saving...
+                </span>
+              ) : (
+                'Continue →'
+              )}
             </ActionButton>
           </div>
         </form>
@@ -1051,7 +1124,10 @@ export default function EmploymentForm() {
             </h3>
 
             {!isLoaded ? (
-              <div className="text-center py-8">Loading map...</div>
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600 mx-auto mb-2" />
+                <p>Loading map...</p>
+              </div>
             ) : (
               <div className="flex flex-col gap-4">
                 {/* Search Box */}
