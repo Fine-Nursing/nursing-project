@@ -1,7 +1,5 @@
 // src/hooks/useAuth.ts
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
 
 interface SignUpData {
   email: string;
@@ -15,11 +13,22 @@ interface SignInData {
   password: string;
 }
 
+interface AuthResponse {
+  success: boolean;
+  message?: string;
+  user?: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+  requiresOnboarding?: boolean;
+}
+
 const useAuth = () => {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
-  const signUp = async (data: SignUpData) => {
+  const signUp = async (data: SignUpData): Promise<AuthResponse> => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -45,7 +54,7 @@ const useAuth = () => {
     }
   };
 
-  const signIn = async (data: SignInData) => {
+  const signIn = async (data: SignInData): Promise<AuthResponse> => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -71,35 +80,9 @@ const useAuth = () => {
     }
   };
 
-  const completeOnboarding = async (tempUserId: string) => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/complete`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ tempUserId }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to complete onboarding');
-    }
-
-    // 성공 시 처리
-    localStorage.removeItem('onboarding_session');
-    toast.success('Welcome! Your account has been set up successfully.');
-    router.push('/dashboard');
-
-    return response.json();
-  };
-
   return {
     signUp,
     signIn,
-    completeOnboarding,
     isLoading,
   };
 };

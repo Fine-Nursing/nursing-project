@@ -1,16 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
 import toast from 'react-hot-toast';
 import useAuth from 'src/api/Auth/useAuth';
+import useCompleteOnboarding from 'src/api/onboarding/useCompleteOnboarding';
+import useAuthStore from 'src/components/AuthInitializer';
 
 export default function AccountForm() {
   const { tempUserId, setStep } = useOnboardingStore();
-  const { signUp, signIn, completeOnboarding, isLoading } = useAuth();
+  const { user, isAuthenticated } = useAuthStore(); // 현재 로그인 상태 확인
+  const { signUp, signIn, isLoading: authLoading } = useAuth();
+  const { completeOnboarding, isLoading: completeLoading } =
+    useCompleteOnboarding();
 
   // 로그인/회원가입용 별도 state
   const [isSignIn, setIsSignIn] = useState(false);
@@ -22,6 +27,23 @@ export default function AccountForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  const isLoading = authLoading || completeLoading;
+
+  const handleAlreadyAuthenticated = async () => {
+    try {
+      toast.loading('Saving your onboarding data...', { id: 'complete' });
+      await completeOnboarding();
+      toast.success('Onboarding completed!', { id: 'complete' });
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to complete onboarding',
+        { id: 'complete' }
+      );
+    }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,10 +65,17 @@ export default function AccountForm() {
 
     try {
       // 1. 회원가입
-      await signUp({ email, password, firstName, lastName });
+      const signUpResult = await signUp({
+        email,
+        password,
+        firstName,
+        lastName,
+      });
 
-      // 2. 온보딩 데이터 병합 (이제 tempUserId는 확실히 string)
-      await completeOnboarding(tempUserId);
+      if (signUpResult && signUpResult.user) {
+        // 2. 회원가입 성공 후 온보딩 데이터 병합
+        await completeOnboarding();
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to create account'
@@ -64,16 +93,84 @@ export default function AccountForm() {
 
     try {
       // 1. 로그인
-      await signIn({ email, password });
+      const signInResult = await signIn({ email, password });
 
-      // 2. 온보딩 데이터 병합
-      await completeOnboarding(tempUserId);
+      if (signInResult && signInResult.user) {
+        // 2. 로그인 성공 후 온보딩 데이터 병합
+        await completeOnboarding();
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to sign in');
     }
   };
+
+  // 이미 로그인되어 있으면 바로 complete 처리
+  useEffect(() => {
+    if (isAuthenticated && user && tempUserId) {
+      handleAlreadyAuthenticated();
+    }
+  }, [isAuthenticated, user, tempUserId]);
+
+  // 이미 로그인된 상태라면 완료 화면 표시
+  if (isAuthenticated && user) {
+    return (
+      <div className="max-w-md mx-auto py-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+        >
+          <div className="text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <svg
+                  className="w-8 h-8 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">
+              Welcome back, {user.firstName || user.first_name || 'there'}!
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {isLoading
+                ? 'Saving your onboarding information...'
+                : "Your account is already set up. We're finishing up your onboarding."}
+            </p>
+            {isLoading && (
+              <div className="flex justify-center">
+                <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600" />
+              </div>
+            )}
+          </div>
+        </motion.div>
+
+        <div className="flex justify-center mt-6">
+          <ActionButton
+            onClick={() => setStep('culture')}
+            variant="outline"
+            className="px-6 py-3"
+            disabled={isLoading}
+          >
+            ← Back
+          </ActionButton>
+        </div>
+      </div>
+    );
+  }
+
+  // 로그인되지 않은 경우 기존 폼 표시
   if (isSignIn) {
-    // Sign In Form
+    // Sign In Form (기존 코드 그대로)
     return (
       <div className="max-w-md mx-auto py-8">
         <motion.div
@@ -144,7 +241,7 @@ export default function AccountForm() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
                       />
                     </svg>
                   ) : (
@@ -183,7 +280,7 @@ export default function AccountForm() {
                   Signing in...
                 </span>
               ) : (
-                'Sign In & Continue'
+                'Sign In & Complete Onboarding'
               )}
             </ActionButton>
 
@@ -215,7 +312,7 @@ export default function AccountForm() {
     );
   }
 
-  // Sign Up Form
+  // Sign Up Form (기존 코드 그대로)
   return (
     <div className="max-w-md mx-auto py-8">
       <motion.div
@@ -325,7 +422,7 @@ export default function AccountForm() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
                     />
                   </svg>
                 ) : (
@@ -387,7 +484,7 @@ export default function AccountForm() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
                     />
                   </svg>
                 ) : (
@@ -454,7 +551,7 @@ export default function AccountForm() {
                 Creating account...
               </span>
             ) : (
-              'Create Account & Finish'
+              'Create Account & Complete Onboarding'
             )}
           </ActionButton>
 

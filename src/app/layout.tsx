@@ -1,6 +1,5 @@
 import './globals.css';
-import QueryProvider from 'src/lib/QueryPrivider';
-import JotaiProvider from 'src/lib/JotaiProvider';
+import Providers from './providers';
 
 export default function RootLayout({
   children,
@@ -10,9 +9,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <QueryProvider>
-          <JotaiProvider>{children}</JotaiProvider>
-        </QueryProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

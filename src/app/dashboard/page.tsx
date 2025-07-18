@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import NursingGraph from 'src/components/graph';
@@ -10,12 +11,18 @@ import NursingCompensationTable from 'src/components/table/NursingCompensationTa
 import CardBoard from 'src/components/CardBoard';
 import type { NursingTableParams } from 'src/api/useNursingTable';
 import { useNursingTable } from 'src/api/useNursingTable';
+import useAuthStore from 'src/components/AuthInitializer';
 
 export default function DashboardPage() {
   const router = useRouter();
+  const {
+    user,
+    isLoading: isCheckingAuth,
+    signOut,
+    checkAuth,
+  } = useAuthStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [user] = useState(null); // TODO: 실제 사용자 상태 관리로 교체
 
   // API 필터 상태
   const [tableFilters, setTableFilters] = useState<NursingTableParams>({
@@ -32,8 +39,21 @@ export default function DashboardPage() {
     isError,
   } = useNursingTable(tableFilters);
 
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
+
   const handleOnboardingClick = () => {
-    router.push('/onboarding');
+    if (!user) {
+      // 로그인하지 않은 경우 로그인 모달 표시
+      setShowLoginModal(true);
+      toast('Please sign in to start onboarding', {
+        icon: '🔐',
+      });
+    } else {
+      router.push('/onboarding');
+    }
   };
 
   const handleSwitchToLogin = () => {
@@ -63,16 +83,42 @@ export default function DashboardPage() {
             </div>
             <nav>
               <ul className="flex items-center space-x-6 text-sm font-medium">
-                {user ? (
+                {isCheckingAuth && (
                   <li>
-                    <button
-                      type="button"
-                      className="text-slate-700 hover:text-purple-600 transition-colors"
-                    >
-                      Profile
-                    </button>
+                    <div className="animate-pulse bg-gray-200 h-8 w-20 rounded" />
                   </li>
-                ) : (
+                )}
+
+                {!isCheckingAuth && user && (
+                  <>
+                    <li>
+                      <span className="text-slate-600">
+                        Welcome,{' '}
+                        {user.first_name || user.firstName || user.email}!
+                      </span>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={() => router.push('/profile')}
+                        className="text-slate-700 hover:text-purple-600 transition-colors"
+                      >
+                        Profile
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="text-slate-700 hover:text-purple-600 transition-colors"
+                      >
+                        Sign Out
+                      </button>
+                    </li>
+                  </>
+                )}
+
+                {!isCheckingAuth && !user && (
                   <>
                     <li>
                       <button
@@ -108,7 +154,9 @@ export default function DashboardPage() {
           </div>
           <div className="text-gray-700">
             <p className="text-lg font-semibold text-gray-800">
-              Start onboarding to see what&apos;s possible for your career.
+              {user
+                ? "Continue your journey to see what's possible for your career."
+                : "Start onboarding to see what's possible for your career."}
             </p>
             <p className="mt-2 text-base text-gray-600">
               We&apos;ll help you understand where you stand — and where you
@@ -174,12 +222,14 @@ export default function DashboardPage() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onSwitchToSignUp={handleSwitchToSignUp}
+        onAuthSuccess={checkAuth}
       />
 
       <SignUpModal
         isOpen={showSignUpModal}
         onClose={() => setShowSignUpModal(false)}
         onSwitchToLogin={handleSwitchToLogin}
+        onAuthSuccess={checkAuth}
       />
     </main>
   );
