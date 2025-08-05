@@ -11,7 +11,7 @@ import {
   Tooltip,
   type TooltipProps,
 } from 'recharts';
-import { useCareerProgression } from 'src/api/useCareerProgression';
+import useCareerProgression from 'src/api/useCareerProgression';
 
 import type { CareerItem } from './types';
 

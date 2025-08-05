@@ -5,7 +5,7 @@ import { Stethoscope, RefreshCw, Moon, Sun, AlertCircle } from 'lucide-react';
 
 import { useMyProfile } from 'src/api/useProfileData';
 import { useMyCompensation } from 'src/api/useCompensation';
-import { useWageDistribution } from 'src/api/useDashboard';
+import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
 import UserProfileCard from 'src/components/user-page/NurseDashboard/UserProfileCard';

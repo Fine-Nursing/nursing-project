@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import { useCareerHistory } from 'src/api/useCareerHistory';
+import useCareerHistory from 'src/api/useCareerHistory';
 import { useMyCompensation } from 'src/api/useCompensation';
 import {
   Sparkles,
