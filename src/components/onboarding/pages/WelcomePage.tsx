@@ -26,7 +26,7 @@ export default function WelcomePage() {
         existingProgress.employmentCompleted && 
         existingProgress.cultureCompleted && 
         existingProgress.accountCompleted) {
-      console.log('온보딩이 이미 완료됨, 사용자 페이지로 이동');
+      // 온보딩이 이미 완료됨, 사용자 페이지로 이동
       toast.success('Onboarding already completed!');
       
       // 사용자 ID가 있으면 사용자 페이지로, 없으면 대시보드로 이동
@@ -46,15 +46,9 @@ export default function WelcomePage() {
   };
 
   const handleContinue = () => {
-    console.log('=== WelcomePage Continue 버튼 클릭 ===');
-    console.log('hasExistingSession:', hasExistingSession);
-    console.log('existingProgress:', existingProgress);
-    
     if (hasExistingSession && existingProgress) {
-      console.log('기존 세션이 있음, continueFromLastStep 호출');
       continueFromLastStep();
     } else {
-      console.log('새로운 온보딩, basicInfo로 이동');
       setStep('basicInfo');
     }
   };

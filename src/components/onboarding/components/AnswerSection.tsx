@@ -69,9 +69,9 @@ const AnswersSection = memo(
             ))}
           </div>
         ) : (
-          <motion.div variants={itemVariants}>
+          <motion.div variants={itemVariants} className="space-y-4">
             <input
-              type={inputType} // 여기서 inputType 적용
+              type={inputType}
               value={currentValue}
               onChange={(e) => onValueChange(e.target.value)}
               onKeyDown={(e) => {
@@ -81,22 +81,41 @@ const AnswersSection = memo(
               }}
               placeholder={placeholder}
               className="w-full p-4 rounded-lg border-2 border-gray-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all duration-300"
-              // 숫자 입력 필드에 대한 추가 속성들
               min={inputType === 'number' ? 0 : undefined}
               max={inputType === 'number' ? 50 : undefined}
             />
-            {inputType === 'number' && (
-              <div className="mt-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => currentValue && onSubmit(currentValue)}
-                  disabled={!currentValue}
-                  className="px-5 py-2 bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:bg-gray-400"
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ 
+                opacity: currentValue ? 1 : 0, 
+                y: currentValue ? 0 : 10 
+              }}
+              className="flex justify-end"
+            >
+              <motion.button
+                type="button"
+                onClick={() => currentValue && onSubmit(currentValue)}
+                disabled={!currentValue}
+                className="px-6 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-0 disabled:pointer-events-none flex items-center gap-2"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <span>Continue</span>
+                <svg 
+                  className="w-5 h-5" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
                 >
-                  Continue
-                </button>
-              </div>
-            )}
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M13 7l5 5m0 0l-5 5m5-5H6" 
+                  />
+                </svg>
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </motion.div>

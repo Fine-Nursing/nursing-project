@@ -39,6 +39,7 @@ export default function NursingGraph() {
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
   // 자동완성을 위한 디바운스 (300ms)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedAutocomplete = useCallback(
     debounce((value: string) => {
       setAutocompleteSearchTerm(value);
@@ -47,6 +48,7 @@ export default function NursingGraph() {
   );
 
   // 검색을 위한 디바운스 (500ms)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((value: string) => {
       setDebouncedSearchTerm(value);
