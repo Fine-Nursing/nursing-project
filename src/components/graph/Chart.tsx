@@ -1,24 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ResponsiveBar,
   type BarDatum,
   type BarTooltipProps,
   type BarCustomLayerProps,
 } from '@nivo/bar';
-import { statesData } from 'src/api/mock-data';
-import type { NursingSpecialty } from 'src/types/nurse';
+import type { RegionStates } from 'src/types/location';
+import { findStateByCode } from 'src/api/useLocations';
 
+// -------------------------------------------
+// Types
+// -------------------------------------------
 interface ChartProps {
-  data: NursingSpecialty[];
+  data: Array<{
+    specialty: string;
+    'Base Pay': number;
+    'Differential Pay': number;
+    total: number;
+    state: string;
+  }>;
+  states?: RegionStates;
+}
+
+type NursingBarDatum = {
+  specialty: string;
+  'Base Pay': number;
+  'Differential Pay': number;
+  total: number;
+  state: string;
+} & BarDatum;
+
+interface ChartTooltipProps extends BarTooltipProps<NursingBarDatum> {
+  states?: RegionStates;
 }
 
 // -------------------------------------------
-// 1) 데이터 타입 정의
-// -------------------------------------------
-type NursingBarDatum = NursingSpecialty & BarDatum;
-
-// -------------------------------------------
-// 2) 숫자 포맷팅 함수
+// Utility functions
 // -------------------------------------------
 function formatCompactNumber(num: number): string {
   if (num >= 1_000_000) {
@@ -30,74 +47,85 @@ function formatCompactNumber(num: number): string {
   return `$${num}`;
 }
 
-// -------------------------------------------
-// 3) 별도 레이어 컴포넌트(함수) 정의
-//    (BarCustomLayerProps<T>를 사용)
-// -------------------------------------------
-function TopLabelsLayer(props: BarCustomLayerProps<NursingBarDatum>) {
-  const { bars } = props;
-
-  // specialty별 최상단 값만 추려서 라벨 표시
-  const topBars: Record<string, { x: number; y: number; total: number }> = {};
-
-  bars.forEach((bar) => {
-    const specialty = bar.data.indexValue;
-    if (!topBars[specialty] || bar.y < topBars[specialty].y) {
-      topBars[specialty] = {
-        x: bar.x + bar.width / 2,
-        y: bar.y - 14,
-        total: bar.data.data.total,
-      };
-    }
-  });
-
-  return (
-    <g>
-      {Object.entries(topBars).map(([key, bar]) => (
-        <text
-          key={key}
-          x={bar.x}
-          y={bar.y}
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fill="#374151"
-          fontSize={11}
-          fontWeight="500"
-        >
-          {formatCompactNumber(bar.total)}
-        </text>
-      ))}
-    </g>
-  );
+function truncateSpecialty(name: string): string {
+  if (!name || typeof name !== 'string') {
+    return '';
+  }
+  if (name.length > 15) {
+    return `${name.substring(0, 13)}...`;
+  }
+  return name;
 }
 
 // -------------------------------------------
-// 4) 툴팁 컴포넌트
+// Components (defined outside of main component)
 // -------------------------------------------
+function createTopLabelsLayer(isMobile: boolean) {
+  return function TopLabelsLayer({ bars }: BarCustomLayerProps<NursingBarDatum>) {
+    // specialty별 최상단 값만 추려서 라벨 표시
+    const topBars: Record<string, { x: number; y: number; total: number }> = {};
+
+    bars.forEach((bar) => {
+      const specialty = bar.data.indexValue as string;
+      if (!topBars[specialty] || bar.y < topBars[specialty].y) {
+        topBars[specialty] = {
+          x: bar.x + bar.width / 2,
+          y: bar.y - (isMobile ? 10 : 14),
+          total: bar.data.data.total,
+        };
+      }
+    });
+
+    return (
+      <g>
+        {Object.entries(topBars).map(([key, bar]) => (
+          <text
+            key={key}
+            x={bar.x}
+            y={bar.y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill="#374151"
+            fontSize={isMobile ? 9 : 11}
+            fontWeight="500"
+          >
+            {formatCompactNumber(bar.total)}
+          </text>
+        ))}
+      </g>
+    );
+  };
+}
+
 function ChartTooltip({
   id,
   value,
   indexValue,
   data,
-}: BarTooltipProps<NursingBarDatum>) {
-  // color 를 쓰고 싶다면 스타일에 활용해도 됩니다
+  states,
+}: ChartTooltipProps) {
+  const stateName =
+    states && data.state !== 'ALL'
+      ? findStateByCode(states, data.state)?.name
+      : 'All Locations';
+
   return (
-    <div className="bg-white p-4 shadow-xl rounded-lg border border-gray-100">
-      <div className="font-semibold text-gray-800 text-lg mb-2">
+    <div className="bg-white p-3 sm:p-4 shadow-xl rounded-lg border border-gray-100">
+      <div className="font-semibold text-gray-800 text-sm sm:text-lg mb-1 sm:mb-2">
         {typeof indexValue === 'number' ? indexValue.toString() : indexValue}
       </div>
-      <div className="flex items-center justify-between text-base">
+      <div className="flex items-center justify-between text-xs sm:text-base">
         <span className="text-gray-700">{id}:</span>
-        <span className="ml-4 font-medium">
+        <span className="ml-2 sm:ml-4 font-medium">
           ${new Intl.NumberFormat().format(value as number)}
         </span>
       </div>
-      <div className="mt-3 pt-3 border-t border-gray-100">
-        <div className="font-semibold text-gray-800 text-base">
-          Total: ${new Intl.NumberFormat().format(data.total as number)}
+      <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
+        <div className="font-semibold text-gray-800 text-xs sm:text-base">
+          Total: ${new Intl.NumberFormat().format(data.total)}
         </div>
-        <div className="text-sm text-gray-600 mt-1">
-          Location: {statesData.find((s) => s.value === data.state)?.label}
+        <div className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
+          Location: {stateName || data.state}
         </div>
       </div>
     </div>
@@ -105,26 +133,56 @@ function ChartTooltip({
 }
 
 // -------------------------------------------
-// 5) 최종 Chart 컴포넌트
+// Main Chart Component
 // -------------------------------------------
-function Chart({ data }: ChartProps) {
-  // 스페셜티명 축약 함수 (원하시면 삭제/수정 가능)
-  const truncateSpecialty = (name: string) => {
-    if (name.length > 15) {
-      return `${name.substring(0, 13)}...`;
-    }
-    return name;
-  };
+function Chart({ data, states }: ChartProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // 데이터가 없거나 유효하지 않을 때 처리
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-[300px] sm:h-[500px] lg:h-[700px] flex items-center justify-center text-gray-500 text-sm sm:text-base">
+        No data to display
+      </div>
+    );
+  }
+
+  // 데이터 유효성 검사
+  const validData = data.filter(
+    (item) => item && item.specialty && typeof item.specialty === 'string'
+  );
+
+  if (validData.length === 0) {
+    return (
+      <div className="h-[300px] sm:h-[500px] lg:h-[700px] flex items-center justify-center text-gray-500 text-sm sm:text-base">
+        No valid data to display
+      </div>
+    );
+  }
 
   return (
-    <div className="h-[700px]">
+    <div className="h-[300px] sm:h-[500px] lg:h-[700px]">
       <ResponsiveBar
-        data={data as NursingBarDatum[]}
+        data={validData as NursingBarDatum[]}
         keys={['Base Pay', 'Differential Pay']}
         indexBy="specialty"
         groupMode="stacked"
         layout="vertical"
-        margin={{ top: 60, right: 150, bottom: 140, left: 100 }}
+        margin={{ 
+          top: isMobile ? 40 : 60, 
+          right: isMobile ? 20 : 150, 
+          bottom: isMobile ? 100 : 140, 
+          left: isMobile ? 60 : 100 
+        }}
         padding={0.35}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
@@ -143,7 +201,7 @@ function Chart({ data }: ChartProps) {
           legend: 'Nursing Specialties',
           legendPosition: 'middle',
           legendOffset: 110,
-          format: (value) => truncateSpecialty(value as string),
+          format: (value) => truncateSpecialty(String(value || '')),
         }}
         axisLeft={{
           tickSize: 5,
@@ -152,7 +210,7 @@ function Chart({ data }: ChartProps) {
           legend: 'Annual Compensation ($)',
           legendPosition: 'middle',
           legendOffset: -70,
-          format: (value) => `$${value / 1000}k`,
+          format: (value) => `$${(value as number) / 1000}k`,
           tickValues: 5,
         }}
         enableGridY
@@ -178,14 +236,14 @@ function Chart({ data }: ChartProps) {
                 strokeWidth: 1,
               },
               text: {
-                fontSize: 12,
+                fontSize: isMobile ? 10 : 12,
                 fill: '#64748b',
                 fontWeight: 500,
               },
             },
             legend: {
               text: {
-                fontSize: 13,
+                fontSize: isMobile ? 11 : 13,
                 fill: '#475569',
                 fontWeight: 600,
               },
@@ -199,9 +257,9 @@ function Chart({ data }: ChartProps) {
           'markers',
           'legends',
           'annotations',
-          TopLabelsLayer, // <--- 별도 레이어
+          createTopLabelsLayer(isMobile),
         ]}
-        legends={[
+        legends={isMobile ? [] : [
           {
             dataFrom: 'keys',
             anchor: 'top-right',
@@ -226,7 +284,8 @@ function Chart({ data }: ChartProps) {
             ],
           },
         ]}
-        tooltip={ChartTooltip}
+        // eslint-disable-next-line react/no-unstable-nested-components
+        tooltip={(props) => <ChartTooltip {...props} states={states} />}
       />
     </div>
   );

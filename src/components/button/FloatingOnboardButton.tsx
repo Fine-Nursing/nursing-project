@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Rocket } from 'lucide-react';
+import { ArrowRight, Rocket, User } from 'lucide-react';
 
 interface FloatingOnboardButtonProps {
   onClick?: () => void; // 선택적 onClick 함수 타입 정의
+  isCompleted?: boolean; // 온보딩 완료 여부
 }
 
-function FloatingOnboardButton({ onClick }: FloatingOnboardButtonProps) {
+function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboardButtonProps) {
   const { scrollY } = useScroll();
   const [buttonRect, setButtonRect] = useState({ x: 0, y: 0 });
 
@@ -15,7 +16,9 @@ function FloatingOnboardButton({ onClick }: FloatingOnboardButtonProps) {
       const button = document.getElementById('onboarding-button');
       if (button) {
         const rect = button.getBoundingClientRect();
-        const endX = window.innerWidth - rect.width - 24; // 24px from right
+        // 모바일에서는 더 오른쪽으로 (16px), 데스크톱에서는 24px
+        const rightMargin = window.innerWidth < 768 ? 16 : 24;
+        const endX = window.innerWidth - rect.width - rightMargin;
         const endY = Math.min(
           window.innerHeight - rect.height - 24, // 24px from bottom
           window.innerHeight * 0.9 // max 90% of viewport height
@@ -75,7 +78,7 @@ function FloatingOnboardButton({ onClick }: FloatingOnboardButtonProps) {
         style={{ opacity: textOpacity }}
         className="absolute inset-0 flex items-center justify-center gap-2 whitespace-nowrap"
       >
-        <span>Start Onboarding</span>
+        <span>{isCompleted ? 'View My Profile' : 'Start Onboarding'}</span>
         <ArrowRight className="w-4 h-4" />
       </motion.div>
 
@@ -83,7 +86,7 @@ function FloatingOnboardButton({ onClick }: FloatingOnboardButtonProps) {
         style={{ opacity: iconOpacity }}
         className="absolute inset-0 flex items-center justify-center"
       >
-        <Rocket className="w-6 h-6" />
+        {isCompleted ? <User className="w-6 h-6" /> : <Rocket className="w-6 h-6" />}
       </motion.div>
     </motion.button>
   );

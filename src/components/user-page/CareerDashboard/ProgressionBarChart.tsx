@@ -11,6 +11,7 @@ import {
   Tooltip,
   type TooltipProps,
 } from 'recharts';
+import { useCareerProgression } from 'src/api/useCareerProgression';
 
 import type { CareerItem } from './types';
 
@@ -99,6 +100,8 @@ export default function ProgressionBarChart({
   careerData,
   theme = 'light',
 }: ProgressionBarChartProps) {
+  const { data: progressionData, isLoading } = useCareerProgression();
+  
   const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
   const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
   const bgClass = theme === 'light' ? 'bg-mint-50 bg-white' : 'bg-slate-700';
@@ -108,16 +111,33 @@ export default function ProgressionBarChart({
   const textGrayClass = theme === 'light' ? 'text-gray-400' : 'text-gray-500';
   const barFillColor = theme === 'light' ? '#5eead4' : '#2dd4bf'; // slate-200 for light, slate-400 for dark
 
-  if (!careerData.length) {
+  if (isLoading) {
     return (
       <div
         className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
-        style={{ height: '320px' }}
       >
         <h4 className={`font-bold ${textClass} text-sm mb-2`}>
           Career Progression Chart
         </h4>
-        <div className={`text-center ${textGrayClass} py-10 text-sm`}>
+        <div className="flex flex-col items-center justify-center" style={{ height: '280px' }}>
+          <div className="w-8 h-8 border-t-2 border-slate-400 border-solid rounded-full animate-spin" />
+          <p className="mt-2 text-sm font-medium text-slate-600">
+            Loading progression data...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!progressionData || !progressionData.progressionData) {
+    return (
+      <div
+        className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
+      >
+        <h4 className={`font-bold ${textClass} text-sm mb-2`}>
+          Career Progression Chart
+        </h4>
+        <div className={`text-center ${textGrayClass} py-10 text-sm`} style={{ height: '280px' }}>
           <AlertCircle className="w-6 h-6 inline-block mr-1" />
           No data to compute progression...
         </div>
@@ -125,45 +145,7 @@ export default function ProgressionBarChart({
     );
   }
 
-  // 1) earliest
-  const earliest = careerData.reduce((acc, cur) => {
-    if (!acc || (cur.startDate && cur.startDate < acc)) {
-      return cur.startDate;
-    }
-    return acc;
-  }, careerData[0].startDate);
-
-  if (!earliest) return null;
-
-  // 2) totalYears
-  const now = new Date();
-  const monthsDiff =
-    (now.getFullYear() - earliest.getFullYear()) * 12 +
-    (now.getMonth() - earliest.getMonth());
-  const totalYears = monthsDiff / 12;
-
-  // 3) bracket
-  const bracketArr = [
-    { label: '0-1 yrs', min: 0, max: 1, salary: 62000 },
-    { label: '1-3 yrs', min: 1, max: 3, salary: 67000 },
-    { label: '3-5 yrs', min: 3, max: 5, salary: 73000 },
-    { label: '5-8 yrs', min: 5, max: 8, salary: 80000 },
-    { label: '9+ yrs', min: 8, max: 99, salary: 86000 },
-  ];
-
-  const data = bracketArr.map((b) => {
-    let isUser = false;
-    if (totalYears >= b.min && totalYears < b.max) {
-      isUser = true;
-    } else if (b.max === 99 && totalYears >= 8) {
-      isUser = true;
-    }
-    return {
-      expBracket: b.label,
-      salary: b.salary,
-      isUser,
-    };
-  });
+  const data = progressionData.progressionData;
 
   // 4) Custom shape function with theme
   const shapeWithTheme = (props: any) => customBouncingBar(props, theme);
@@ -171,16 +153,15 @@ export default function ProgressionBarChart({
   return (
     <div
       className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
-      style={{ height: '320px' }}
     >
       <h4 className={`font-bold ${textClass} text-sm mb-2`}>
         Career Progression Chart
       </h4>
-      <div className="w-full h-full">
+      <div className="w-full" style={{ height: '280px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 20, bottom: 30, left: 40 }}
+            margin={{ top: 30, right: 10, bottom: 40, left: 10 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
             <XAxis
@@ -195,7 +176,6 @@ export default function ProgressionBarChart({
               tick={{ fill: chartTextColor, fontSize: 11 }}
             />
             <YAxis
-              domain={[60000, 90000]}
               label={{
                 value: 'Annual Salary ($)',
                 angle: -90,
@@ -204,6 +184,7 @@ export default function ProgressionBarChart({
                 fill: chartTextColor,
               }}
               tick={{ fill: chartTextColor, fontSize: 11 }}
+              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
             />
 
             {/** (C) custom tooltip with theme */}

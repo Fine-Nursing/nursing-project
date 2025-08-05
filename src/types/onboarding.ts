@@ -29,83 +29,83 @@ export type NursingRole =
   | 'Hospice Nurse'
   | 'Case Manager Nurse';
 
-export type ExperienceGroup =
-  | '1-3 years'
-  | '3-5 years'
-  | '5-10 years'
-  | '10+ years';
+// API에는 실제 EmploymentType이 정의되어 있음
+export type EmploymentType =
+  | 'Full-time'
+  | 'Part-time'
+  | 'Per Diem/PRN'
+  | 'Temporary/Contract'
+  | 'Travel Nursing'
+  | 'Agency Nursing';
 
+// API의 ShiftType은 더 간단함
 export type ShiftType =
   | 'Day Shift'
   | 'Night Shift'
   | 'Evening Shift'
-  | 'Rotating Shift'
-  | 'Split Shift'
-  | 'On-Call Shift'
-  | 'Per Diem Shift'
-  | 'Weekend Shift'
-  | 'Flexible Shift'
-  | 'Overtime Shift';
+  | 'Rotating Shift';
 
+// BasicInfo - experienceGroup을 experienceYears로 변경
 export interface BasicInfoFormData {
   name: string;
   education: EducationLevel;
   nursingRole: NursingRole;
-  experienceGroup: ExperienceGroup;
+  experienceYears: number; // ExperienceGroup 대신 숫자로 변경
 }
 
+// Differential 구조는 API와 동일
 export interface DifferentialPay {
-  group: string;
   type: string;
   amount: number;
   unit: 'hourly' | 'annual';
+  group: string; // 'Shift-Based', 'Unit-Based' 등
 }
 
+// Employment - API 명세에 맞게 수정
 export interface EmploymentFormData {
-  employmentType: string;
   specialty: string;
   subSpecialty?: string;
   organizationName: string;
   organizationCity: string;
-  organizationState: string;
+  organizationState: string; // 2자리 주 코드 (예: "NY")
   employmentStartYear: number;
-  isUnionized: boolean;
-  yearsAtOrganization: number;
+  employmentType: EmploymentType; // string 대신 타입 지정
+  shiftType: ShiftType;
+  nurseToPatientRatio: string;
   basePay: number;
   paymentFrequency: 'hourly' | 'yearly';
-  shiftType: ShiftType;
-
-  // 기존 필드 제거하고 새로운 구조로 교체
-  // bonusesAndDifferentials: {
-  //   id: string;
-  //   type: string;
-  //   amount: number;
-  // }[];
-
-  // 새로운 differential 구조
+  isUnionized: boolean;
   individualDifferentials: DifferentialPay[];
-  totalDifferential: number;
   differentialsFreeText?: string;
-
-  nurseToPatientRatio: string;
+  // 제거: yearsAtOrganization, totalDifferential (API에 없음)
 }
 
+// Culture - API 명세에 맞게 완전히 변경
 export interface CultureFormData {
-  cultureRating: number;
-  unitStrengths: string;
-  improvementAreas: string;
+  unitCulture: number; // 1-5 점수
+  benefits: number; // 1-5 점수
+  growthOpportunities: number; // 1-5 점수
+  hospitalQuality: number; // 1-5 점수
+  freeTextFeedback?: string; // 자유 피드백
+  // 제거: cultureRating, unitStrengths, improvementAreas
 }
 
+// Account - confirmPassword는 프론트엔드 검증용으로 유지
 export interface AccountFormData {
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword: string; // 프론트엔드 검증용
 }
 
+// 전체 폼 데이터
 export type OnboardingFormData = BasicInfoFormData &
   EmploymentFormData &
   CultureFormData &
-  AccountFormData;
+  AccountFormData & {
+    // Store에서 관리하는 추가 필드들
+    tempUserId?: string;
+    sessionId?: string;
+  };
 
 export type OnboardingStep =
   | 'welcome'
@@ -113,3 +113,13 @@ export type OnboardingStep =
   | 'employment'
   | 'culture'
   | 'account';
+
+// API 요청/응답 타입들 (선택사항)
+export interface OnboardingProgress {
+  tempUserId: string;
+  completedSteps: string[];
+  basicInfoCompleted: boolean;
+  employmentCompleted: boolean;
+  cultureCompleted: boolean;
+  accountCompleted: boolean;
+}

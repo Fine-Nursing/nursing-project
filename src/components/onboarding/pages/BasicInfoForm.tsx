@@ -2,27 +2,22 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
+
 import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 import type { EducationLevel, NursingRole } from 'src/types/onboarding';
+import useBasicInfoMutation from 'src/api/onboarding/useBasicInfoMutation';
+import toast from 'react-hot-toast';
 import QuestionContent from '../components/QuestionContent';
 import AnswersSection from '../components/AnswerSection';
 
-/**
- * 1) 질문 객체가 가질 수 있는 속성을 정의합니다.
- * - key: 'name' | 'education' | 'nursingRole' | 'experienceGroup'
- * - title, subtitle: 문자열
- * - validation?: (값) => boolean
- * - options?: (값의 배열)
- * - inputType?: 'text' | 'number' - 추가: 입력 타입 지정
- */
 type BasicQuestion = {
-  key: 'name' | 'education' | 'nursingRole' | 'experienceGroup';
+  key: 'name' | 'education' | 'nursingRole' | 'experienceYears';
   title: string;
   subtitle: string;
   validation?: (value: string) => boolean;
-  options?: string[]; // EducationLevel | NursingRole | ExperienceGroup 등 문자열 유니온도 가능
-  inputType?: 'text' | 'number'; // 추가: 입력 타입 속성
+  options?: string[];
+  inputType?: 'text' | 'number';
 };
 
 export default function BasicInfoForm() {
@@ -32,10 +27,8 @@ export default function BasicInfoForm() {
   const [showSummary, setShowSummary] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
 
-  /**
-   * 2) questions 배열을 생성할 때, BasicQuestion[] 타입을 명시합니다.
-   *    첫 번째 질문에는 options가 없고, 그 밖의 질문에는 options가 있는 형태로 작성.
-   */
+  const basicInfoMutation = useBasicInfoMutation();
+
   const questions = useMemo<BasicQuestion[]>(
     () => [
       {
@@ -87,14 +80,12 @@ export default function BasicInfoForm() {
         ] as NursingRole[],
       },
       {
-        key: 'experienceGroup',
+        key: 'experienceYears',
         title: 'And lastly, how many years of experience do you have?',
         subtitle: 'Your experience is valuable to us',
-        // options 속성 제거하고 inputType과 validation 추가
         inputType: 'number',
         validation: (value: string) => {
           const num = Number(value);
-          // isNaN 대신 Number.isNaN 사용
           return !Number.isNaN(num) && num >= 0 && num <= 50;
         },
       },
@@ -133,10 +124,9 @@ export default function BasicInfoForm() {
 
   const handleGoBack = useCallback(() => {
     if (activeQuestionIndex > 0) {
-      setIsTypingComplete(true); // Keep typing complete for previous questions
+      setIsTypingComplete(true);
       setActiveQuestionIndex((prev) => prev - 1);
     } else {
-      // If we're at the first question, going back means going to welcome step
       setStep('welcome');
     }
   }, [activeQuestionIndex, setStep]);
@@ -148,13 +138,30 @@ export default function BasicInfoForm() {
     questions.forEach((q) => updateFormData({ [q.key]: '' }));
   }, [questions, updateFormData]);
 
-  // 경력 표시용 포맷 함수 추가
   const formatExperience = (value: string) => {
     if (!value) return '';
     return `${value} years`;
   };
 
-  // 필드 레이블 가져오기 (중첩된 삼항 연산자를 피하기 위한 함수)
+  // Continue 버튼 클릭 시 API 호출
+  const handleContinue = async () => {
+    try {
+      const payload = {
+        name: formData.name || '',
+        education: formData.education || '',
+        nursingRole: formData.nursingRole || '',
+        experienceYears: Number(formData.experienceYears) || 0,
+      };
+
+      await basicInfoMutation.mutateAsync(payload);
+      // 성공 시 자동으로 employment 단계로 이동 (onSuccess에서 처리)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to save information'
+      );
+    }
+  };
+
   const getFieldLabel = (key: string) => {
     if (key === 'name') return 'Your Name';
     if (key === 'education') return 'Education Level';
@@ -162,45 +169,45 @@ export default function BasicInfoForm() {
     return 'Years of Experience';
   };
 
-  // formData에서 안전하게 값 가져오기 (타입 문제 해결)
   const getFormDataValue = (key: string): string => {
-    // formData[key]를 안전하게 문자열로 반환
     const value = formData[key as keyof typeof formData];
 
-    // 값이 없거나 문자열이 아닌 경우 빈 문자열 반환
     if (value === undefined || value === null) return '';
-
-    // 숫자 값인 경우 문자열로 변환
     if (typeof value === 'number') return String(value);
-
-    // 문자열이 아닌 다른 타입은 일단 빈 문자열 반환 (실제로는 이런 경우가 없어야 함)
     if (typeof value !== 'string') return '';
 
     return value;
   };
 
-  // ---------- 요약 화면 ----------
+  // 모든 필드가 채워졌는지 확인
+  const isFormValid = () =>
+    questions.every((q) => {
+      const value = getFormDataValue(q.key);
+      return value !== '';
+    });
+
+  // 요약 화면
   if (showSummary) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto px-4 py-12"
+        className="max-w-3xl mx-auto px-4 py-6 sm:py-12"
       >
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="text-center mb-6 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             Perfect! Let&apos;s Review Your Information
           </h2>
-          <p className="text-gray-500 text-lg">
+          <p className="text-gray-500 text-base sm:text-lg">
             Please review your details and make any changes if needed.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-10">
           {questions.map((q, index) => (
             <div
               key={q.key}
-              className={`group py-6 ${
+              className={`group py-4 sm:py-6 ${
                 index !== questions.length - 1 ? 'border-b border-gray-100' : ''
               }`}
             >
@@ -261,18 +268,18 @@ export default function BasicInfoForm() {
                       onBlur={() => setEditingField(null)}
                       className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                       placeholder={
-                        q.key === 'experienceGroup'
+                        q.key === 'experienceYears'
                           ? 'Enter years'
                           : `Enter your ${q.key}`
                       }
-                      min={q.key === 'experienceGroup' ? 0 : undefined}
-                      max={q.key === 'experienceGroup' ? 50 : undefined}
+                      min={q.key === 'experienceYears' ? 0 : undefined}
+                      max={q.key === 'experienceYears' ? 50 : undefined}
                     />
                   )}
                 </div>
               ) : (
                 <p className="text-xl text-gray-900 font-medium mt-1">
-                  {q.key === 'experienceGroup'
+                  {q.key === 'experienceYears'
                     ? formatExperience(getFormDataValue(q.key))
                     : getFormDataValue(q.key)}
                 </p>
@@ -299,19 +306,25 @@ export default function BasicInfoForm() {
             </ActionButton>
           </div>
           <ActionButton
-            onClick={() => setStep('employment')}
-            disabled={false}
-            // disabled={!Object.values(formData).every(Boolean)}
+            onClick={handleContinue}
+            disabled={basicInfoMutation.isPending || !isFormValid()}
             className="w-full sm:w-auto px-8 py-4 text-lg order-1 sm:order-2"
           >
-            Continue to Next Step →
+            {basicInfoMutation.isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                Saving...
+              </span>
+            ) : (
+              'Continue to Next Step →'
+            )}
           </ActionButton>
         </div>
       </motion.div>
     );
   }
 
-  // ---------- 질문 입력 화면 ----------
+  // 질문 입력 화면
   return (
     <div className="max-w-3xl mx-auto px-4">
       <div className="mb-8">
@@ -329,7 +342,7 @@ export default function BasicInfoForm() {
         </div>
       </div>
 
-      <div className="relative min-h-[400px]">
+      <div className="relative min-h-[300px] sm:min-h-[400px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeQuestion.key}
@@ -354,7 +367,7 @@ export default function BasicInfoForm() {
                 onValueChange={handleValueChange}
                 onSubmit={handleValueSubmit}
                 placeholder={
-                  activeQuestion.key === 'experienceGroup'
+                  activeQuestion.key === 'experienceYears'
                     ? 'Enter years of experience'
                     : `Enter your ${activeQuestion.key}`
                 }
@@ -366,14 +379,13 @@ export default function BasicInfoForm() {
       </div>
 
       {isTypingComplete && (
-        <div className="mt-8 flex justify-between">
+        <div className="mt-6 sm:mt-8 flex justify-between">
           <div className="flex gap-4">
-            {/* Back button */}
-            <ActionButton onClick={handleGoBack} variant="outline">
+            <ActionButton onClick={handleGoBack} variant="outline" className="px-4 py-2 text-sm sm:text-base">
               ← Back
             </ActionButton>
           </div>
-          <ActionButton onClick={() => setStep('welcome')} variant="outline">
+          <ActionButton onClick={() => setStep('welcome')} variant="outline" className="px-4 py-2 text-sm sm:text-base">
             Cancel
           </ActionButton>
         </div>

@@ -1,6 +1,7 @@
 // components/NurseDashboard/RadarAnalytics.tsx
 import React, { useState } from 'react';
 import { Award } from 'lucide-react';
+import { useAllAiInsights } from 'src/api/useAiInsights';
 
 interface RadarAnalyticsProps {
   userMetrics: Record<string, number>;
@@ -49,6 +50,7 @@ export default function RadarAnalytics({
   metricAnalysis,
 }: RadarAnalyticsProps) {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
+  const { data: allInsights, isLoading: isInsightsLoading } = useAllAiInsights();
 
   const userPoints = calculateRadarPoints(userMetrics, 120);
   const avgPoints = calculateRadarPoints(avgMetrics, 120);
@@ -57,20 +59,27 @@ export default function RadarAnalytics({
     <div
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
-      } rounded-2xl shadow-lg p-6 border ${
+      } rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border ${
         theme === 'light' ? 'border-slate-100' : 'border-slate-600'
       } space-y-3`}
     >
-      <h2 className="text-xl font-bold flex items-center">
-        <Award className="w-5 h-5 mr-2 text-slate-500" />
-        <span>Advanced Analytics</span>
-        <div className="ml-2 bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">
+      <h2 className="text-lg sm:text-xl font-bold flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="flex items-center">
+          <Award className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-slate-500" />
+          <span>Advanced Analytics</span>
+        </div>
+        <div className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full w-fit">
           AI Powered
         </div>
       </h2>
 
-      <div className="relative">
-        <svg width="320" height="320" viewBox="0 0 320 320" className="mx-auto">
+      <div className="relative overflow-x-auto">
+        <svg 
+          width="320" 
+          height="320" 
+          viewBox="0 0 320 320" 
+          className="mx-auto w-full h-auto max-w-xs sm:max-w-sm"
+        >
           {/* Background circles */}
           {[120, 90, 60, 30].map((r) => (
             <circle
@@ -194,11 +203,11 @@ export default function RadarAnalytics({
                 x={labelX}
                 y={labelY}
                 textAnchor="middle"
-                fontSize="12"
+                fontSize="10"
                 fill={theme === 'light' ? '#374151' : '#e5e7eb'}
                 dy="4"
               >
-                {cat}
+                {cat.length > 12 ? cat.substring(0, 10) + '...' : cat}
               </text>
             );
           })}
@@ -206,7 +215,7 @@ export default function RadarAnalytics({
       </div>
 
       <div
-        className={`p-3 rounded-2xl border text-sm ${
+        className={`p-3 rounded-xl sm:rounded-2xl border text-xs sm:text-sm ${
           theme === 'light'
             ? 'bg-slate-50 border-slate-200'
             : 'bg-slate-600 border-slate-500 text-white'
@@ -217,17 +226,36 @@ export default function RadarAnalytics({
             theme === 'light' ? 'text-slate-700' : 'text-slate-300'
           }`}
         >
-          AI Observations for Each Metric
+          AI Career Insights
         </p>
-        <ul
-          className={`list-disc list-inside space-y-1 ${
-            theme === 'light' ? 'text-gray-700' : 'text-gray-200'
-          }`}
-        >
-          {Object.keys(metricAnalysis).map((key) => (
-            <li key={key}>{metricAnalysis[key]}</li>
-          ))}
-        </ul>
+        {isInsightsLoading ? (
+          <p className="text-slate-400 text-xs">Loading AI insights...</p>
+        ) : allInsights?.market || allInsights?.compensation ? (
+          <div className="space-y-2">
+            {allInsights.market && (
+              <div>
+                <p className="font-medium text-xs mb-1">Market Analysis:</p>
+                <p className="text-xs leading-relaxed">{allInsights.market}</p>
+              </div>
+            )}
+            {allInsights.compensation && (
+              <div>
+                <p className="font-medium text-xs mb-1">Compensation Insights:</p>
+                <p className="text-xs leading-relaxed">{allInsights.compensation}</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <ul
+            className={`list-disc list-inside space-y-1 text-xs ${
+              theme === 'light' ? 'text-gray-700' : 'text-gray-200'
+            }`}
+          >
+            {Object.keys(metricAnalysis).slice(0, 3).map((key) => (
+              <li key={key} className="leading-relaxed">{metricAnalysis[key]}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

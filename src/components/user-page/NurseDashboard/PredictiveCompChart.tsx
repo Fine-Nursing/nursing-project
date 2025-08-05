@@ -85,45 +85,53 @@ export default function PredictiveCompChart({
     <div
       className={`${
         theme === 'light' ? 'bg-white' : 'bg-slate-700'
-      } rounded-2xl shadow-lg p-6 mb-6 border ${
+      } rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border ${
         theme === 'light' ? 'border-slate-100' : 'border-slate-600'
       }`}
     >
-      <h2 className="text-xl font-bold mb-4 flex items-center">
-        <TrendingUp className="w-5 h-5 mr-2 text-slate-500" />
-        <span>Predictive Compensation Comparison</span>
-        <div className="ml-2 bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full">
+      <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="flex items-center">
+          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-slate-500" />
+          <span className="text-sm sm:text-xl">Predictive Compensation Comparison</span>
+        </div>
+        <div className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full w-fit">
           AI Powered
         </div>
       </h2>
 
       <div
-        className={`mb-6 ${
+        className={`mb-4 sm:mb-6 ${
           theme === 'light'
             ? 'bg-gradient-to-r from-slate-50 to-cyan-50'
             : 'bg-slate-600'
-        } rounded-2xl shadow-md p-5 border ${
+        } rounded-xl sm:rounded-2xl shadow-md p-3 sm:p-5 border ${
           theme === 'light' ? 'border-slate-100' : 'border-slate-500'
         }`}
       >
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
           <h3
-            className={`font-bold text-xl ${
+            className={`font-bold text-base sm:text-xl ${
               theme === 'light' ? 'text-gray-800' : 'text-white'
             } flex items-center`}
           >
             ER Average Pay in New York City, NY
           </h3>
-          <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium flex items-center">
+          <div className="px-2 sm:px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium flex items-center w-fit">
             Live Data
           </div>
         </div>
 
-        <div className="w-full" style={{ height: 300 }}>
+        <div className="w-full overflow-x-auto">
+          <div style={{ minWidth: '300px', height: window.innerWidth < 640 ? 250 : 300 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={payDistributionData}
-              margin={{ top: 40, right: 50, bottom: 40, left: 50 }}
+              margin={{ 
+                top: 30, 
+                right: window.innerWidth < 640 ? 20 : 50, 
+                bottom: 30, 
+                left: window.innerWidth < 640 ? 20 : 50 
+              }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -135,7 +143,7 @@ export default function PredictiveCompChart({
                 domain={[24, 46]}
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
-                  fontSize: 12,
+                  fontSize: window.innerWidth < 640 ? 10 : 12,
                 }}
                 label={{
                   value: 'Hourly Wage ($)',
@@ -151,7 +159,7 @@ export default function PredictiveCompChart({
                 dataKey="count"
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
-                  fontSize: 12,
+                  fontSize: window.innerWidth < 640 ? 10 : 12,
                 }}
                 label={{
                   value: 'Number of Nurses',
@@ -194,28 +202,29 @@ export default function PredictiveCompChart({
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          </div>
         </div>
 
         <div
-          className={`mt-4 pt-4 border-t ${
+          className={`mt-3 sm:mt-4 pt-3 sm:pt-4 border-t ${
             theme === 'light' ? 'border-slate-100' : 'border-slate-500'
-          } flex flex-col items-start sm:flex-row sm:justify-between sm:items-center`}
+          } flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-0`}
         >
-          <div className="flex items-center text-sm mb-2 sm:mb-0">
-            <TrendingUp className="h-4 w-4 text-slate-600 mr-2" />
+          <div className="flex items-center text-xs sm:text-sm">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600 mr-1 sm:mr-2" />
             <span>
               Your wage:{' '}
               <span className="font-semibold">${userHourlyRate}</span> (Top
               ~15%)
             </span>
           </div>
-          <div className="flex flex-wrap items-center">
-            <div className="flex mr-4 mb-2 sm:mb-0">
-              <div className="w-4 h-4 bg-slate-600 rounded-sm mr-1 mt-1" />
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+            <div className="flex items-center">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-slate-600 rounded-sm mr-1" />
               <span className="text-xs font-medium">Your wage</span>
             </div>
-            <div className="flex mb-2 sm:mb-0">
-              <div className="w-8 border-t-2 border-dashed border-slate-500 mr-1 mt-2" />
+            <div className="flex items-center">
+              <div className="w-6 sm:w-8 border-t-2 border-dashed border-slate-500 mr-1" />
               <span className="text-xs font-medium">Regional avg wage</span>
             </div>
           </div>

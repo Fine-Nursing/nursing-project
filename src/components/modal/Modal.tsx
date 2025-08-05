@@ -1,6 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import useAuth from 'src/api/Auth/useAuth';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 // Common Modal Container
 interface ModalProps {
@@ -47,24 +51,103 @@ interface SignUpModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToLogin: () => void;
+  onAuthSuccess?: () => void;
 }
 
 export function SignUpModal({
   isOpen,
   onClose,
   onSwitchToLogin,
+  onAuthSuccess,
 }: SignUpModalProps) {
+  const router = useRouter();
+  const { signUp, isLoading } = useAuth();
+  const setUser = useAuthStore((state) => state.setUser);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     confirmPassword: '',
-    nickname: '',
+    firstName: '',
+    lastName: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call
-    console.log('Sign up data:', formData);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const { confirmPassword, ...signUpData } = formData;
+      const result = await signUp(signUpData);
+
+      // result에 user가 있으면 성공
+      if (result && result.user) {
+        toast.success('Account created successfully!');
+
+        // Zustand store에 user 정보 저장
+        setUser(result.user);
+
+        // 콜백 실행 (checkAuth 등)
+        if (onAuthSuccess) {
+          onAuthSuccess();
+        }
+
+        onClose();
+
+        // Check if onboarding is needed
+        if (result.requiresOnboarding) {
+          router.push('/onboarding');
+        } else {
+          router.push('/dashboard');
+        }
+      }
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to create account'
+      );
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData({ ...formData, [field]: value });
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' });
+    }
   };
 
   return (
@@ -83,6 +166,7 @@ export function SignUpModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -108,6 +192,7 @@ export function SignUpModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -118,9 +203,10 @@ export function SignUpModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.024-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.747 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z" />
+              <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
             </svg>
             Continue with LinkedIn
           </button>
@@ -137,29 +223,57 @@ export function SignUpModal({
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <input
+              type="text"
+              placeholder="First name"
+              value={formData.firstName}
+              onChange={(e) => handleInputChange('firstName', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+                errors.firstName ? 'border-red-500' : 'border-gray-300'
+              }`}
+              required
+              disabled={isLoading}
+            />
+            {errors.firstName && (
+              <p className="mt-1 text-xs text-red-500">{errors.firstName}</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Last name"
+              value={formData.lastName}
+              onChange={(e) => handleInputChange('lastName', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+                errors.lastName ? 'border-red-500' : 'border-gray-300'
+              }`}
+              required
+              disabled={isLoading}
+            />
+            {errors.lastName && (
+              <p className="mt-1 text-xs text-red-500">{errors.lastName}</p>
+            )}
+          </div>
+        </div>
+
         <div>
           <input
             type="email"
             placeholder="Email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
             required
+            disabled={isLoading}
           />
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Nickname (optional)"
-            value={formData.nickname}
-            onChange={(e) =>
-              setFormData({ ...formData, nickname: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-          />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+          )}
         </div>
 
         <div>
@@ -167,12 +281,16 @@ export function SignUpModal({
             type="password"
             placeholder="Password"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            onChange={(e) => handleInputChange('password', e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+              errors.password ? 'border-red-500' : 'border-gray-300'
+            }`}
             required
+            disabled={isLoading}
           />
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+          )}
         </div>
 
         <div>
@@ -181,18 +299,27 @@ export function SignUpModal({
             placeholder="Confirm Password"
             value={formData.confirmPassword}
             onChange={(e) =>
-              setFormData({ ...formData, confirmPassword: e.target.value })
+              handleInputChange('confirmPassword', e.target.value)
             }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+              errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+            }`}
             required
+            disabled={isLoading}
           />
+          {errors.confirmPassword && (
+            <p className="mt-1 text-xs text-red-500">
+              {errors.confirmPassword}
+            </p>
+          )}
         </div>
 
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading}
         >
-          Sign Up
+          {isLoading ? 'Creating Account...' : 'Sign Up'}
         </button>
       </form>
 
@@ -203,6 +330,7 @@ export function SignUpModal({
             type="button"
             onClick={onSwitchToLogin}
             className="text-purple-600 hover:text-purple-700 font-medium"
+            disabled={isLoading}
           >
             Sign In
           </button>
@@ -217,22 +345,79 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSwitchToSignUp: () => void;
+  onAuthSuccess?: () => void;
 }
 
 export function LoginModal({
   isOpen,
   onClose,
   onSwitchToSignUp,
+  onAuthSuccess,
 }: LoginModalProps) {
+  const router = useRouter();
+  const { signIn, isLoading } = useAuth();
+  const setUser = useAuthStore((state) => state.setUser);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    rememberMe: false,
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API call
-    console.log('Login data:', formData);
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      const { rememberMe, ...signInData } = formData;
+      const result = await signIn(signInData);
+
+      // result에 user가 있으면 성공
+      if (result && result.user) {
+        toast.success('Welcome back!');
+
+        // Zustand store에 user 정보 저장
+        setUser(result.user);
+
+        // 콜백 실행 (checkAuth 등)
+        if (onAuthSuccess) {
+          onAuthSuccess();
+        }
+
+        onClose();
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to sign in');
+    }
+  };
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData({ ...formData, [field]: value });
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' });
+    }
   };
 
   return (
@@ -251,6 +436,7 @@ export function LoginModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -276,6 +462,7 @@ export function LoginModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -286,9 +473,10 @@ export function LoginModal({
           <button
             type="button"
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+            disabled={isLoading}
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.024-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.747 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z" />
+              <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
             </svg>
             Continue with LinkedIn
           </button>
@@ -310,12 +498,16 @@ export function LoginModal({
             type="email"
             placeholder="Email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            onChange={(e) => handleInputChange('email', e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
             required
+            disabled={isLoading}
           />
+          {errors.email && (
+            <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+          )}
         </div>
 
         <div>
@@ -323,19 +515,47 @@ export function LoginModal({
             type="password"
             placeholder="Password"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
+            onChange={(e) => handleInputChange('password', e.target.value)}
+            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none ${
+              errors.password ? 'border-red-500' : 'border-gray-300'
+            }`}
             required
+            disabled={isLoading}
           />
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={formData.rememberMe}
+              onChange={(e) =>
+                handleInputChange('rememberMe', e.target.checked)
+              }
+              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              disabled={isLoading}
+            />
+            <span className="ml-2 text-sm text-gray-600">Remember me</span>
+          </label>
+
+          <button
+            type="button"
+            className="text-sm text-purple-600 hover:text-purple-700"
+            disabled={isLoading}
+          >
+            Forgot password?
+          </button>
         </div>
 
         <button
           type="submit"
-          className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium"
+          className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading}
         >
-          Sign In
+          {isLoading ? 'Signing In...' : 'Sign In'}
         </button>
       </form>
 
@@ -346,6 +566,7 @@ export function LoginModal({
             type="button"
             onClick={onSwitchToSignUp}
             className="text-purple-600 hover:text-purple-700 font-medium"
+            disabled={isLoading}
           >
             Sign Up
           </button>
@@ -357,9 +578,10 @@ export function LoginModal({
 
 // Usage Example - Auth Buttons for Header
 export function AuthButtons() {
+  const router = useRouter();
+  const { user, isLoading, checkAuth, signOut } = useAuthStore();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-  const [user] = useState(null); // Will be from state management library
 
   const handleSwitchToLogin = () => {
     setShowSignUpModal(false);
@@ -371,19 +593,48 @@ export function AuthButtons() {
     setShowSignUpModal(true);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    router.push('/');
+  };
+
+  if (isLoading) {
+    return (
+      <nav>
+        <ul className="flex space-x-4 text-sm font-medium">
+          <li>
+            <div className="animate-pulse bg-gray-200 h-8 w-20 rounded" />
+          </li>
+        </ul>
+      </nav>
+    );
+  }
+
   return (
     <>
       <nav>
         <ul className="flex space-x-4 text-sm font-medium">
           {user ? (
-            <li>
-              <button
-                type="button"
-                className="text-slate-700 hover:text-purple-600"
-              >
-                Profile
-              </button>
-            </li>
+            <>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => router.push('/profile')}
+                  className="text-slate-700 hover:text-purple-600"
+                >
+                  Profile
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="text-slate-700 hover:text-purple-600"
+                >
+                  Sign Out
+                </button>
+              </li>
+            </>
           ) : (
             <>
               <li>
@@ -414,12 +665,14 @@ export function AuthButtons() {
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
         onSwitchToSignUp={handleSwitchToSignUp}
+        onAuthSuccess={checkAuth}
       />
 
       <SignUpModal
         isOpen={showSignUpModal}
         onClose={() => setShowSignUpModal(false)}
         onSwitchToLogin={handleSwitchToLogin}
+        onAuthSuccess={checkAuth}
       />
     </>
   );
