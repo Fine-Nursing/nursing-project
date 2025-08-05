@@ -24,6 +24,8 @@ const queryKeys = {
   user: {
     all: ['user'] as const,
     profile: (id: string) => ['user', 'profile', id] as const,
+    me: () => ['user', 'me'] as const,
+    compensation: () => ['user', 'compensation'] as const,
     settings: () => ['user', 'settings'] as const,
   },
   dashboard: {

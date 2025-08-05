@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuth from 'src/api/Auth/useAuth';
-import useAuthStore from '../AuthInitializer';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 // Common Modal Container
 interface ModalProps {

@@ -8,7 +8,7 @@ import useOnboardingStore from 'src/store/onboardingStores';
 import toast from 'react-hot-toast';
 import useAuth from 'src/api/Auth/useAuth';
 import useCompleteOnboarding from 'src/api/onboarding/useCompleteOnboarding';
-import useAuthStore from 'src/components/AuthInitializer';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 export default function AccountForm() {
   const { tempUserId, setStep } = useOnboardingStore();
@@ -106,15 +106,16 @@ export default function AccountForm() {
 
   // 이미 로그인되어 있으면 바로 complete 처리
   useEffect(() => {
-    if (isAuthenticated && user && tempUserId) {
+    if (isAuthenticated && user && tempUserId && !completeLoading) {
       handleAlreadyAuthenticated();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user, tempUserId]);
 
   // 이미 로그인된 상태라면 완료 화면 표시
   if (isAuthenticated && user) {
     return (
-      <div className="max-w-md mx-auto py-8">
+      <div className="max-w-md mx-auto px-4 py-6 sm:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -172,7 +173,7 @@ export default function AccountForm() {
   if (isSignIn) {
     // Sign In Form (기존 코드 그대로)
     return (
-      <div className="max-w-md mx-auto py-8">
+      <div className="max-w-md mx-auto px-4 py-6 sm:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

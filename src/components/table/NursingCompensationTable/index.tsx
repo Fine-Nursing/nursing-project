@@ -17,6 +17,8 @@ import type { ColumnId } from './CustomizePanel';
 import CustomizePanel from './CustomizePanel';
 import TableView from './TableView';
 import CompactView from './CompactView';
+import MobileCompensationCard from './MobileCompensationCard';
+import ResponsiveWrapper from './ResponsiveWrapper';
 
 interface NursingCompensationTableProps {
   data: NursingPosition[];
@@ -236,7 +238,8 @@ export default function NursingCompensationTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      {/* Desktop controls - hidden on mobile */}
+      <div className="hidden md:flex justify-between items-center">
         <div className="flex space-x-2">
           <button
             type="button"
@@ -291,26 +294,43 @@ export default function NursingCompensationTable({
         />
       )}
 
-      <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg overflow-x-auto">
-        <div style={{ minWidth: '1200px' }}>
-          {viewMode === 'table' ? (
-            <TableView
-              headerGroups={headerGroups}
-              page={rows}
-              prepareRow={prepareRow}
-              getTableProps={getTableProps}
-              getTableBodyProps={getTableBodyProps}
-            />
-          ) : (
-            <CompactView page={rows} prepareRow={prepareRow} />
-          )}
-        </div>
-      </div>
+      <ResponsiveWrapper
+        mobileContent={
+          <div className="space-y-3 w-full max-w-full">
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <MobileCompensationCard
+                  key={row.id}
+                  position={row.original}
+                />
+              );
+            })}
+          </div>
+        }
+        desktopContent={
+          <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg">
+            <div className="overflow-x-auto max-w-full">
+              {viewMode === 'table' ? (
+                <TableView
+                  headerGroups={headerGroups}
+                  page={rows}
+                  prepareRow={prepareRow}
+                  getTableProps={getTableProps}
+                  getTableBodyProps={getTableBodyProps}
+                />
+              ) : (
+                <CompactView page={rows} prepareRow={prepareRow} />
+              )}
+            </div>
+          </div>
+        }
+      />
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           {meta && (
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-gray-700 text-center md:text-left">
               Showing{' '}
               <span className="font-medium">
                 {(meta.page - 1) * meta.limit + 1}
@@ -323,7 +343,7 @@ export default function NursingCompensationTable({
             </p>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-center md:justify-end space-x-2">
           <button
             type="button"
             onClick={handlePreviousPage}

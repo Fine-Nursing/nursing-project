@@ -144,24 +144,24 @@ export default function CultureForm() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Header - Full Width */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-12"
+        className="text-center mb-6 sm:mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
           How&apos;s Your Workplace Culture?
         </h2>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
           Your honest feedback helps create better work environments for
           healthcare professionals everywhere
         </p>
       </motion.div>
 
       {/* Main Content - 2 Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-8">
         {/* Left Column - Form (3/5 width) */}
         <div className="lg:col-span-3">
           <motion.div
@@ -171,32 +171,32 @@ export default function CultureForm() {
           >
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Rating Categories */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <h3 className="text-2xl font-semibold text-gray-900 mb-8">
+              <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8">
+                <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4 sm:mb-8">
                   Rate Your Experience
                 </h3>
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   {RATING_CATEGORIES.map((category, index) => (
                     <motion.div
                       key={category.key}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + index * 0.05 }}
-                      className="space-y-3"
+                      className="space-y-2 sm:space-y-3"
                     >
-                      <div className="flex items-start gap-3">
-                        <span className="text-2xl mt-1">{category.icon}</span>
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <span className="text-xl sm:text-2xl mt-0.5 sm:mt-1">{category.icon}</span>
                         <div className="flex-1">
-                          <h4 className="text-base font-semibold text-gray-900">
+                          <h4 className="text-sm sm:text-base font-semibold text-gray-900">
                             {category.label}
                           </h4>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
                             {category.description}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex gap-2 pl-10">
+                      <div className="flex gap-1.5 sm:gap-2 pl-0 sm:pl-10">
                         {RATING_OPTIONS.map((option) => {
                           const isSelected =
                             formData[category.key] === option.value;
@@ -208,7 +208,7 @@ export default function CultureForm() {
                                 handleRatingChange(category.key, option.value)
                               }
                               className={`
-                flex-1 py-3 px-1 rounded-lg border-2 transition-all duration-200
+                flex-1 min-h-[80px] sm:min-h-0 py-3 sm:py-3 px-1 sm:px-1 rounded-lg border-2 transition-all duration-200
                 ${
                   isSelected
                     ? 'border-slate-500 bg-slate-50 shadow-md scale-105'
@@ -216,12 +216,12 @@ export default function CultureForm() {
                 }
               `}
                             >
-                              <div className="text-center">
-                                <div className="text-xl mb-1">
+                              <div className="text-center flex flex-col justify-center h-full">
+                                <div className="text-xl sm:text-xl mb-1">
                                   {option.emoji}
                                 </div>
                                 <div
-                                  className={`text-xs font-semibold ${
+                                  className={`text-xs sm:text-xs font-bold ${
                                     isSelected
                                       ? 'text-slate-700'
                                       : 'text-gray-600'
@@ -230,7 +230,7 @@ export default function CultureForm() {
                                   {option.value}
                                 </div>
                                 <div
-                                  className={`text-[10px] mt-0.5 ${
+                                  className={`text-[10px] sm:text-[10px] mt-0.5 hidden sm:block ${
                                     isSelected
                                       ? 'text-slate-600'
                                       : 'text-gray-400'
@@ -253,13 +253,13 @@ export default function CultureForm() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
+                className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-8"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-1">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                     Anything else to share?
                   </h3>
-                  <span className="text-sm text-gray-400">
+                  <span className="text-xs sm:text-sm text-gray-400">
                     Optional • {formData.freeTextFeedback?.length || 0}/500
                   </span>
                 </div>
@@ -272,33 +272,33 @@ export default function CultureForm() {
                   maxLength={500}
                   rows={4}
                   placeholder="Share your thoughts about work environment, team dynamics, or suggestions for improvement..."
-                  className="w-full p-4 text-gray-700 bg-gray-50 border border-gray-200 rounded-xl
+                  className="w-full p-3 sm:p-4 text-sm sm:text-base text-gray-700 bg-gray-50 border border-gray-200 rounded-xl
                            focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-100 
                            outline-none transition-all resize-none"
                 />
               </motion.div>
 
               {/* Navigation */}
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <ActionButton
                   onClick={() => setStep('employment')}
                   variant="outline"
-                  className="px-6 py-3"
+                  className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base w-full sm:w-auto"
                 >
                   ← Back
                 </ActionButton>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div className="text-center">
-                    <div className="text-sm text-gray-500">Overall Score</div>
-                    <div className="text-2xl font-bold text-slate-600">
+                    <div className="text-xs sm:text-sm text-gray-500">Overall Score</div>
+                    <div className="text-xl sm:text-2xl font-bold text-slate-600">
                       {calculateAverageScore()}/5.0
                     </div>
                   </div>
 
                   <ActionButton
                     type="submit"
-                    className="px-8 py-3"
+                    className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base"
                     disabled={
                       cultureMutation.isPending ||
                       calculateAverageScore() === '0.0'
@@ -320,7 +320,7 @@ export default function CultureForm() {
         </div>
 
         {/* Right Column - Reviews (2/5 width) */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 hidden lg:block">
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}

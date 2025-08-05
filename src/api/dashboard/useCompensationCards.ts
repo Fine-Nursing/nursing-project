@@ -34,14 +34,13 @@ interface CompensationCardsByLevelParams extends CompensationCardsParams {
   experienceLevel: 'beginner' | 'junior' | 'experienced' | 'senior';
 }
 
-// API functions
+// API functions 수정
 const fetchCompensationCards = async (
   params?: CompensationCardsParams
 ): Promise<CompensationCard[]> => {
   const { data } = await apiClient.get('/api/dashboard/compensation-cards', {
     params: {
-      page: params?.page || 1,
-      limit: params?.limit || 20,
+      // page와 limit 제거! 이 엔드포인트는 페이지네이션 없음
       specialty: params?.specialty,
       state: params?.state,
       city: params?.city,

@@ -77,7 +77,7 @@ function FilterSection({
             toggleFilter();
           }
         }}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer ${
+        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border cursor-pointer ${
           showFilter || hasActiveFilters
             ? 'border-violet-500 bg-violet-50 text-violet-700'
             : 'hover:border-violet-500 text-gray-700'
@@ -85,8 +85,8 @@ function FilterSection({
         aria-expanded={showFilter}
         aria-haspopup="true"
       >
-        <Sliders size={16} />
-        <span className="text-sm font-medium">
+        <Sliders size={14} className="sm:w-4 sm:h-4" />
+        <span className="text-xs sm:text-sm font-medium">
           Filters{' '}
           {hasActiveFilters &&
             `(${selectedExperience.length + (salaryRange[0] !== 300000 || salaryRange[1] !== 600000 ? 1 : 0)})`}
@@ -100,28 +100,28 @@ function FilterSection({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            className="absolute right-0 mt-2 w-[280px] sm:w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-[70vh] overflow-y-auto"
           >
             {/* Filter Content */}
-            <div className="p-4 space-y-4">
+            <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
               {/* Experience Level Filter */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">
                   Experience Level
                 </h3>
                 <div className="space-y-1">
                   {experienceOptions.map((option) => (
                     <label
                       key={option.value}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                      className="flex items-center gap-2 p-1.5 sm:p-2 hover:bg-gray-50 rounded cursor-pointer"
                     >
                       <input
                         type="checkbox"
                         checked={selectedExperience.includes(option.value)}
                         onChange={() => toggleExperience(option.value)}
-                        className="w-4 h-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500"
+                        className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-violet-600 border-gray-300 rounded focus:ring-violet-500"
                       />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-xs sm:text-sm text-gray-700">
                         {option.label}
                       </span>
                     </label>
@@ -130,8 +130,8 @@ function FilterSection({
               </div>
 
               {/* Salary Range Filter */}
-              <div className="pt-3 border-t">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+              <div className="pt-2 sm:pt-3 border-t">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3">
                   Salary Range
                 </h3>
                 <RangeSlider
@@ -143,20 +143,20 @@ function FilterSection({
               </div>
 
               {/* Insights Section */}
-              <div className="pt-4 border-t">
-                <div className="text-sm text-gray-600">
+              <div className="pt-3 sm:pt-4 border-t">
+                <div className="text-xs sm:text-sm text-gray-600">
                   Found {processedData.length} specialties in range
                 </div>
                 {/* Top Paying Section */}
                 {processedData.length > 0 && (
-                  <div className="mt-3">
-                    <div className="text-violet-700 font-medium mb-2">
+                  <div className="mt-2 sm:mt-3">
+                    <div className="text-violet-700 font-medium text-xs sm:text-sm mb-1 sm:mb-2">
                       Top Paying:
                     </div>
                     {processedData.slice(0, 3).map((item) => (
                       <div
                         key={item.specialty}
-                        className="flex justify-between text-gray-600 text-sm"
+                        className="flex justify-between text-gray-600 text-xs sm:text-sm"
                       >
                         <span className="truncate mr-2">{item.specialty}</span>
                         <span className="font-medium">
@@ -170,14 +170,14 @@ function FilterSection({
 
               {/* Reset Filters */}
               {hasActiveFilters && (
-                <div className="pt-3 border-t">
+                <div className="pt-2 sm:pt-3 border-t">
                   <button
                     type="button"
                     onClick={() => {
                       onSalaryRangeChange([minSalary, maxSalary]);
                       onExperienceChange([]);
                     }}
-                    className="w-full text-center text-sm text-violet-600 hover:text-violet-700 py-1"
+                    className="w-full text-center text-xs sm:text-sm text-violet-600 hover:text-violet-700 py-1"
                   >
                     Reset all filters
                   </button>

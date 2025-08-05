@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect } from 'react';
-import useAuthStore from 'src/components/AuthInitializer';
-import JotaiProvider from 'src/lib/JotaiProvider';
-import QueryProvider from 'src/lib/QueryPrivider';
+import { Toaster } from 'react-hot-toast';
+import useAuthStore from 'src/hooks/useAuthStore';
+import ErrorBoundary from 'src/components/ErrorBoundary';
+import QueryProvider from 'src/lib/QueryProvider';
 
 function AuthInit() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -17,11 +18,36 @@ function AuthInit() {
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryProvider>
-      <JotaiProvider>
+    <ErrorBoundary>
+      <QueryProvider>
         <AuthInit />
         {children}
-      </JotaiProvider>
-    </QueryProvider>
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+              maxWidth: '500px',
+            },
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#4ade80',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 5000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+      </QueryProvider>
+    </ErrorBoundary>
   );
 }

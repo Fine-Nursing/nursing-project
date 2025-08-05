@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import useAuthStore from 'src/components/AuthInitializer';
+import useAuthStore from 'src/hooks/useAuthStore';
 import useOnboardingStore from 'src/store/onboardingStores';
 
 interface CompleteOnboardingResult {

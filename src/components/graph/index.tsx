@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { Search, X } from 'lucide-react';
 import { debounce } from 'lodash';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -11,11 +11,16 @@ import {
   useSpecialtyList,
 } from 'src/api/useSpecialties';
 import { findStateByCode, useStates } from 'src/api/useLocations';
+import { useIsMobile } from 'src/hooks/useIsMobile';
 import LocationSelector from './LocationSelector';
 import FilterSection from './FilterSections';
 import Chart from './Chart';
 
+// Lazy load MobileNursingGraph to avoid SSR issues
+const MobileNursingGraph = lazy(() => import('./MobileNursingGraph'));
+
 export default function NursingGraph() {
+  const isMobile = useIsMobile();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [autocompleteSearchTerm, setAutocompleteSearchTerm] = useState('');
@@ -254,6 +259,19 @@ export default function NursingGraph() {
   }, [compensations, salaryRange, selectedLocations]);
 
   // 초기 로딩 시에만 전체 로딩 표시
+  // Return mobile version if on mobile device
+  if (isMobile) {
+    return (
+      <Suspense fallback={
+        <div className="min-h-[400px] sm:min-h-[600px] lg:min-h-[800px] w-full bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-md flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+        </div>
+      }>
+        <MobileNursingGraph />
+      </Suspense>
+    );
+  }
+
   if (isLoadingStates || (!compensations && isLoadingCompensations)) {
     return (
       <div className="min-h-[800px] w-full bg-white p-8 rounded-xl shadow-md flex items-center justify-center">
@@ -263,14 +281,14 @@ export default function NursingGraph() {
   }
 
   return (
-    <div className="min-h-[800px] w-full bg-white p-8 rounded-xl shadow-md">
-      <div className="space-y-6 mb-8">
+    <div className="min-h-[400px] sm:min-h-[600px] lg:min-h-[800px] w-full bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-md">
+      <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-8">
         {/* Title */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
             Nursing Specialties Explorer
           </h2>
-          <p className="text-gray-500 mt-2">
+          <p className="text-xs sm:text-sm lg:text-base text-gray-500 mt-1 sm:mt-2">
             {selectedLocations.length > 0
               ? `Showing specialties in ${selectedLocations.length} selected ${
                   selectedLocations.length === 1 ? 'location' : 'locations'
@@ -280,9 +298,9 @@ export default function NursingGraph() {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           {/* Search with Autocomplete */}
-          <div className="relative w-80">
+          <div className="relative w-full sm:w-80">
             <div className="relative">
               <input
                 ref={searchInputRef}
@@ -303,11 +321,11 @@ export default function NursingGraph() {
                     setShowSuggestions(true);
                   }
                 }}
-                className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-violet-500 pl-10"
+                className="w-full px-3 sm:px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-violet-500 pl-9 sm:pl-10 text-sm sm:text-base"
               />
               <Search
-                className="absolute left-3 top-2.5 text-gray-400"
-                size={18}
+                className="absolute left-2.5 sm:left-3 top-2.5 text-gray-400"
+                size={16}
               />
               {/* 검색 로딩 인디케이터 */}
               {searchTerm !== debouncedSearchTerm && (
@@ -336,7 +354,7 @@ export default function NursingGraph() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 justify-end">
             <LocationSelector
               selectedLocations={selectedLocations}
               onLocationChange={setSelectedLocations}
@@ -356,15 +374,15 @@ export default function NursingGraph() {
 
         {/* Selected Location Tags */}
         {selectedLocations.length > 0 && states && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {selectedLocations.map((locationCode) => {
               const state = findStateByCode(states, locationCode);
               return (
                 <div
                   key={locationCode}
-                  className="flex items-center gap-2 px-3 py-1 bg-violet-50 text-violet-700 rounded-full text-sm"
+                  className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 bg-violet-50 text-violet-700 rounded-full text-xs sm:text-sm"
                 >
-                  <span>{state?.name || locationCode}</span>
+                  <span className="truncate max-w-[100px] sm:max-w-none">{state?.name || locationCode}</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -373,9 +391,9 @@ export default function NursingGraph() {
                       );
                     }}
                     aria-label={`Remove ${state?.name} filter`}
-                    className="cursor-pointer hover:text-violet-900 p-0.5 flex items-center justify-center"
+                    className="cursor-pointer hover:text-violet-900 p-0.5 flex items-center justify-center flex-shrink-0"
                   >
-                    <X size={14} />
+                    <X size={12} className="sm:w-3.5 sm:h-3.5" />
                   </button>
                 </div>
               );
@@ -385,11 +403,11 @@ export default function NursingGraph() {
 
         {/* Experience Filter Tags */}
         {selectedExperience.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             {selectedExperience.map((exp) => (
               <div
                 key={exp}
-                className="flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-50 text-blue-700 rounded-full text-xs sm:text-sm"
               >
                 <span>{exp}</span>
                 <button
@@ -399,9 +417,9 @@ export default function NursingGraph() {
                       prev.filter((e) => e !== exp)
                     );
                   }}
-                  className="cursor-pointer hover:text-blue-900 p-0.5"
+                  className="cursor-pointer hover:text-blue-900 p-0.5 flex-shrink-0"
                 >
-                  <X size={14} />
+                  <X size={12} className="sm:w-3.5 sm:h-3.5" />
                 </button>
               </div>
             ))}

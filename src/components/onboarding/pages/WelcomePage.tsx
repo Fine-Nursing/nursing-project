@@ -1,16 +1,118 @@
 'use client';
 
-import { Eye, Ear, Handshake } from 'lucide-react';
+import { Eye, Ear, Handshake, AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import ActionButton from 'src/components/button/ActionButton';
-
 import useOnboardingStore from 'src/store/onboardingStores';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 export default function WelcomePage() {
-  const { setStep } = useOnboardingStore();
+  const router = useRouter();
+  const { user } = useAuthStore();
+  const {
+    setStep,
+    hasExistingSession,
+    existingProgress,
+    continueFromLastStep,
+    resetOnboarding,
+    tempUserId,
+  } = useOnboardingStore();
+
+  // 모든 온보딩이 완료된 경우 처리
+  useEffect(() => {
+    if (existingProgress && 
+        existingProgress.basicInfoCompleted && 
+        existingProgress.employmentCompleted && 
+        existingProgress.cultureCompleted && 
+        existingProgress.accountCompleted) {
+      console.log('온보딩이 이미 완료됨, 사용자 페이지로 이동');
+      toast.success('Onboarding already completed!');
+      
+      // 사용자 ID가 있으면 사용자 페이지로, 없으면 대시보드로 이동
+      if (user?.id) {
+        router.push(`/users/${user.id}`);
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [existingProgress, user, router]);
+
+  const handleStartNew = () => {
+    // Clear existing session and start fresh
+    localStorage.removeItem('onboarding_session');
+    resetOnboarding();
+    window.location.reload(); // Reload to get new session
+  };
+
+  const handleContinue = () => {
+    console.log('=== WelcomePage Continue 버튼 클릭 ===');
+    console.log('hasExistingSession:', hasExistingSession);
+    console.log('existingProgress:', existingProgress);
+    
+    if (hasExistingSession && existingProgress) {
+      console.log('기존 세션이 있음, continueFromLastStep 호출');
+      continueFromLastStep();
+    } else {
+      console.log('새로운 온보딩, basicInfo로 이동');
+      setStep('basicInfo');
+    }
+  };
+
+  const getProgressMessage = () => {
+    if (!existingProgress) return '';
+
+    const steps = [];
+    if (existingProgress.basicInfoCompleted) steps.push('Basic Info');
+    if (existingProgress.employmentCompleted) steps.push('Employment');
+    if (existingProgress.cultureCompleted) steps.push('Culture');
+
+    if (steps.length === 0) {
+      return 'You have an unfinished onboarding session.';
+    }
+
+    return `Progress saved: ${steps.join(' → ')} completed`;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        {/* Existing Session Alert */}
+        {hasExistingSession && existingProgress && (
+          <div className="mb-12 max-w-2xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="bg-slate-100 p-2.5 rounded-xl">
+                  <AlertCircle className="w-5 h-5 text-slate-600" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900">Welcome back!</p>
+                  <p className="text-sm text-gray-600">
+                    {getProgressMessage()}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={handleContinue}
+                  className="px-4 py-2 bg-slate-600 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  Continue
+                </button>
+                <button
+                  type="button"
+                  onClick={handleStartNew}
+                  className="px-4 py-2 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Start Over
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -31,7 +133,7 @@ export default function WelcomePage() {
                   <Eye className="w-10 h-10 text-slate-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900">
                 Real-time Compensation data
               </h3>
               <div className="space-y-4">
@@ -73,7 +175,7 @@ export default function WelcomePage() {
                   <Ear className="w-10 h-10 text-slate-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900">
                 Listen to Nurse Stories
               </h3>
               <div className="space-y-4">
@@ -114,7 +216,7 @@ export default function WelcomePage() {
                   <Handshake className="w-10 h-10 text-slate-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold mb-4 text-center text-gray-900">
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900">
                 Dedicated Career Partner
               </h3>
               <div className="space-y-4">
@@ -141,8 +243,8 @@ export default function WelcomePage() {
 
         {/* CTA Section */}
         <div className="text-center">
-          <ActionButton onClick={() => setStep('basicInfo')} size="lg">
-            Get Started 🚀
+          <ActionButton onClick={handleContinue} size="lg">
+            {hasExistingSession ? 'Continue Onboarding →' : 'Get Started 🚀'}
           </ActionButton>
         </div>
       </div>

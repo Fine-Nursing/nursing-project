@@ -23,7 +23,7 @@ function RegionSection({
   onToggleLocation,
 }: RegionSectionProps) {
   return (
-    <div className="mb-3 last:mb-0 p-3">
+    <div className="mb-2 sm:mb-3 last:mb-0 p-2 sm:p-3">
       <div className="text-xs font-medium text-gray-500 mb-1">{region}</div>
       <div className="grid grid-cols-2 gap-1">
         {states.map((state) => (
@@ -32,7 +32,7 @@ function RegionSection({
             onClick={() => onToggleLocation(state.code)}
             type="button"
             aria-pressed={selectedLocations.includes(state.code)}
-            className={`flex items-center justify-between p-2 rounded-md cursor-pointer text-sm transition-colors w-full
+            className={`flex items-center justify-between p-1.5 sm:p-2 rounded-md cursor-pointer text-xs sm:text-sm transition-colors w-full
                 ${
                   selectedLocations.includes(state.code)
                     ? 'bg-violet-50 text-violet-700'
@@ -92,10 +92,10 @@ function LocationSelector({
         <button
           type="button"
           disabled
-          className="flex items-center gap-2 px-4 py-2 rounded-lg border cursor-not-allowed opacity-50 text-gray-500"
+          className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border cursor-not-allowed opacity-50 text-gray-500"
         >
-          <MapPin size={16} />
-          <span className="text-sm font-medium">Loading...</span>
+          <MapPin size={14} className="sm:w-4 sm:h-4" />
+          <span className="text-xs sm:text-sm font-medium">Loading...</span>
         </button>
       </div>
     );
@@ -110,14 +110,14 @@ function LocationSelector({
         aria-expanded={showDropdown}
         aria-haspopup="true"
         aria-controls="location-dropdown"
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer ${
+        className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border cursor-pointer ${
           showDropdown || selectedLocations.length > 0
             ? 'border-violet-500 bg-violet-50 text-violet-700'
             : 'hover:border-violet-500 text-gray-700'
         }`}
       >
-        <MapPin size={16} />
-        <span className="text-sm font-medium">
+        <MapPin size={14} className="sm:w-4 sm:h-4" />
+        <span className="text-xs sm:text-sm font-medium">
           {selectedLocations.length > 0
             ? `${selectedLocations.length} selected`
             : 'Location'}
@@ -131,7 +131,7 @@ function LocationSelector({
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
-            className="absolute right-0 mt-2 w-[320px] bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            className="absolute right-0 mt-2 w-[280px] sm:w-[320px] bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-[60vh] overflow-y-auto"
           >
             {/* Dropdown Content */}
             {isRegionStates(statesData) ? (

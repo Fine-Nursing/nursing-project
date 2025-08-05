@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
+import { useCareerHistory } from 'src/api/useCareerHistory';
+import { useMyCompensation } from 'src/api/useCompensation';
 import {
   Sparkles,
   BarChart4,
@@ -87,30 +89,29 @@ const renderDuration = (years: number, months: number) => {
   return months > 0 ? `${months}m` : '< 1m';
 };
 
-export default function CareerDashboard({
+function CareerDashboard({
   theme = 'light',
 }: CareerDashboardProps) {
   /** 1) CAREER HISTORY STATE */
-  const [careerData, setCareerData] = useState<CareerItem[]>([
-    {
-      id: 1,
-      facility: 'City Hospital',
-      role: 'RN',
-      specialty: 'MedSurg',
-      startDate: new Date('2019-01-01'),
-      endDate: new Date('2021-05-01'),
-      hourlyRate: 32.0,
-    },
-    {
-      id: 2,
-      facility: 'General Medical Center',
-      role: 'Charge Nurse',
-      specialty: 'ER',
-      startDate: new Date('2021-06-01'),
-      endDate: null,
-      hourlyRate: 42.0,
-    },
-  ]);
+  const [careerData, setCareerData] = useState<CareerItem[]>([]);
+  const { data: careerHistoryData, isLoading: isCareerLoading } = useCareerHistory();
+  const { data: compensationData, isLoading: isCompensationLoading } = useMyCompensation();
+
+  // API 데이터를 careerData로 변환
+  useEffect(() => {
+    if (careerHistoryData) {
+      const transformedData = careerHistoryData.map((item, index) => ({
+        id: index + 1,
+        facility: item.facility,
+        role: item.role,
+        specialty: item.specialty,
+        startDate: item.startDate ? new Date(item.startDate) : new Date(),
+        endDate: item.endDate ? new Date(item.endDate) : null,
+        hourlyRate: item.hourlyRate,
+      }));
+      setCareerData(transformedData);
+    }
+  }, [careerHistoryData]);
 
   const [newItem, setNewItem] = useState<NewItemInput>({
     facility: '',
@@ -135,7 +136,7 @@ export default function CareerDashboard({
     setNewItem((prev) => ({ ...prev, endDate: date }));
   };
 
-  const handleAdd = () => {
+  const handleAdd = useCallback(() => {
     if (!newItem.facility || !newItem.role) {
       alert('Facility & Role are required!');
       return;
@@ -165,7 +166,7 @@ export default function CareerDashboard({
       hourlyRate: '',
     });
     setFormVisible(false);
-  };
+  }, [careerData, newItem]);
 
   const handleEdit = (id: number) => {
     const itemToEdit = careerData.find((item) => item.id === id);
@@ -280,34 +281,49 @@ export default function CareerDashboard({
   };
   const handleCloseTrend = () => setShowTrend(false);
 
-  /** 3) 경력 통계 계산 */
-  const sortedCareerData = [...careerData].sort(
-    (a, b) => (a.startDate?.getTime() || 0) - (b.startDate?.getTime() || 0)
+  /** 3) 경력 통계 계산 - Memoized */
+  const sortedCareerData = useMemo(() => 
+    [...careerData].sort(
+      (a, b) => (a.startDate?.getTime() || 0) - (b.startDate?.getTime() || 0)
+    ), [careerData]
   );
 
-  const totalMonths = sortedCareerData.reduce((total, item) => {
-    const startDate = dayjs(item.startDate);
-    const endDate = item.endDate ? dayjs(item.endDate) : dayjs();
-    return total + endDate.diff(startDate, 'month');
-  }, 0);
+  const { totalMonths, totalYears, remainingMonths } = useMemo(() => {
+    const months = sortedCareerData.reduce((total, item) => {
+      const startDate = dayjs(item.startDate);
+      const endDate = item.endDate ? dayjs(item.endDate) : dayjs();
+      return total + endDate.diff(startDate, 'month');
+    }, 0);
+    
+    return {
+      totalMonths: months,
+      totalYears: Math.floor(months / 12),
+      remainingMonths: months % 12
+    };
+  }, [sortedCareerData]);
 
-  const totalYears = Math.floor(totalMonths / 12);
-  const remainingMonths = totalMonths % 12;
-
-  const currentRole = sortedCareerData.length
-    ? sortedCareerData[sortedCareerData.length - 1]
-    : null;
-
-  const highestSalary = Math.max(
-    ...sortedCareerData.map((item) => item.hourlyRate)
+  const currentRole = useMemo(() => 
+    sortedCareerData.length
+      ? sortedCareerData[sortedCareerData.length - 1]
+      : null,
+    [sortedCareerData]
   );
-  const annualSalary = highestSalary * 40 * 52; // 40 hours per week, 52 weeks per year
 
-  /** 4) LINE CHART: CAREER HISTORY Over Time */
-  const lineData = sortedCareerData.map((item) => ({
-    ...item,
-    xLabel: item.startDate ? dayjs(item.startDate).format('MMM YYYY') : '',
-  }));
+  const highestSalary = useMemo(() => 
+    Math.max(...sortedCareerData.map((item) => item.hourlyRate)),
+    [sortedCareerData]
+  );
+  
+  const annualSalary = compensationData?.annualSalary || 0;
+
+  /** 4) LINE CHART: CAREER HISTORY Over Time - Memoized */
+  const lineData = useMemo(() => 
+    sortedCareerData.map((item) => ({
+      ...item,
+      xLabel: item.startDate ? dayjs(item.startDate).format('MMM YYYY') : '',
+    })),
+    [sortedCareerData]
+  );
 
   // 다크모드 조건부 클래스
   const bgClass = theme === 'light' ? 'bg-white' : 'bg-slate-700';
@@ -317,6 +333,18 @@ export default function CareerDashboard({
 
   const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
   const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
+
+  // 로딩 상태 처리
+  if (isCareerLoading || isCompensationLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-8 h-8 border-t-2 border-slate-400 border-solid rounded-full animate-spin" />
+        <p className="mt-2 text-sm font-medium text-slate-600">
+          Loading career history...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -406,7 +434,7 @@ export default function CareerDashboard({
               <span
                 className={`text-xl font-bold ${theme === 'light' ? 'text-purple-800' : 'text-purple-200'}`}
               >
-                ${highestSalary.toFixed(2)}/hr
+                ${compensationData?.hourlyRate?.toFixed(2) || '0.00'}/hr
               </span>
             </div>
           </div>
@@ -515,7 +543,7 @@ export default function CareerDashboard({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
               {/* Start Date */}
               <div>
                 <label
@@ -879,3 +907,5 @@ export default function CareerDashboard({
     </div>
   );
 }
+
+export default React.memo(CareerDashboard);

@@ -13,15 +13,20 @@ interface SignInData {
   password: string;
 }
 
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  first_name?: string; // API might return this format
+  last_name?: string; // API might return this format
+  hasCompletedOnboarding: boolean; // ✅ 추가!
+}
+
 interface AuthResponse {
   success: boolean;
   message?: string;
-  user?: {
-    id: string;
-    email: string;
-    firstName: string;
-    lastName: string;
-  };
+  user?: User;
   requiresOnboarding?: boolean;
 }
 
@@ -80,9 +85,33 @@ const useAuth = () => {
     }
   };
 
+  // 현재 사용자 정보 조회 (me endpoint)
+  const checkAuth = async (): Promise<User | null> => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BE_URL}/api/auth/me`,
+        {
+          method: 'GET',
+          credentials: 'include',
+        }
+      );
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      return data.user || null;
+    } catch (error) {
+      console.error('Error checking auth:', error);
+      return null;
+    }
+  };
+
   return {
     signUp,
     signIn,
+    checkAuth, // ✅ 추가!
     isLoading,
   };
 };

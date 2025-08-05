@@ -502,7 +502,7 @@ export default function EmploymentForm() {
             </h3>
 
             {/* Specialty + Sub-specialty */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2 relative">
                 <label
                   htmlFor="specialty"
@@ -520,7 +520,7 @@ export default function EmploymentForm() {
                     setTimeout(() => setShowSuggestions(false), 200)
                   }
                   placeholder="e.g., ICU, Pediatrics"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                  className="w-full p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
                 {showSuggestions && filteredList.length > 0 && (
@@ -533,7 +533,7 @@ export default function EmploymentForm() {
                             handleSelect(specialty);
                             updateFormData({ specialty });
                           }}
-                          className="w-full text-left px-4 py-2 hover:bg-slate-100 transition-colors"
+                          className="w-full text-left px-3 sm:px-4 py-3 sm:py-2 text-base hover:bg-slate-100 transition-colors border-b border-gray-100 last:border-b-0"
                         >
                           {specialty}
                         </button>
@@ -558,14 +558,14 @@ export default function EmploymentForm() {
                     updateFormData({ subSpecialty: e.target.value })
                   }
                   placeholder="E.g., Pediatric ICU"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                  className="w-full p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* Organization info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label
                   htmlFor="organizationName"
@@ -582,7 +582,7 @@ export default function EmploymentForm() {
                       updateFormData({ organizationName: e.target.value })
                     }
                     placeholder="Hospital or Organization Name"
-                    className="flex-1 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                    className="flex-1 p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                                focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   />
                   <ActionButton
@@ -616,14 +616,14 @@ export default function EmploymentForm() {
                     })
                   }
                   placeholder="Start year"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                  className="w-full p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
             </div>
 
             {/* City + State */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label
                   htmlFor="organizationCity"
@@ -639,7 +639,7 @@ export default function EmploymentForm() {
                     updateFormData({ organizationCity: e.target.value })
                   }
                   placeholder="City"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                  className="w-full p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
@@ -661,7 +661,7 @@ export default function EmploymentForm() {
                     })
                   }
                   placeholder="e.g., NY, CA"
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                  className="w-full p-2.5 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                 />
               </div>
@@ -669,12 +669,12 @@ export default function EmploymentForm() {
           </div>
 
           {/* Role Section */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-              <span className="text-2xl">🩺</span> Your Role
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm p-4 sm:p-6 space-y-4 sm:space-y-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
+              <span className="text-xl sm:text-2xl">🩺</span> Your Role
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Employment Type */}
               <div className="space-y-2">
                 <label
@@ -692,8 +692,8 @@ export default function EmploymentForm() {
                         employmentType: e.target.value as EmploymentType,
                       }) // 타입 캐스팅 추가
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                  className="w-full h-12 sm:h-auto px-3 py-3 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all appearance-none"
                 >
                   <option value="">Select employment type</option>
                   {EMPLOYMENT_TYPES.map((type) => (
@@ -718,8 +718,8 @@ export default function EmploymentForm() {
                   onChange={(e) =>
                     updateFormData({ shiftType: e.target.value as ShiftType })
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                  className="w-full h-12 sm:h-auto px-3 py-3 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all appearance-none"
                 >
                   <option value="">Select your shift</option>
                   {SHIFT_TYPES.map((type) => (
@@ -732,7 +732,7 @@ export default function EmploymentForm() {
             </div>
 
             {/* Nurse to Patient Ratio + Base Pay */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <label
                   htmlFor="nurseToPatientRatio"
@@ -746,8 +746,8 @@ export default function EmploymentForm() {
                   onChange={(e) =>
                     updateFormData({ nurseToPatientRatio: e.target.value })
                   }
-                  className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                  className="w-full h-12 sm:h-auto px-3 py-3 sm:p-3 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                           focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all appearance-none"
                 >
                   <option value="">Select ratio</option>
                   {NURSE_PATIENT_RATIOS.map((ratio) => (
@@ -781,7 +781,7 @@ export default function EmploymentForm() {
                           basePay: parseFloat(e.target.value) || undefined,
                         })
                       }
-                      className="w-full p-3 pl-8 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                      className="w-full p-2.5 sm:p-3 pl-7 sm:pl-8 text-base sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
                                focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                     />
                   </div>
@@ -793,8 +793,8 @@ export default function EmploymentForm() {
                         paymentFrequency: e.target.value as 'hourly' | 'yearly',
                       })
                     }
-                    className="w-32 p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
-                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                    className="w-24 sm:w-32 h-12 sm:h-auto px-2 py-3 sm:p-3 text-sm sm:text-lg bg-gray-50 border-2 border-gray-200 rounded-xl
+                             focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all appearance-none"
                   >
                     <option value="hourly">/ hour</option>
                     <option value="yearly">/ year</option>
@@ -804,29 +804,29 @@ export default function EmploymentForm() {
             </div>
 
             {/* Differential Pay Section */}
-            <div className="bg-gray-50 rounded-xl p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-medium text-gray-900 flex items-center gap-2">
-                  <span className="text-xl">💰</span>
+            <div className="bg-gray-50 rounded-xl p-4 sm:p-5 space-y-3 sm:space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                <h4 className="text-base sm:text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <span className="text-lg sm:text-xl">💰</span>
                   Differential Pay
                 </h4>
-                <span className="text-sm text-gray-600">
+                <span className="text-xs sm:text-sm text-gray-600">
                   Optional but recommended
                 </span>
               </div>
 
               {/* Popular Differentials */}
               <div className="space-y-3">
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-xs sm:text-sm font-medium text-gray-700">
                   Quick add popular differentials:
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {POPULAR_DIFFERENTIALS.map((diffType) => (
                     <button
                       key={diffType}
                       type="button"
                       onClick={() => addPopularDifferential(diffType)}
-                      className="px-3 py-2 text-sm bg-white border-2 border-gray-200 text-gray-700 rounded-lg
+                      className="px-3 py-2 sm:px-3 sm:py-2 text-sm sm:text-sm bg-white border-2 border-gray-200 text-gray-700 rounded-lg
                                hover:border-slate-400 hover:bg-slate-50 transition-colors font-medium"
                     >
                       {diffType}
@@ -841,7 +841,7 @@ export default function EmploymentForm() {
                 <div className="space-y-2 relative">
                   <label
                     htmlFor="differential-search-input"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-xs sm:text-sm font-medium text-gray-700"
                   >
                     Search for other differentials:
                   </label>
@@ -859,7 +859,7 @@ export default function EmploymentForm() {
                       )
                     }
                     placeholder="e.g., ER, Preceptor, Bilingual..."
-                    className="w-full p-3 text-lg bg-white border-2 border-gray-200 rounded-xl
+                    className="w-full h-12 sm:h-auto px-3 py-3 sm:p-3 text-base sm:text-lg bg-white border-2 border-gray-200 rounded-xl
                              focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                   />
 
@@ -876,9 +876,12 @@ export default function EmploymentForm() {
                               onClick={() =>
                                 handleDifferentialSelectAndSet(diff.display)
                               }
-                              className="w-full text-left px-4 py-2 hover:bg-slate-100 transition-colors"
+                              className="w-full text-left px-3 sm:px-4 py-3 sm:py-2 text-base hover:bg-slate-100 transition-colors border-b border-gray-100 last:border-b-0"
                             >
-                              {diff.display}
+                              <div className="flex flex-col">
+                                <span className="font-medium">{diff.display}</span>
+                                <span className="text-xs text-gray-500">{diff.group}</span>
+                              </div>
                             </button>
                           </li>
                         ))}
@@ -888,9 +891,9 @@ export default function EmploymentForm() {
 
                 {/* Amount and Unit - only show when type is selected */}
                 {customDiff.type && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-white rounded-xl border border-gray-200">
-                    <div className="space-y-2">
-                      <label className="block text-sm font-medium text-gray-700">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 p-3 sm:p-4 bg-white rounded-xl border border-gray-200">
+                    <div className="col-span-1 sm:col-span-2 md:col-span-1">
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700">
                         Selected:{' '}
                         <span className="font-semibold text-slate-600">
                           {customDiff.type}
@@ -901,7 +904,7 @@ export default function EmploymentForm() {
                     <div className="space-y-2">
                       <label
                         htmlFor="differential-amount"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-xs sm:text-sm font-medium text-gray-700"
                       >
                         Amount
                       </label>
@@ -921,7 +924,7 @@ export default function EmploymentForm() {
                               amount: parseFloat(e.target.value) || 0,
                             })
                           }
-                          className="w-full p-3 pl-8 text-lg bg-white border-2 border-gray-200 rounded-xl
+                          className="w-full h-12 sm:h-auto px-3 py-3 sm:p-3 pl-7 sm:pl-8 text-base sm:text-lg bg-white border-2 border-gray-200 rounded-xl
                                    focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
                         />
                       </div>
@@ -930,7 +933,7 @@ export default function EmploymentForm() {
                     <div className="space-y-2">
                       <label
                         htmlFor="differential-unit-select"
-                        className="block text-sm font-medium text-gray-700"
+                        className="block text-xs sm:text-sm font-medium text-gray-700"
                       >
                         Unit
                       </label>
@@ -944,8 +947,8 @@ export default function EmploymentForm() {
                               unit: e.target.value as 'hourly' | 'annual',
                             })
                           }
-                          className="flex-1 p-3 text-lg bg-white border-2 border-gray-200 rounded-xl
-                                   focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
+                          className="flex-1 h-12 sm:h-auto px-3 py-3 sm:p-3 text-base sm:text-lg bg-white border-2 border-gray-200 rounded-xl
+                                   focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all appearance-none"
                         >
                           <option value="hourly">per hour</option>
                           <option value="annual">per year</option>
@@ -1063,7 +1066,7 @@ export default function EmploymentForm() {
             </div>
 
             {/* Union Checkbox */}
-            <div className="flex items-center gap-2 bg-slate-50 p-4 rounded-xl">
+            <div className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl">
               <input
                 type="checkbox"
                 id="isUnionized"
@@ -1071,9 +1074,9 @@ export default function EmploymentForm() {
                 onChange={(e) =>
                   updateFormData({ isUnionized: e.target.checked })
                 }
-                className="w-5 h-5 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
+                className="w-5 h-5 sm:w-5 sm:h-5 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
               />
-              <label htmlFor="isUnionized" className="text-slate-900">
+              <label htmlFor="isUnionized" className="text-base sm:text-base text-slate-900">
                 Unionized workplace
               </label>
             </div>

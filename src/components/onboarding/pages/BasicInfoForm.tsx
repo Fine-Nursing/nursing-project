@@ -192,22 +192,22 @@ export default function BasicInfoForm() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto px-4 py-12"
+        className="max-w-3xl mx-auto px-4 py-6 sm:py-12"
       >
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <div className="text-center mb-6 sm:mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
             Perfect! Let&apos;s Review Your Information
           </h2>
-          <p className="text-gray-500 text-lg">
+          <p className="text-gray-500 text-base sm:text-lg">
             Please review your details and make any changes if needed.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-10">
           {questions.map((q, index) => (
             <div
               key={q.key}
-              className={`group py-6 ${
+              className={`group py-4 sm:py-6 ${
                 index !== questions.length - 1 ? 'border-b border-gray-100' : ''
               }`}
             >
@@ -342,7 +342,7 @@ export default function BasicInfoForm() {
         </div>
       </div>
 
-      <div className="relative min-h-[400px]">
+      <div className="relative min-h-[300px] sm:min-h-[400px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeQuestion.key}
@@ -379,13 +379,13 @@ export default function BasicInfoForm() {
       </div>
 
       {isTypingComplete && (
-        <div className="mt-8 flex justify-between">
+        <div className="mt-6 sm:mt-8 flex justify-between">
           <div className="flex gap-4">
-            <ActionButton onClick={handleGoBack} variant="outline">
+            <ActionButton onClick={handleGoBack} variant="outline" className="px-4 py-2 text-sm sm:text-base">
               ← Back
             </ActionButton>
           </div>
-          <ActionButton onClick={() => setStep('welcome')} variant="outline">
+          <ActionButton onClick={() => setStep('welcome')} variant="outline" className="px-4 py-2 text-sm sm:text-base">
             Cancel
           </ActionButton>
         </div>

@@ -35,7 +35,7 @@ export default function TableView({
   };
 
   return (
-    <table {...getTableProps()} className="min-w-full divide-y divide-gray-300">
+    <table {...getTableProps()} className="w-full divide-y divide-gray-300">
       <thead className="bg-gray-50">
         {headerGroups.map((headerGroup) => {
           const { key: groupKey, ...restGroupProps } =
