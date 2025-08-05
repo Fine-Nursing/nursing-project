@@ -1,6 +1,6 @@
 // src/hooks/api/useCompensationApi.ts
 import { useQuery } from '@tanstack/react-query';
-import apiClient from 'src/lib/axios';
+import axiosApiClient from 'src/lib/axios';
 import queryKeys from 'src/constants/queryKeys';
 
 // Types
@@ -23,7 +23,7 @@ interface CompensationResponse {
 
 // API function
 const fetchMyCompensation = async (): Promise<CompensationData> => {
-  const { data } = await apiClient.get<CompensationResponse>(
+  const { data } = await axiosApiClient.get<CompensationResponse>(
     '/api/profile/compensation'
   );
 

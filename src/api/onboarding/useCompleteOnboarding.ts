@@ -60,6 +60,7 @@ const useCompleteOnboarding = () => {
       try {
         await checkAuth();
       } catch (authError) {
+        // eslint-disable-next-line no-console
         console.error('Failed to refresh auth after onboarding:', authError);
         // Continue even if auth refresh fails - the user can try logging in again
       }
@@ -87,6 +88,7 @@ const useCompleteOnboarding = () => {
         toast.error(errorMessage);
       }
 
+      // eslint-disable-next-line no-console
       console.error('Onboarding completion error:', error);
       throw error;
     } finally {

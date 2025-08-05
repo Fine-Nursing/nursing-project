@@ -27,8 +27,8 @@ export interface DifferentialsSummary {
   };
 }
 
-export const useDifferentialsSummary = () => {
-  return useQuery<DifferentialsSummary>({
+export const useDifferentialsSummary = () =>
+  useQuery<DifferentialsSummary>({
     queryKey: ['differentials-summary'],
     queryFn: async () => {
       const { data } = await apiClient.get('/api/profile/differentials-summary');
@@ -37,4 +37,3 @@ export const useDifferentialsSummary = () => {
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });
-};

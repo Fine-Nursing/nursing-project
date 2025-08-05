@@ -17,8 +17,8 @@ export interface NextStepsInsight {
   user_id: string;
 }
 
-export const useNextStepsInsight = () => {
-  return useQuery<NextStepsInsight>({
+export const useNextStepsInsight = () =>
+  useQuery<NextStepsInsight>({
     queryKey: ['ai-insights', 'next_steps'],
     queryFn: async () => {
       const { data } = await apiClient.get('/api/ai-insights/next_steps');
@@ -27,7 +27,6 @@ export const useNextStepsInsight = () => {
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });
-};
 
 // NextSteps 컴포넌트에서 사용할 수 있도록 파싱된 데이터를 반환하는 hook
 export const useParsedNextSteps = () => {
@@ -63,7 +62,7 @@ export const useParsedNextSteps = () => {
         }
         // Opportunity 설명
         else if (isOpportunitySection && line.trim()) {
-          opportunityDesc += line.trim() + ' ';
+          opportunityDesc += `${line.trim()} `;
         }
       });
 
@@ -84,8 +83,9 @@ export const useParsedNextSteps = () => {
       }
 
       return result;
-    } catch (error) {
-      console.error('Failed to parse next steps:', error);
+    } catch (parseError) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to parse next steps:', parseError);
       return {
         steps: [
           'Review your career progression and identify areas for improvement',

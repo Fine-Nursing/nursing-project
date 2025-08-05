@@ -103,6 +103,7 @@ const useAuth = () => {
       const data = await response.json();
       return data.user || null;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error checking auth:', error);
       return null;
     }
