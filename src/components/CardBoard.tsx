@@ -18,6 +18,12 @@ import type { CompensationCard } from 'src/types/dashboard';
 import { useSpecialtyList } from 'src/api/useSpecialties';
 import NurseCard from './card/NurseCard';
 
+function getGridColumns(columns: number): string {
+  if (columns === 2) return 'sm:grid-cols-2';
+  if (columns === 4) return 'sm:grid-cols-2 lg:grid-cols-4';
+  return '';
+}
+
 // State mapping constant
 const STATE_MAPPING = {
   AL: 'Alabama',
@@ -524,7 +530,7 @@ function CardBoard() {
             initial="initial"
             animate="animate"
             exit="exit"
-            className={`grid grid-cols-1 ${columns === 2 ? 'sm:grid-cols-2' : columns === 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : ''} gap-4 w-full`}
+            className={`grid grid-cols-1 ${getGridColumns(columns)} gap-4 w-full`}
           >
             {currentGroup.map((card, index) => (
               <motion.div

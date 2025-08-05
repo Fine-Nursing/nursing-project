@@ -1,18 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import queryKeys from 'src/constants/queryKeys';
 import type { CompensationCard } from 'src/types/dashboard';
-
-// API Base URL - 환경변수로 관리하는 것을 추천
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-// Axios instance
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import { apiClient } from 'src/lib/axios';
 
 export interface PaginatedResponse<T> {
   data: T[];

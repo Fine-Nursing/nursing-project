@@ -6,6 +6,19 @@ import { ChevronLeft, ChevronRight, Filter, MapPin, DollarSign, Users } from 'lu
 import type { CompensationCard } from 'src/types/dashboard';
 import { useCompensationCards } from 'src/api/dashboard/useCompensationCards';
 
+function getExperienceLevelClass(level: string): string {
+  switch (level) {
+    case 'senior':
+      return 'bg-purple-100 text-purple-700';
+    case 'experienced':
+      return 'bg-blue-100 text-blue-700';
+    case 'junior':
+      return 'bg-green-100 text-green-700';
+    default:
+      return 'bg-yellow-100 text-yellow-700';
+  }
+}
+
 interface MobileCardBoardProps {
   filters: {
     specialty?: string;
@@ -25,10 +38,7 @@ function MobileCompensationCard({ card }: { card: CompensationCard }) {
           <p className="text-sm text-gray-600">{card.hospital}</p>
         </div>
         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-          card.experienceLevel === 'senior' ? 'bg-purple-100 text-purple-700' :
-          card.experienceLevel === 'experienced' ? 'bg-blue-100 text-blue-700' :
-          card.experienceLevel === 'junior' ? 'bg-green-100 text-green-700' :
-          'bg-yellow-100 text-yellow-700'
+          getExperienceLevelClass(card.experienceLevel)
         }`}>
           {card.experienceLevel}
         </span>
@@ -158,6 +168,7 @@ function MobileCardBoard({ filters, onFiltersChange }: MobileCardBoardProps) {
       {/* Experience Level Pills */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
         <button
+          type="button"
           onClick={() => setSelectedLevel(null)}
           className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
             !selectedLevel ? 'bg-purple-600 text-white' : 'bg-gray-100 text-gray-600'
@@ -167,6 +178,7 @@ function MobileCardBoard({ filters, onFiltersChange }: MobileCardBoardProps) {
         </button>
         {Object.entries(experienceSummary).map(([level, count]) => (
           <button
+            type="button"
             key={level}
             onClick={() => setSelectedLevel(level)}
             className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
@@ -199,6 +211,7 @@ function MobileCardBoard({ filters, onFiltersChange }: MobileCardBoardProps) {
       {/* Navigation */}
       <div className="flex items-center justify-between">
         <button
+          type="button"
           onClick={handlePrev}
           disabled={currentIndex === 0}
           className={`p-2 rounded-lg ${
@@ -216,7 +229,7 @@ function MobileCardBoard({ filters, onFiltersChange }: MobileCardBoardProps) {
             const dotIndex = Math.max(0, Math.min(currentIndex - 2, cards.length - 5)) + i;
             return (
               <div
-                key={i}
+                key={`dot-${dotIndex}`}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   dotIndex === currentIndex ? 'bg-purple-600' : 'bg-gray-300'
                 }`}
@@ -226,6 +239,7 @@ function MobileCardBoard({ filters, onFiltersChange }: MobileCardBoardProps) {
         </div>
 
         <button
+          type="button"
           onClick={handleNext}
           disabled={currentIndex === cards.length - 1}
           className={`p-2 rounded-lg ${
