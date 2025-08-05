@@ -525,7 +525,7 @@ export default function AccountForm() {
               I agree to the{' '}
               <button
                 type="button"
-                onClick={() => alert('Terms of Service - Coming Soon')}
+                onClick={() => toast('Terms of Service - Coming Soon', { icon: '📄' })}
                 className="text-slate-600 hover:text-slate-700 underline"
               >
                 Terms of Service
@@ -533,7 +533,7 @@ export default function AccountForm() {
               and{' '}
               <button
                 type="button"
-                onClick={() => alert('Privacy Policy - Coming Soon')}
+                onClick={() => toast('Privacy Policy - Coming Soon', { icon: '🔒' })}
                 className="text-slate-600 hover:text-slate-700 underline"
               >
                 Privacy Policy

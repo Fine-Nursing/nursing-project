@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
+import toast from 'react-hot-toast';
 import useCareerHistory from 'src/api/useCareerHistory';
 import { useMyCompensation } from 'src/api/useCompensation';
 import {
@@ -138,7 +139,7 @@ function CareerDashboard({
 
   const handleAdd = useCallback(() => {
     if (!newItem.facility || !newItem.role) {
-      alert('Facility & Role are required!');
+      toast.error('Facility & Role are required!');
       return;
     }
     const nextId = careerData.length
@@ -230,8 +231,11 @@ function CareerDashboard({
   };
 
   const handleDelete = (id: number) => {
+    // TODO: Replace with a proper confirmation modal
+    // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete this career entry?')) {
       setCareerData((prev) => prev.filter((item) => item.id !== id));
+      toast.success('Career entry deleted successfully');
     }
   };
 

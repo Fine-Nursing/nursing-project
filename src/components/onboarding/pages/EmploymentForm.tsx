@@ -340,7 +340,7 @@ export default function EmploymentForm() {
       setCustomDiff({ type: '', amount: 0, unit: 'hourly' });
       setDifferentialInput('');
     }
-  }, [customDiff, formData.individualDifferentials, updateFormData]);
+  }, [customDiff, formData.individualDifferentials, updateFormData, setDifferentialInput]);
 
   const handleDifferentialInputChange = (value: string) => {
     setDifferentialInput(value);

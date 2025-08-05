@@ -2,6 +2,7 @@
 import React from 'react';
 import { Trash2, Edit, Clipboard } from 'lucide-react';
 import dayjs from 'dayjs';
+import toast from 'react-hot-toast';
 import type { CareerItem } from './types';
 
 interface CareerHistoryListProps {
@@ -65,7 +66,7 @@ export default function CareerHistoryList({
                   <div className="flex items-center space-x-2">
                     <button
                       type="button"
-                      onClick={() => alert('Edit not implemented.')}
+                      onClick={() => toast('Edit feature coming soon!', { icon: '🚧' })}
                       className="p-1 rounded text-slate-600 hover:bg-slate-100"
                     >
                       <Edit className="w-4 h-4" />

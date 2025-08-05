@@ -1,6 +1,7 @@
 'use client';
 
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface Props {
@@ -24,7 +25,11 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    // Log error to error reporting service in production
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.error('Uncaught error:', error, errorInfo);
+    }
   }
 
   private handleReset = () => {
@@ -33,9 +38,12 @@ export default class ErrorBoundary extends Component<Props, State> {
   };
 
   public render() {
-    if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
+    const { hasError, error } = this.state;
+    const { fallback, children } = this.props;
+
+    if (hasError) {
+      if (fallback) {
+        return fallback;
       }
 
       return (
@@ -50,13 +58,13 @@ export default class ErrorBoundary extends Component<Props, State> {
             <p className="mt-2 text-sm text-center text-gray-600">
               An unexpected error occurred. Please try refreshing the page.
             </p>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {process.env.NODE_ENV === 'development' && error && (
               <details className="mt-4 p-4 bg-gray-100 rounded text-xs">
                 <summary className="cursor-pointer font-medium">
                   Error details
                 </summary>
                 <pre className="mt-2 whitespace-pre-wrap">
-                  {this.state.error.toString()}
+                  {error.toString()}
                 </pre>
               </details>
             )}
@@ -73,6 +81,6 @@ export default class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.props.children;
+    return children;
   }
 }

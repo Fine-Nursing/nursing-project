@@ -6,17 +6,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Filter, X } from 'lucide-react';
 import useIsMobile from 'src/hooks/useIsMobile';
 
-// Lazy load MobileCardBoard to avoid SSR issues
-const MobileCardBoard = lazy(() => import('./CardBoard/MobileCardBoard'));
-
 import {
   useCompensationCards,
   useCompensationCardsByLevel,
 } from 'src/api/dashboard/useCompensationCards';
-
 import type { CompensationCard } from 'src/types/dashboard';
 import { useSpecialtyList } from 'src/api/useSpecialties';
 import NurseCard from './card/NurseCard';
+
+// Lazy load MobileCardBoard to avoid SSR issues
+const MobileCardBoard = lazy(() => import('./CardBoard/MobileCardBoard'));
 
 function getGridColumns(columns: number): string {
   if (columns === 2) return 'sm:grid-cols-2';
@@ -368,10 +367,18 @@ function CardBoard() {
 
   const [columns, setColumns] = useState(getResponsiveColumns());
 
-  // Data processing
-  const levelCards = levelCardsResponse?.data || [];
+  // Data processing - Memoized to prevent dependency warnings
+  const levelCards = React.useMemo(() => 
+    levelCardsResponse?.data || [], 
+    [levelCardsResponse?.data]
+  );
   const totalCount = levelCardsResponse?.total || 0;
-  const displayCards = selectedLevel ? levelCards : allCards || [];
+  
+  // Memoize displayCards to prevent dependency warnings
+  const displayCards = React.useMemo(() => 
+    selectedLevel ? levelCards : allCards || [], 
+    [selectedLevel, levelCards, allCards]
+  );
 
   // Group cards by responsive columns - Memoized
   const groupedCards = React.useMemo(() => {
