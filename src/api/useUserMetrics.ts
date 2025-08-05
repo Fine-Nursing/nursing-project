@@ -17,6 +17,7 @@ export interface UserMetrics {
   experienceLevel: number;
   careerGrowth: number;
   marketCompetitiveness: number;
+  [key: string]: number; // 인덱스 시그니처 추가
 }
 
 export interface MetricsResponse {
