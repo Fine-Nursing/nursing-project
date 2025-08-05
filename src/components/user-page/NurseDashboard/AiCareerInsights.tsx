@@ -31,13 +31,15 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
         </div>
       </div>
       <p className="text-xs sm:text-sm mb-3 leading-relaxed">
-        {isLoading ? (
-          <span className="text-slate-400">Loading insights...</span>
-        ) : allInsights?.growth ? (
-          allInsights.growth
-        ) : (
-          "Your compensation is well-positioned for your experience level. You can expect ~15-18% growth in 3 years by staying in your current role."
-        )}
+        {(() => {
+          if (isLoading) {
+            return <span className="text-slate-400">Loading insights...</span>;
+          }
+          if (allInsights?.growth) {
+            return allInsights.growth;
+          }
+          return "Your compensation is well-positioned for your experience level. You can expect ~15-18% growth in 3 years by staying in your current role.";
+        })()}
       </p>
       <div
         className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl border mb-3 ${
@@ -51,17 +53,21 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
           <span className="text-xs sm:text-sm font-medium">Growth Opportunities</span>
         </div>
         <ul className="pl-3 sm:pl-4 text-xs space-y-1">
-          {isLoading ? (
-            <li className="text-slate-400">Loading skills insights...</li>
-          ) : allInsights?.skills ? (
-            <li className="leading-relaxed">{allInsights.skills}</li>
-          ) : (
-            <>
-              <li>Critical Care certification: +8-12% potential</li>
-              <li>Leadership training: +5-7% potential</li>
-              <li>Trauma specialization: +7-10% potential</li>
-            </>
-          )}
+          {(() => {
+            if (isLoading) {
+              return <li className="text-slate-400">Loading skills insights...</li>;
+            }
+            if (allInsights?.skills) {
+              return <li className="leading-relaxed">{allInsights.skills}</li>;
+            }
+            return (
+              <>
+                <li>Critical Care certification: +8-12% potential</li>
+                <li>Leadership training: +5-7% potential</li>
+                <li>Trauma specialization: +7-10% potential</li>
+              </>
+            );
+          })()}
         </ul>
       </div>
       <div className="text-xs flex flex-col sm:flex-row sm:justify-between opacity-60 gap-1 sm:gap-0">

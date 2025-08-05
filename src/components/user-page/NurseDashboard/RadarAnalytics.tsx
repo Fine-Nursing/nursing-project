@@ -207,7 +207,7 @@ export default function RadarAnalytics({
                 fill={theme === 'light' ? '#374151' : '#e5e7eb'}
                 dy="4"
               >
-                {cat.length > 12 ? cat.substring(0, 10) + '...' : cat}
+                {cat.length > 12 ? `${cat.substring(0, 10)}...` : cat}
               </text>
             );
           })}
@@ -228,34 +228,40 @@ export default function RadarAnalytics({
         >
           AI Career Insights
         </p>
-        {isInsightsLoading ? (
-          <p className="text-slate-400 text-xs">Loading AI insights...</p>
-        ) : allInsights?.market || allInsights?.compensation ? (
-          <div className="space-y-2">
-            {allInsights.market && (
-              <div>
-                <p className="font-medium text-xs mb-1">Market Analysis:</p>
-                <p className="text-xs leading-relaxed">{allInsights.market}</p>
+        {(() => {
+          if (isInsightsLoading) {
+            return <p className="text-slate-400 text-xs">Loading AI insights...</p>;
+          }
+          if (allInsights?.market || allInsights?.compensation) {
+            return (
+              <div className="space-y-2">
+                {allInsights.market && (
+                  <div>
+                    <p className="font-medium text-xs mb-1">Market Analysis:</p>
+                    <p className="text-xs leading-relaxed">{allInsights.market}</p>
+                  </div>
+                )}
+                {allInsights.compensation && (
+                  <div>
+                    <p className="font-medium text-xs mb-1">Compensation Insights:</p>
+                    <p className="text-xs leading-relaxed">{allInsights.compensation}</p>
+                  </div>
+                )}
               </div>
-            )}
-            {allInsights.compensation && (
-              <div>
-                <p className="font-medium text-xs mb-1">Compensation Insights:</p>
-                <p className="text-xs leading-relaxed">{allInsights.compensation}</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <ul
-            className={`list-disc list-inside space-y-1 text-xs ${
-              theme === 'light' ? 'text-gray-700' : 'text-gray-200'
-            }`}
-          >
-            {Object.keys(metricAnalysis).slice(0, 3).map((key) => (
-              <li key={key} className="leading-relaxed">{metricAnalysis[key]}</li>
-            ))}
-          </ul>
-        )}
+            );
+          }
+          return (
+            <ul
+              className={`list-disc list-inside space-y-1 text-xs ${
+                theme === 'light' ? 'text-gray-700' : 'text-gray-200'
+              }`}
+            >
+              {Object.keys(metricAnalysis).slice(0, 3).map((key) => (
+                <li key={key} className="leading-relaxed">{metricAnalysis[key]}</li>
+              ))}
+            </ul>
+          );
+        })()}
       </div>
     </div>
   );

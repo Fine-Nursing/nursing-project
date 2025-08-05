@@ -1,5 +1,4 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import queryKeys from 'src/constants/queryKeys';
 import type { SortOrder, ExperienceGroup } from 'src/types/common';
 import type {
@@ -7,16 +6,7 @@ import type {
   ShiftType,
   NursingPosition,
 } from 'src/types/nursing';
-
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+import { apiClient } from 'src/lib/axios';
 
 // API specific types
 interface NursingTableMeta {

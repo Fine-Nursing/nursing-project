@@ -31,8 +31,8 @@ interface AllInsights {
 }
 
 // 특정 타입의 인사이트 가져오기
-export const useAiInsight = (summaryType: SummaryType) => {
-  return useQuery<AiInsight>({
+export const useAiInsight = (summaryType: SummaryType) =>
+  useQuery<AiInsight>({
     queryKey: ['ai-insight', summaryType],
     queryFn: async () => {
       const { data } = await apiClient.get(`/api/ai-insights/${summaryType}`);
@@ -42,11 +42,10 @@ export const useAiInsight = (summaryType: SummaryType) => {
     gcTime: 10 * 60 * 1000, // 10분
     retry: 1,
   });
-};
 
 // 모든 인사이트 가져오기
-export const useAllAiInsights = () => {
-  return useQuery<AllInsights>({
+export const useAllAiInsights = () =>
+  useQuery<AllInsights>({
     queryKey: ['ai-insights-all'],
     queryFn: async () => {
       const { data } = await apiClient.get('/api/ai-insights/all');
@@ -56,12 +55,9 @@ export const useAllAiInsights = () => {
     gcTime: 10 * 60 * 1000, // 10분
     retry: 1,
   });
-};
 
 // 인사이트 재생성
-export const useGenerateInsight = () => {
-  return async (summaryType: SummaryType) => {
-    const { data } = await apiClient.post(`/api/ai-insights/${summaryType}`);
-    return data.data;
-  };
+export const useGenerateInsight = () => async (summaryType: SummaryType) => {
+  const { data } = await apiClient.post(`/api/ai-insights/${summaryType}`);
+  return data.data;
 };

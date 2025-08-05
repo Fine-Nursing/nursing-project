@@ -31,8 +31,8 @@ interface WageDistributionParams {
   city?: string;
 }
 
-export const useWageDistribution = (params?: WageDistributionParams) => {
-  return useQuery<WageDistributionResponse>({
+const useWageDistribution = (params?: WageDistributionParams) =>
+  useQuery<WageDistributionResponse>({
     queryKey: ['wageDistribution', params],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
@@ -48,4 +48,5 @@ export const useWageDistribution = (params?: WageDistributionParams) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
-};
+
+export default useWageDistribution;

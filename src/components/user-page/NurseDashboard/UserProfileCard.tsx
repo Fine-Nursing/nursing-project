@@ -114,13 +114,15 @@ export default function UserProfileCard({
               <Smile className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
             </div>
             <div className="text-center sm:text-left">
-              <span className="font-medium">AI Advisor:</span> {isLoading ? (
-                <span className="text-slate-400">Loading insights...</span>
-              ) : careerInsight?.insight ? (
-                <span className="leading-relaxed">{careerInsight.insight}</span>
-              ) : (
-                <span className="leading-relaxed">You're on track for a 3-5% raise soon. Consider trauma specialization for +8-12% market value.</span>
-              )}
+              <span className="font-medium">AI Advisor:</span> {(() => {
+                if (isLoading) {
+                  return <span className="text-slate-400">Loading insights...</span>;
+                }
+                if (careerInsight?.insight) {
+                  return <span className="leading-relaxed">{careerInsight.insight}</span>;
+                }
+                return <span className="leading-relaxed">You&apos;re on track for a 3-5% raise soon. Consider trauma specialization for +8-12% market value.</span>;
+              })()}
             </div>
           </div>
         </div>

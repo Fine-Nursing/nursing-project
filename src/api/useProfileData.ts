@@ -1,6 +1,6 @@
 // src/hooks/api/useProfileApi.ts
 import { useQuery } from '@tanstack/react-query';
-import apiClient from 'src/lib/axios';
+import axiosApiClient from 'src/lib/axios';
 
 import queryKeys from 'src/constants/queryKeys';
 
@@ -22,7 +22,7 @@ interface UserProfileResponse {
 
 // API function
 const fetchMyProfile = async (): Promise<UserProfileData> => {
-  const { data } = await apiClient.get<UserProfileResponse>('/api/profile/me');
+  const { data } = await axiosApiClient.get<UserProfileResponse>('/api/profile/me');
 
   if (!data.success || !data.data) {
     throw new Error('Failed to fetch profile data');

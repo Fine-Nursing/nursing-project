@@ -38,6 +38,17 @@
       }
     ],
     "@typescript-eslint/lines-between-class-members": "off",
-    "@typescript-eslint/no-throw-literal": "off"
+    "@typescript-eslint/no-throw-literal": "off",
+    "no-alert": "warn",
+    "no-console": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/no-unused-vars": ["error", { "ignoreRestSiblings": true }],
+    "no-nested-ternary": "error",
+    "react/button-has-type": "error",
+    "react/no-array-index-key": "error",
+    "import/first": "warn",
+    "react/state-in-constructor": "off",
+    "react/destructuring-assignment": "warn",
+    "@typescript-eslint/consistent-type-imports": "warn"
   }
 }

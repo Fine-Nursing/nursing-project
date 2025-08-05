@@ -11,7 +11,7 @@ import {
   useSpecialtyList,
 } from 'src/api/useSpecialties';
 import { findStateByCode, useStates } from 'src/api/useLocations';
-import { useIsMobile } from 'src/hooks/useIsMobile';
+import useIsMobile from 'src/hooks/useIsMobile';
 import LocationSelector from './LocationSelector';
 import FilterSection from './FilterSections';
 import Chart from './Chart';

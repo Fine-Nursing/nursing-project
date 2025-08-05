@@ -17,7 +17,6 @@ export default function WelcomePage() {
     existingProgress,
     continueFromLastStep,
     resetOnboarding,
-    tempUserId,
   } = useOnboardingStore();
 
   // 모든 온보딩이 완료된 경우 처리

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useIsMobile(breakpoint: number = 768) {
+const useIsMobile = (breakpoint: number = 768) => {
   // 초기값은 항상 false로 설정하여 서버와 클라이언트가 동일하게 시작
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -10,6 +10,7 @@ export function useIsMobile(breakpoint: number = 768) {
     
     const checkIsMobile = () => {
       const mobile = window.innerWidth < breakpoint;
+      // eslint-disable-next-line no-console
       console.log(`useIsMobile: width=${window.innerWidth}, breakpoint=${breakpoint}, isMobile=${mobile}`);
       setIsMobile(mobile);
     };
@@ -31,4 +32,6 @@ export function useIsMobile(breakpoint: number = 768) {
   }
 
   return isMobile;
-}
+};
+
+export default useIsMobile;

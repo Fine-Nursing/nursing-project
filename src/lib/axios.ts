@@ -91,6 +91,7 @@ apiClient.interceptors.response.use(
       
       // 개발 환경에서는 상세 정보도 콘솔에 출력
       if (process.env.NODE_ENV === 'development') {
+        // eslint-disable-next-line no-console
         console.error('API Error:', {
           url: error.config?.url,
           method: error.config?.method,
@@ -112,67 +113,16 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Request 인터셉터 - 로딩 상태 관리 (선택적)
-let activeRequests = 0;
-
+// Request 인터셉터 - 요청 로깅 (개발 환경)
 apiClient.interceptors.request.use(
   (config) => {
-    activeRequests++;
-    
-    // 로딩 인디케이터 표시 (필요한 경우)
-    // 여기서는 각 컴포넌트에서 자체 로딩 상태를 관리하므로 생략
-    
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log('API Request:', config.method?.toUpperCase(), config.url);
+    }
     return config;
   },
-  (error) => {
-    activeRequests--;
-    return Promise.reject(error);
-  }
-);
-
-// Response 인터셉터에도 activeRequests 감소 추가
-apiClient.interceptors.response.use(
-  (response) => {
-    activeRequests--;
-    return response;
-  },
-  (error) => {
-    activeRequests--;
-    
-    // 위의 에러 처리 로직...
-    if (error.response?.status === 401) {
-      const isAuthEndpoint = error.config?.url?.includes('/auth/');
-      const isPublicEndpoint = error.config?.url?.includes('/dashboard/compensation-cards');
-      
-      if (!isAuthEndpoint && !isPublicEndpoint) {
-        toast.error('Please login to continue', {
-          icon: '🔐',
-          duration: 4000,
-        });
-      }
-    } else {
-      const errorMessage = getErrorMessage(error);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.error('API Error:', {
-          url: error.config?.url,
-          method: error.config?.method,
-          status: error.response?.status,
-          data: error.response?.data,
-          message: errorMessage,
-        });
-      }
-      
-      toast.error(errorMessage, {
-        duration: 5000,
-        style: {
-          maxWidth: '500px',
-        },
-      });
-    }
-    
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 export default apiClient;

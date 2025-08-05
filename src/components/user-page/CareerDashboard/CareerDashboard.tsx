@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-import { useCareerHistory } from 'src/api/useCareerHistory';
+import useCareerHistory from 'src/api/useCareerHistory';
 import { useMyCompensation } from 'src/api/useCompensation';
 import {
   Sparkles,
@@ -288,7 +288,7 @@ function CareerDashboard({
     ), [careerData]
   );
 
-  const { totalMonths, totalYears, remainingMonths } = useMemo(() => {
+  const { totalYears, remainingMonths } = useMemo(() => {
     const months = sortedCareerData.reduce((total, item) => {
       const startDate = dayjs(item.startDate);
       const endDate = item.endDate ? dayjs(item.endDate) : dayjs();
@@ -296,7 +296,6 @@ function CareerDashboard({
     }, 0);
     
     return {
-      totalMonths: months,
       totalYears: Math.floor(months / 12),
       remainingMonths: months % 12
     };
@@ -309,10 +308,6 @@ function CareerDashboard({
     [sortedCareerData]
   );
 
-  const highestSalary = useMemo(() => 
-    Math.max(...sortedCareerData.map((item) => item.hourlyRate)),
-    [sortedCareerData]
-  );
   
   const annualSalary = compensationData?.annualSalary || 0;
 

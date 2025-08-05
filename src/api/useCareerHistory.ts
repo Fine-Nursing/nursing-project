@@ -28,8 +28,8 @@ interface CareerHistoryResponse {
   data: CareerHistoryItem[];
 }
 
-export const useCareerHistory = () => {
-  return useQuery<CareerHistoryItem[]>({
+const useCareerHistory = () =>
+  useQuery<CareerHistoryItem[]>({
     queryKey: ['careerHistory'],
     queryFn: async () => {
       const { data } = await apiClient.get<CareerHistoryResponse>(
@@ -40,4 +40,5 @@ export const useCareerHistory = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
-};
+
+export default useCareerHistory;

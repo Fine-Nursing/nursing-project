@@ -11,7 +11,7 @@ import {
   Tooltip,
   type TooltipProps,
 } from 'recharts';
-import { useCareerProgression } from 'src/api/useCareerProgression';
+import useCareerProgression from 'src/api/useCareerProgression';
 
 import type { CareerItem } from './types';
 
@@ -97,6 +97,7 @@ const customBouncingBar = (props: any, theme = 'light') => {
 };
 
 export default function ProgressionBarChart({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   careerData,
   theme = 'light',
 }: ProgressionBarChartProps) {

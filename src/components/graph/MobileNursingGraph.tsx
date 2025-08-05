@@ -6,9 +6,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { ExperienceGroup } from 'src/types/common';
 import {
   useSpecialtyAverageCompensation,
-  useSpecialtyList,
 } from 'src/api/useSpecialties';
 import { useStates } from 'src/api/useLocations';
+
+function getTrendByIndex(index: number): 'up' | 'down' | 'stable' {
+  if (index < 3) return 'up';
+  if (index > 7) return 'down';
+  return 'stable';
+}
 
 interface MobileFilterPanelProps {
   selectedLocations: string[];
@@ -46,7 +51,7 @@ function MobileFilterPanel({
     >
       <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
         <h3 className="text-lg font-semibold">Filters</h3>
-        <button onClick={onClose} className="p-2">
+        <button type="button" onClick={onClose} className="p-2">
           <X size={20} />
         </button>
       </div>
@@ -58,6 +63,7 @@ function MobileFilterPanel({
           <div className="grid grid-cols-2 gap-2">
             {experienceOptions.map((option) => (
               <button
+                type="button"
                 key={option.value}
                 onClick={() => {
                   setSelectedExperience(
@@ -83,9 +89,10 @@ function MobileFilterPanel({
           <h4 className="font-medium mb-3">Popular Locations</h4>
           <div className="grid grid-cols-3 gap-2">
             {popularStates.map((stateCode) => {
-              const state = states?.find((s: any) => s.code === stateCode);
+              const stateName = states?.find((s: any) => s.code === stateCode)?.name || stateCode;
               return (
                 <button
+                  type="button"
                   key={stateCode}
                   onClick={() => {
                     setSelectedLocations(
@@ -100,7 +107,7 @@ function MobileFilterPanel({
                       : 'border-gray-200 text-gray-700'
                   }`}
                 >
-                  {stateCode}
+                  {stateName}
                 </button>
               );
             })}
@@ -110,6 +117,7 @@ function MobileFilterPanel({
         {/* Clear Filters */}
         {(selectedLocations.length > 0 || selectedExperience.length > 0) && (
           <button
+            type="button"
             onClick={() => {
               setSelectedLocations([]);
               setSelectedExperience([]);
@@ -123,6 +131,7 @@ function MobileFilterPanel({
 
       <div className="sticky bottom-0 bg-white border-t p-4">
         <button
+          type="button"
           onClick={onClose}
           className="w-full py-3 bg-purple-600 text-white rounded-lg font-medium"
         >
@@ -144,9 +153,13 @@ function SpecialtyCard({
   rank: number;
   trend?: 'up' | 'down' | 'stable';
 }) {
-  const trendIcon = trend === 'up' ? <TrendingUp size={16} className="text-green-600" /> :
-                    trend === 'down' ? <TrendingDown size={16} className="text-red-600" /> :
-                    null;
+  const getTrendIcon = () => {
+    if (trend === 'up') return <TrendingUp size={16} className="text-green-600" />;
+    if (trend === 'down') return <TrendingDown size={16} className="text-red-600" />;
+    return null;
+  };
+  
+  const trendIcon = getTrendIcon();
 
   return (
     <motion.div
@@ -208,7 +221,6 @@ export default function MobileNursingGraph() {
   const [viewMode, setViewMode] = useState<'top' | 'search'>('top');
 
   const { data: states } = useStates();
-  const { data: specialtyList } = useSpecialtyList(searchTerm);
 
   const {
     data: compensations,
@@ -254,6 +266,7 @@ export default function MobileNursingGraph() {
 
           {/* Filter Button */}
           <button
+            type="button"
             onClick={() => setShowFilters(true)}
             className="mt-3 flex items-center gap-2 text-sm text-purple-600 font-medium"
           >
@@ -277,6 +290,7 @@ export default function MobileNursingGraph() {
                   <MapPin size={10} />
                   {loc}
                   <button
+                    type="button"
                     onClick={() => setSelectedLocations(selectedLocations.filter(l => l !== loc))}
                     className="ml-1"
                   >
@@ -291,6 +305,7 @@ export default function MobileNursingGraph() {
                 >
                   {exp}
                   <button
+                    type="button"
                     onClick={() => setSelectedExperience(selectedExperience.filter(e => e !== exp))}
                     className="ml-1"
                   >
@@ -341,7 +356,7 @@ export default function MobileNursingGraph() {
                   specialty={item.specialty}
                   data={item}
                   rank={index + 1}
-                  trend={index < 3 ? 'up' : index > 7 ? 'down' : 'stable'}
+                  trend={getTrendByIndex(index)}
                 />
               ))}
             </div>
