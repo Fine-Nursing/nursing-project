@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspens
 import type { Variants } from 'framer-motion';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Filter, X } from 'lucide-react';
-import { useIsMobile } from 'src/hooks/useIsMobile';
+import useIsMobile from 'src/hooks/useIsMobile';
 
 // Lazy load MobileCardBoard to avoid SSR issues
 const MobileCardBoard = lazy(() => import('./CardBoard/MobileCardBoard'));
