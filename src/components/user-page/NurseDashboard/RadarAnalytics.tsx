@@ -207,7 +207,7 @@ export default function RadarAnalytics({
                 fill={theme === 'light' ? '#374151' : '#e5e7eb'}
                 dy="4"
               >
-                {cat.length > 12 ? cat.substring(0, 10) + '...' : cat}
+                {cat.length > 12 ? `${cat.substring(0, 10)}...` : cat}
               </text>
             );
           })}
@@ -230,7 +230,7 @@ export default function RadarAnalytics({
         </p>
         {isInsightsLoading ? (
           <p className="text-slate-400 text-xs">Loading AI insights...</p>
-        ) : allInsights?.market || allInsights?.compensation ? (
+        ) : (allInsights?.market || allInsights?.compensation) ? (
           <div className="space-y-2">
             {allInsights.market && (
               <div>

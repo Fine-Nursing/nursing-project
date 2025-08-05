@@ -8,7 +8,7 @@ interface NextStepsProps {
 }
 
 export default function NextSteps({ theme }: NextStepsProps) {
-  const { data, isLoading, error } = useParsedNextSteps();
+  const { data, isLoading } = useParsedNextSteps();
 
   // 로딩 상태
   if (isLoading) {
@@ -72,8 +72,8 @@ export default function NextSteps({ theme }: NextStepsProps) {
         </div>
       </div>
       <ol className="list-decimal pl-4 sm:pl-5 text-xs sm:text-sm space-y-2 mb-3 sm:mb-4">
-        {steps.map((step, index) => (
-          <li key={index} className="leading-relaxed">{step}</li>
+        {steps.map((step) => (
+          <li key={step} className="leading-relaxed">{step}</li>
         ))}
       </ol>
       {opportunity && (

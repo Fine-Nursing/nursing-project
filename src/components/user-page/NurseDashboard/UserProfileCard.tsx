@@ -119,7 +119,7 @@ export default function UserProfileCard({
               ) : careerInsight?.insight ? (
                 <span className="leading-relaxed">{careerInsight.insight}</span>
               ) : (
-                <span className="leading-relaxed">You're on track for a 3-5% raise soon. Consider trauma specialization for +8-12% market value.</span>
+                <span className="leading-relaxed">You&apos;re on track for a 3-5% raise soon. Consider trauma specialization for +8-12% market value.</span>
               )}
             </div>
           </div>

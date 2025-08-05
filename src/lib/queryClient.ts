@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 
 // 공통 Query Client 설정
-export const queryClient = new QueryClient({
+const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // 에러 발생 시 자동 재시도 횟수
@@ -40,6 +40,7 @@ export const queryClient = new QueryClient({
 if (process.env.NODE_ENV === 'development') {
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'updated' && event.action?.type === 'error') {
+      // eslint-disable-next-line no-console
       console.error('Query Error:', {
         queryKey: event.query.queryKey,
         error: event.action.error,
@@ -47,3 +48,5 @@ if (process.env.NODE_ENV === 'development') {
     }
   });
 }
+
+export default queryClient;
