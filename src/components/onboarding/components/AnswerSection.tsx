@@ -70,33 +70,68 @@ const AnswersSection = memo(
           </div>
         ) : (
           <motion.div variants={itemVariants}>
-            <input
-              type={inputType} // 여기서 inputType 적용
-              value={currentValue}
-              onChange={(e) => onValueChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && currentValue) {
-                  onSubmit(currentValue);
-                }
+            <div className="relative">
+              <input
+                type={inputType}
+                value={currentValue}
+                onChange={(e) => onValueChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && currentValue) {
+                    onSubmit(currentValue);
+                  }
+                }}
+                placeholder={placeholder}
+                className="w-full p-4 pr-24 rounded-lg border-2 border-gray-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all duration-300"
+                min={inputType === 'number' ? 0 : undefined}
+                max={inputType === 'number' ? 50 : undefined}
+              />
+              <motion.button
+                type="button"
+                onClick={() => currentValue && onSubmit(currentValue)}
+                disabled={!currentValue}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white rounded-md text-sm font-medium transition-all duration-200 disabled:opacity-0 disabled:pointer-events-none"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ 
+                  opacity: currentValue ? 1 : 0, 
+                  scale: currentValue ? 1 : 0.9 
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <span className="flex items-center gap-1">
+                  Next
+                  <svg 
+                    className="w-4 h-4" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      strokeWidth={2} 
+                      d="M9 5l7 7-7 7" 
+                    />
+                  </svg>
+                </span>
+              </motion.button>
+            </div>
+            {/* 모바일을 위한 추가 버튼 (입력 필드 아래) */}
+            <motion.button
+              type="button"
+              onClick={() => currentValue && onSubmit(currentValue)}
+              disabled={!currentValue}
+              className="w-full mt-3 py-3 bg-slate-500 hover:bg-slate-600 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-0 disabled:pointer-events-none sm:hidden"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ 
+                opacity: currentValue ? 1 : 0, 
+                y: currentValue ? 0 : 10 
               }}
-              placeholder={placeholder}
-              className="w-full p-4 rounded-lg border-2 border-gray-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all duration-300"
-              // 숫자 입력 필드에 대한 추가 속성들
-              min={inputType === 'number' ? 0 : undefined}
-              max={inputType === 'number' ? 50 : undefined}
-            />
-            {inputType === 'number' && (
-              <div className="mt-3 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => currentValue && onSubmit(currentValue)}
-                  disabled={!currentValue}
-                  className="px-5 py-2 bg-slate-500 hover:bg-slate-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:bg-gray-400"
-                >
-                  Continue
-                </button>
-              </div>
-            )}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Continue →
+            </motion.button>
           </motion.div>
         )}
       </motion.div>
