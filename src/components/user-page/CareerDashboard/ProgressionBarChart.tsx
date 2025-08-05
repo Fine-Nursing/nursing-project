@@ -97,6 +97,7 @@ const customBouncingBar = (props: any, theme = 'light') => {
 };
 
 export default function ProgressionBarChart({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   careerData,
   theme = 'light',
 }: ProgressionBarChartProps) {

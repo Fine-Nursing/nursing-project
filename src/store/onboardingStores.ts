@@ -103,10 +103,13 @@ const useOnboardingStore = create<OnboardingStore>()(
 
       continueFromLastStep: () =>
         set((state) => {
+          // eslint-disable-next-line no-console
           console.log('=== continueFromLastStep 호출됨 ===');
+          // eslint-disable-next-line no-console
           console.log('existingProgress:', state.existingProgress);
           
           if (!state.existingProgress) {
+            // eslint-disable-next-line no-console
             console.log('existingProgress가 없음');
             return state;
           }
@@ -124,12 +127,14 @@ const useOnboardingStore = create<OnboardingStore>()(
             nextStep = 'account';
           } else {
             // 모든 단계가 완료된 경우
+            // eslint-disable-next-line no-console
             console.log('모든 온보딩이 완료됨, 완료 처리 필요');
             // 온보딩이 이미 완료되었으므로 대시보드로 리다이렉트
             window.location.href = '/dashboard';
             return state;
           }
 
+          // eslint-disable-next-line no-console
           console.log('다음 단계로 이동:', nextStep);
           return { currentStep: nextStep };
         }),

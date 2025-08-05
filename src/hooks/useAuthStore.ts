@@ -48,6 +48,7 @@ const useAuthStore = create<AuthState>()(
 
           if (response.ok) {
             const data = await response.json();
+            // eslint-disable-next-line no-console
             console.log('Auth check response:', data);
             const userData = data.user || data;
             set({
@@ -63,6 +64,7 @@ const useAuthStore = create<AuthState>()(
             });
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Auth check failed:', error);
           set({
             user: null,
@@ -91,6 +93,7 @@ const useAuthStore = create<AuthState>()(
             // router.push는 컴포넌트에서 처리
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Sign out error:', error);
           toast.error('Failed to sign out');
         }
