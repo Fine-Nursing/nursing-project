@@ -3,7 +3,9 @@
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect, lazy, Suspense } from 'react';
 import toast from 'react-hot-toast';
-
+import type { NursingTableParams } from 'src/api/useNursingTable';
+import { useNursingTable } from 'src/api/useNursingTable';
+import useAuthStore from 'src/hooks/useAuthStore';
 import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
 import { LoginModal, SignUpModal } from 'src/components/modal/Modal';
 import CardBoard from 'src/components/CardBoard';
@@ -11,9 +13,6 @@ import CardBoard from 'src/components/CardBoard';
 // Lazy load heavy components
 const NursingCompensationTable = lazy(() => import('src/components/table/NursingCompensationTable'));
 const NursingGraph = lazy(() => import('src/components/graph'));
-import type { NursingTableParams } from 'src/api/useNursingTable';
-import { useNursingTable } from 'src/api/useNursingTable';
-import useAuthStore from 'src/hooks/useAuthStore';
 
 export default function HomePage() {
   const router = useRouter();
@@ -109,6 +108,7 @@ export default function HomePage() {
         });
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('온보딩 시작 실패:', error);
       toast.error('Failed to start onboarding. Please try again.');
     }
@@ -134,10 +134,15 @@ export default function HomePage() {
 
   // 디버깅용 콘솔 로그
   useEffect(() => {
+    // eslint-disable-next-line no-console
     console.log('=== 온보딩 상태 확인 ===');
+    // eslint-disable-next-line no-console
     console.log('User 객체:', user);
+    // eslint-disable-next-line no-console
     console.log('hasCompletedOnboarding:', user?.hasCompletedOnboarding);
+    // eslint-disable-next-line no-console
     console.log('isCheckingAuth:', isCheckingAuth);
+    // eslint-disable-next-line no-console
     console.log('====================');
   }, [user, isCheckingAuth]);
 

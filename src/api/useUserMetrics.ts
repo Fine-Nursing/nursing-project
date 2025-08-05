@@ -25,8 +25,8 @@ export interface MetricsResponse {
   regionalAverageMetrics: UserMetrics;
 }
 
-export const useUserMetrics = () => {
-  return useQuery<MetricsResponse>({
+export const useUserMetrics = () =>
+  useQuery<MetricsResponse>({
     queryKey: ['user-metrics'],
     queryFn: async () => {
       const { data } = await apiClient.get('/api/dashboard/user-metrics');
@@ -35,4 +35,3 @@ export const useUserMetrics = () => {
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분
   });
-};

@@ -84,29 +84,38 @@ export default function UserPage() {
   // 사용자 메트릭 데이터 API 호출
   const {
     data: metricsData,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isMetricsLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: metricsError,
   } = useUserMetrics();
 
   // 차등수당 데이터 API 호출
   const {
     data: differentialsData,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isDifferentialsLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: differentialsError,
   } = useDifferentialsSummary();
 
   // 데이터 로깅 - 개발 시 확인용
   useEffect(() => {
     if (profileData) {
+      // eslint-disable-next-line no-console
       console.log('Profile Data:', profileData);
     }
   }, [profileData]);
 
   useEffect(() => {
     if (compensationData) {
+      // eslint-disable-next-line no-console
       console.log('Compensation Data:', compensationData);
+      // eslint-disable-next-line no-console
       console.log('Hourly Rate:', compensationData.hourlyRate);
+      // eslint-disable-next-line no-console
       console.log('Annual Salary:', compensationData.annualSalary);
+      // eslint-disable-next-line no-console
       console.log('Differentials:', compensationData.differentials);
     }
   }, [compensationData]);
