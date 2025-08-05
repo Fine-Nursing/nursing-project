@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import type { Variants } from 'framer-motion';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Filter, X } from 'lucide-react';

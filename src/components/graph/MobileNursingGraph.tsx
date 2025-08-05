@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { ExperienceGroup } from 'src/types/common';
 import {
   useSpecialtyAverageCompensation,
-  useSpecialtyList,
 } from 'src/api/useSpecialties';
 import { useStates } from 'src/api/useLocations';
 
@@ -83,7 +82,7 @@ function MobileFilterPanel({
           <h4 className="font-medium mb-3">Popular Locations</h4>
           <div className="grid grid-cols-3 gap-2">
             {popularStates.map((stateCode) => {
-              const state = states?.find((s: any) => s.code === stateCode);
+              const stateName = states?.find((s: any) => s.code === stateCode)?.name || stateCode;
               return (
                 <button
                   key={stateCode}
@@ -100,7 +99,7 @@ function MobileFilterPanel({
                       : 'border-gray-200 text-gray-700'
                   }`}
                 >
-                  {stateCode}
+                  {stateName}
                 </button>
               );
             })}
@@ -208,7 +207,6 @@ export default function MobileNursingGraph() {
   const [viewMode, setViewMode] = useState<'top' | 'search'>('top');
 
   const { data: states } = useStates();
-  const { data: specialtyList } = useSpecialtyList(searchTerm);
 
   const {
     data: compensations,
