@@ -1,52 +1,52 @@
 /**
- * User가 가진 직장 정보(문서) 구조
+ * Job information (document) structure owned by User
  */
 export interface JobDto {
-  /** DB 상의 고유 식별자 (예: UUID) */
-  jobID: string; // 예: "jobID1"
+  /** Unique identifier in DB (e.g.: UUID) */
+  jobID: string; // e.g.: "jobID1"
 
-  /** 병원/기관 관련 정보 */
-  organizationName: string; // 예: "ABC Hospital"
-  organizationEmploymentStartYear: number; // 예: 2020
-  organizationCity: string; // 예: "New York"
-  organizationState: string; // 예: "NY"
+  /** Hospital/organization related information */
+  organizationName: string; // e.g.: "ABC Hospital"
+  organizationEmploymentStartYear: number; // e.g.: 2020
+  organizationCity: string; // e.g.: "New York"
+  organizationState: string; // e.g.: "NY"
 
-  /** 실제 Job 세부 정보(원 문서에서 job_details에 해당) */
+  /** Actual Job detailed information (corresponds to job_details in original document) */
   job_details: {
-    nursingRole: string; // 예: "Registered Nurse"
-    specialty: string; // 예: "Cardiology"
-    subSpecialty: string; // 예: "Pediatric Cardiology"
-    shiftType: string; // 예: "Night"
-    employmentType: string; // 예: "Full-time"
-    basePay: number; // 예: 45
-    basePay_unit: string; // 예: "hourly"
-    nurseToPatientRatio: string; // 예: "1:4"
-    certifications: string[]; // 예: ["ACLS", "BLS", "PALS"]
-    unionized: boolean; // 예: true
+    nursingRole: string; // e.g.: "Registered Nurse"
+    specialty: string; // e.g.: "Cardiology"
+    subSpecialty: string; // e.g.: "Pediatric Cardiology"
+    shiftType: string; // e.g.: "Night"
+    employmentType: string; // e.g.: "Full-time"
+    basePay: number; // e.g.: 45
+    basePay_unit: string; // e.g.: "hourly"
+    nurseToPatientRatio: string; // e.g.: "1:4"
+    certifications: string[]; // e.g.: ["ACLS", "BLS", "PALS"]
+    unionized: boolean; // e.g.: true
   };
 
-  /** 수당/디퍼렌셜 관련 정보 */
+  /** Allowance/differential related information */
   differentials: {
-    totalDifferential: number; // 예: 20
+    totalDifferential: number; // e.g.: 20
     differentialsFreeText: string;
-    // 예: "Bonuses for advanced certifications."
+    // e.g.: "Bonuses for advanced certifications."
 
     individualDifferentials: Array<{
-      type: string; // 예: "Night Shift"
-      amount: number; // 예: 10
+      type: string; // e.g.: "Night Shift"
+      amount: number; // e.g.: 10
     }>;
   };
 
-  /** 조직 문화 관련 정보 */
+  /** Organization culture related information */
   culture: {
-    unitFeedback: string; // 예: "One thing the unit does well is patient care..."
-    unitCultureRating: number; // 예: 8
+    unitFeedback: string; // e.g.: "One thing the unit does well is patient care..."
+    unitCultureRating: number; // e.g.: 8
   };
 
-  /** 경력 히스토리 정보 */
+  /** Career history information */
   historicalInfo: {
-    startDate: string; // 예: "2020-01-01"
-    endDate: string | null; // 예: null
-    yearsInJob: number; // 예: 5
+    startDate: string; // e.g.: "2020-01-01"
+    endDate: string | null; // e.g.: null
+    yearsInJob: number; // e.g.: 5
   };
 }

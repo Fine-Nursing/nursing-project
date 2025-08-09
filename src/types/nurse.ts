@@ -1,11 +1,11 @@
 import type { Column } from 'react-table';
 
-// 기본 타입 정의
+// Basic type definitions
 export type NurseAvatar = '👩‍⚕️' | '👨‍⚕️';
 export type ShiftType = 'Day' | 'Night';
 export type Region = 'Northeast' | 'South' | 'Midwest' | 'West';
 
-// 기본 간호사 정보 인터페이스
+// Basic nurse information interface
 export interface BaseNurseInfo {
   id: string;
   location: string;
@@ -15,13 +15,13 @@ export interface BaseNurseInfo {
   salary: string;
 }
 
-// 간호사 프로필
+// Nurse profile
 export interface NurseProfile extends BaseNurseInfo {
   role: string;
   avatar: NurseAvatar;
 }
 
-// 간호사 카드 컴포넌트 Props
+// Nurse card component Props
 export interface NurseCardProps {
   title: string;
   subtitle: string;
@@ -29,7 +29,7 @@ export interface NurseCardProps {
   nurseInfo: NurseProfile;
 }
 
-// 간호사 포지션
+// Nurse position
 export interface NursePosition {
   id: string;
   title: string;
@@ -38,7 +38,7 @@ export interface NursePosition {
   nurseInfo: NurseProfile;
 }
 
-// 보상/급여 관련
+// Compensation/salary related
 export interface CompensationDataPoint {
   hourly: number;
   concentration: number;
@@ -60,7 +60,7 @@ export interface CompensationStats {
   verifiedNurses: number;
 }
 
-// 테이블 관련
+// Table related
 export interface NurseTableData extends BaseNurseInfo {
   user: string;
   shiftType: ShiftType;
@@ -79,7 +79,7 @@ export interface NurseTableProps {
   enablePagination?: boolean;
 }
 
-// 지역 및 상태 관련
+// Region and state related
 export interface State {
   value: string;
   label: string;
@@ -91,7 +91,7 @@ export type RegionGroup = {
   [key in Region]: State[];
 };
 
-// 전문 분야 관련
+// Specialty related
 export interface NursingSpecialty {
   specialty: string;
   'Base Pay': number;
@@ -100,20 +100,20 @@ export interface NursingSpecialty {
   state: string;
 }
 
-// 필터 및 상태 관련
+// Filter and state related
 export interface FilterState {
   searchTerm: string;
   salaryRange: [number, number];
   selectedLocations: string[];
 }
 
-// 차트 관련
+// Chart related
 export interface ChartProps {
   data: NursingSpecialty[];
   CustomTooltip: React.ComponentType<any>;
 }
 
-// 컴포넌트 Props
+// Component Props
 export interface LocationSelectorProps {
   selectedLocations: string[];
   onLocationChange: (locations: string[]) => void;

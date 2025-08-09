@@ -62,7 +62,7 @@ export const DIFFERENTIALS = {
   HOLIDAY: 7.5,
 };
 
-// 베이스 페이
+// Base pay
 export const UNIT_BASE_PAY = {
   MedSurg: { min: 32, max: 45 },
   ICU: { min: 36, max: 52 },
@@ -96,10 +96,10 @@ export const ACUITY_STAFFING = {
   Psychiatric: { nurseToPatient: '1:6' },
   OR: { nurseToPatient: '1:1' },
 
-  // 누락된 키 추가:
+  // Add missing keys:
   Oncology: { nurseToPatient: '1:4' },
-  Psych: { nurseToPatient: '1:6' }, // 혹은 동일하게 처리
-  'Float Pool': { nurseToPatient: 'N/A' }, // 임의
+  Psych: { nurseToPatient: '1:6' }, // Or handle the same way
+  'Float Pool': { nurseToPatient: 'N/A' }, // Arbitrary
 };
 
 export const CONTRACT_REQUIREMENTS = {

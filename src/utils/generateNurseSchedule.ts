@@ -3,12 +3,12 @@
 import { DIFFERENTIALS, UNIT_BASE_PAY, HOLIDAYS } from './constants';
 
 type UnitKey = keyof typeof UNIT_BASE_PAY;
-// 타입 예시
+// Type example
 interface GenerateNurseScheduleOptions {
   startDate: Date;
   totalWeeks: number;
   shiftPattern: string;
-  unitType: UnitKey; // 여기서 string 말고, UnitKey 사용!
+  unitType: UnitKey; // Use UnitKey here instead of string!
   maxWeeklyHours: number;
   preferNight: boolean;
   maxConsecutiveShifts: number;
@@ -21,7 +21,7 @@ interface GenerateNurseScheduleOptions {
   preceptorDuty: boolean;
 }
 
-// 1) scheduleShift 함수 먼저 선언
+// 1) Declare scheduleShift function first
 function scheduleShift(
   date: Date,
   isNightShift: boolean,
@@ -37,9 +37,9 @@ function scheduleShift(
 
   let shiftLabel = '';
   let shiftCode = '';
-  let startHour = 7; // 기본 Day shift
+  let startHour = 7; // Default Day shift
 
-  // no-lonely-if 규칙 회피: if/else if/else 형태
+  // Avoid no-lonely-if rule: use if/else if/else format
   if (hours === 12 && isNightShift) {
     startHour = 19;
     shiftLabel = isWeekend ? 'Weekend Night (7PM-7AM)' : 'Night (7PM-7AM)';
@@ -49,12 +49,12 @@ function scheduleShift(
     shiftLabel = isWeekend ? 'Weekend Day (7AM-7PM)' : 'Day (7AM-7PM)';
     shiftCode = isWeekend ? 'WD' : 'D';
   } else if (hours !== 12 && isNightShift) {
-    // 8시간 + Night
+    // 8 hours + Night
     startHour = 23;
     shiftLabel = isWeekend ? 'Weekend NOC (11PM-7AM)' : 'NOC (11PM-7AM)';
     shiftCode = isWeekend ? 'WNOC' : 'NOC';
   } else {
-    // 8시간 + Day
+    // 8 hours + Day
     startHour = 7;
     shiftLabel = isWeekend ? 'Weekend AM (7AM-3PM)' : 'AM (7AM-3PM)';
     shiftCode = isWeekend ? 'WA' : 'A';
@@ -65,7 +65,7 @@ function scheduleShift(
   const shiftEnd = new Date(shiftStart);
   shiftEnd.setHours(shiftStart.getHours() + hours);
 
-  // 차등 계산
+  // Calculate differentials
   let diffAmt = 0;
   const diffList: string[] = [];
 
@@ -110,7 +110,7 @@ function scheduleShift(
   return { event, earnings };
 }
 
-// 2) generateNurseSchedule 함수
+// 2) generateNurseSchedule function
 function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
   const {
     startDate,
@@ -134,7 +134,7 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
 
   const dayMs = 24 * 60 * 60 * 1000;
 
-  // 베이스페이 계산
+  // Calculate base pay
   const unitPay = UNIT_BASE_PAY[unitType] || UNIT_BASE_PAY.MedSurg;
   let basePay =
     unitPay.min +
@@ -144,7 +144,7 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
     basePay += DIFFERENTIALS.CERTIFICATION;
   }
 
-  // 기본 shiftDuration = 8
+  // Default shiftDuration = 8
   let shiftDuration = 8;
   if (
     shiftPattern === '3x12s' ||
@@ -154,7 +154,7 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
     shiftDuration = 12;
   }
 
-  // Off 날짜들
+  // Off dates
   const offTimestamps = (requestedDaysOff || []).map((d) =>
     new Date(d).getTime()
   );
@@ -167,7 +167,7 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
   for (let w = 0; w < totalWeeks; w += 1) {
     let weeklyHours = 0;
 
-    // 7on-7off 처리
+    // Handle 7on-7off pattern
     if (shiftPattern === '7on-7off') {
       const isOnWeek = w % 2 === 0;
       if (isOnWeek) {
@@ -185,16 +185,16 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
           currentDate = new Date(currentDate.getTime() + dayMs);
         }
       } else {
-        // off 주 (7일 패스)
+        // off week (skip 7 days)
         currentDate = new Date(currentDate.getTime() + 7 * dayMs);
       }
     } else {
-      // 그 외 패턴
+      // Other patterns
       for (let d = 0; d < 7; d += 1) {
         if (weeklyHours + shiftDuration <= maxWeeklyHours) {
           const dayStamp = currentDate.getTime();
           if (!offTimestamps.includes(dayStamp)) {
-            // 휴무가 아닌 날짜
+            // Non-holiday date
             let isWorkDay = false;
 
             if (shiftPattern === '5x8s' && d < 5) {
@@ -204,14 +204,14 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
             } else if (shiftPattern === 'Baylor') {
               isWorkDay = d === 5 || d === 6;
             } else if (shiftPattern === 'Block Scheduling') {
-              // 월-수-금
+              // Mon-Wed-Fri
               isWorkDay = d === 1 || d === 3 || d === 5;
             } else if (shiftPattern === 'Self-Scheduled' && selfScheduled) {
               isWorkDay = d % 3 !== 0;
             }
 
             if (isWorkDay) {
-              // 연속근무 검사
+              // Check consecutive shifts
               if (consecutiveShifts >= maxConsecutiveShifts) {
                 isWorkDay = false;
                 consecutiveShifts = 0;
@@ -243,11 +243,11 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
               }
             }
           } else {
-            // 오프 날짜
+            // Off date
             consecutiveShifts = 0;
           }
         }
-        // maxWeeklyHours 초과면 아무것도 안 함(shift skip)
+        // Skip shift if maxWeeklyHours exceeded
         currentDate = new Date(currentDate.getTime() + dayMs);
       }
     }

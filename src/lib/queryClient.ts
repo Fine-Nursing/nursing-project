@@ -1,42 +1,42 @@
 import { QueryClient } from '@tanstack/react-query';
 
-// 공통 Query Client 설정
+// Common Query Client configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // 에러 발생 시 자동 재시도 횟수
+      // Number of automatic retries on error
       retry: (failureCount, error: any) => {
-        // 401, 403, 404 에러는 재시도하지 않음
+        // Do not retry 401, 403, 404 errors
         if (error?.response?.status && [401, 403, 404].includes(error.response.status)) {
           return false;
         }
-        // 다른 에러는 최대 2번 재시도
+        // Retry other errors up to 2 times
         return failureCount < 2;
       },
       
-      // 재시도 지연 시간
+      // Retry delay time
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       
-      // 포커스 시 자동 리페치 비활성화 (필요시 개별 쿼리에서 활성화)
+      // Disable auto refetch on focus (enable individually per query if needed)
       refetchOnWindowFocus: false,
       
-      // 마운트 시 자동 리페치 비활성화 (필요시 개별 쿼리에서 활성화)
+      // Disable auto refetch on mount (enable individually per query if needed)
       refetchOnMount: true,
       
-      // 스테일 타임 기본값 (5분)
+      // Default stale time (5 minutes)
       staleTime: 5 * 60 * 1000,
       
-      // 가비지 컬렉션 타임 기본값 (10분)
+      // Default garbage collection time (10 minutes)
       gcTime: 10 * 60 * 1000,
     },
     mutations: {
-      // 뮤테이션 에러는 재시도하지 않음
+      // Do not retry mutation errors
       retry: false,
     },
   },
 });
 
-// 개발 환경에서 쿼리 디버깅
+// Query debugging in development environment
 if (process.env.NODE_ENV === 'development') {
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'updated' && event.action?.type === 'error') {
