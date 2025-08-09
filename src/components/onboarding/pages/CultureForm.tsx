@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import ActionButton from 'src/components/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 import useCultureMutation from 'src/api/onboarding/useCultureMutation';
 import toast from 'react-hot-toast';
+import { Users, DollarSign, TrendingUp, Building2, ChevronDown } from 'lucide-react';
+import AnimatedProgressBar from '../components/AnimatedProgressBar';
 
 // 평가 항목 정의
 const RATING_CATEGORIES = [
@@ -13,35 +15,35 @@ const RATING_CATEGORIES = [
     key: 'unitCulture' as const,
     label: 'Unit Culture & Teamwork',
     description: 'How well does your unit work together?',
-    icon: '👥',
+    icon: Users,
   },
   {
     key: 'benefits' as const,
     label: 'Benefits & Compensation',
     description: 'Quality of benefits package and compensation',
-    icon: '💰',
+    icon: DollarSign,
   },
   {
     key: 'growthOpportunities' as const,
     label: 'Growth & Development',
     description: 'Opportunities for professional growth',
-    icon: '📈',
+    icon: TrendingUp,
   },
   {
     key: 'hospitalQuality' as const,
     label: 'Hospital/Facility Quality',
     description: 'Overall quality of care and facilities',
-    icon: '🏥',
+    icon: Building2,
   },
 ];
 
 // 평가 점수 옵션
 const RATING_OPTIONS = [
-  { value: 1, label: 'Poor', emoji: '😟' },
-  { value: 2, label: 'Fair', emoji: '😐' },
-  { value: 3, label: 'Good', emoji: '🙂' },
-  { value: 4, label: 'Very Good', emoji: '😊' },
-  { value: 5, label: 'Excellent', emoji: '🤩' },
+  { value: 1, label: 'Poor' },
+  { value: 2, label: 'Fair' },
+  { value: 3, label: 'Good' },
+  { value: 4, label: 'Very Good' },
+  { value: 5, label: 'Excellent' },
 ];
 
 // 기존 리뷰 데이터
@@ -87,17 +89,18 @@ const existingReviews = [
   },
 ];
 
-export default function CultureForm() {
+export default function CultureForm(): JSX.Element {
   const { formData, updateFormData, setStep } = useOnboardingStore();
   const cultureMutation = useCultureMutation();
-  const [selectedReview, setSelectedReview] = useState<number | null>(1);
+  const [expandedReview, setExpandedReview] = useState<number | null>(null);
+  const [hoveredRating, setHoveredRating] = useState<{ category: string; value: number } | null>(null);
 
-  const handleRatingChange = (
+  const handleRatingChange = useCallback((
     category: keyof typeof formData,
     value: number
   ) => {
     updateFormData({ [category]: value });
-  };
+  }, [updateFormData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -143,8 +146,32 @@ export default function CultureForm() {
     return (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
   };
 
+  const getCompletedCategories = () => RATING_CATEGORIES.filter((cat) => formData[cat.key]).length;
+
+  const progress = (getCompletedCategories() / RATING_CATEGORIES.length) * 100;
+
   return (
     <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <AnimatedProgressBar 
+          progress={progress} 
+          showPercentage={false}
+          height="h-1"
+          className="max-w-2xl mx-auto"
+        />
+        <motion.div 
+          className="text-center mt-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <p className="text-sm text-gray-500">
+            {getCompletedCategories()} of {RATING_CATEGORIES.length} categories rated
+          </p>
+        </motion.div>
+      </div>
+
       {/* Header - Full Width */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -176,30 +203,47 @@ export default function CultureForm() {
                   Rate Your Experience
                 </h3>
                 <div className="space-y-4 sm:space-y-6">
-                  {RATING_CATEGORIES.map((category, index) => (
+                  {RATING_CATEGORIES.map((category, index) => {
+                    const Icon = category.icon;
+                    const isRated = !!formData[category.key];
+                    return (
                     <motion.div
                       key={category.key}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.1 + index * 0.05 }}
-                      className="space-y-2 sm:space-y-3"
+                      className={`space-y-3 p-3 rounded-lg transition-all ${
+                        isRated ? 'bg-emerald-50' : ''
+                      }`}
                     >
-                      <div className="flex items-start gap-2 sm:gap-3">
-                        <span className="text-xl sm:text-2xl mt-0.5 sm:mt-1">{category.icon}</span>
+                      <div className="flex items-start gap-3">
+                        <div className={`p-2 rounded-lg ${
+                          isRated ? 'bg-emerald-200' : 'bg-emerald-100'
+                        }`}>
+                          <Icon className="w-5 h-5 text-emerald-600" />
+                        </div>
                         <div className="flex-1">
-                          <h4 className="text-sm sm:text-base font-semibold text-gray-900">
+                          <h4 className="text-base font-semibold text-gray-900">
                             {category.label}
+                            {isRated && (
+                              <span className="ml-2 text-sm font-normal text-emerald-500">
+                                ✓
+                              </span>
+                            )}
                           </h4>
-                          <p className="text-xs text-gray-500 mt-0.5 sm:mt-1">
+                          <p className="text-xs text-gray-500 mt-0.5">
                             {category.description}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex gap-1.5 sm:gap-2 pl-0 sm:pl-10">
+                      <div className="flex gap-1.5 sm:gap-2 pl-0 sm:pl-11">
                         {RATING_OPTIONS.map((option) => {
                           const isSelected =
                             formData[category.key] === option.value;
+                          const isHovered = 
+                            hoveredRating?.category === category.key && 
+                            hoveredRating?.value === option.value;
                           return (
                             <button
                               key={option.value}
@@ -207,36 +251,49 @@ export default function CultureForm() {
                               onClick={() =>
                                 handleRatingChange(category.key, option.value)
                               }
+                              onMouseEnter={() => setHoveredRating({ category: category.key, value: option.value })}
+                              onMouseLeave={() => setHoveredRating(null)}
                               className={`
-                flex-1 min-h-[80px] sm:min-h-0 py-3 sm:py-3 px-1 sm:px-1 rounded-lg border-2 transition-all duration-200
-                ${
-                  isSelected
-                    ? 'border-slate-500 bg-slate-50 shadow-md scale-105'
-                    : 'border-gray-200 hover:border-slate-300 hover:shadow'
-                }
-              `}
+                                flex-1 min-h-[75px] py-3 px-1 rounded-lg border-2 transition-all duration-200
+                                ${
+                                  isSelected
+                                    ? 'border-emerald-500 bg-emerald-50 shadow-md scale-105'
+                                    : isHovered
+                                    ? 'border-emerald-300 shadow-sm scale-102'
+                                    : 'border-gray-200 hover:border-emerald-300'
+                                }
+                              `}
                             >
-                              <div className="text-center flex flex-col justify-center h-full">
-                                <div className="text-xl sm:text-xl mb-1">
-                                  {option.emoji}
-                                </div>
-                                <div
-                                  className={`text-xs sm:text-xs font-bold ${
-                                    isSelected
-                                      ? 'text-slate-700'
-                                      : 'text-gray-600'
-                                  }`}
-                                >
+                              <div className="text-center">
+                                <div className={`text-2xl font-bold mb-1 ${
+                                  isSelected
+                                    ? 'text-emerald-700'
+                                    : 'text-gray-500'
+                                }`}>
                                   {option.value}
                                 </div>
                                 <div
-                                  className={`text-[10px] sm:text-[10px] mt-0.5 hidden sm:block ${
+                                  className={`text-[11px] font-medium ${
                                     isSelected
-                                      ? 'text-slate-600'
+                                      ? 'text-emerald-600'
                                       : 'text-gray-400'
                                   }`}
                                 >
                                   {option.label}
+                                </div>
+                                <div className="flex justify-center gap-0.5 mt-1">
+                                  {[...Array(5)].map((_, i) => (
+                                    <div
+                                      key={i}
+                                      className={`w-1.5 h-1.5 rounded-full ${
+                                        i < option.value
+                                          ? isSelected 
+                                            ? 'bg-emerald-600' 
+                                            : 'bg-gray-300'
+                                          : 'bg-gray-200'
+                                      }`}
+                                    />
+                                  ))}
                                 </div>
                               </div>
                             </button>
@@ -244,7 +301,8 @@ export default function CultureForm() {
                         })}
                       </div>
                     </motion.div>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
 
@@ -273,7 +331,7 @@ export default function CultureForm() {
                   rows={4}
                   placeholder="Share your thoughts about work environment, team dynamics, or suggestions for improvement..."
                   className="w-full p-3 sm:p-4 text-sm sm:text-base text-gray-700 bg-gray-50 border border-gray-200 rounded-xl
-                           focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-100 
+                           focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100 
                            outline-none transition-all resize-none"
                 />
               </motion.div>
@@ -291,7 +349,7 @@ export default function CultureForm() {
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className="text-center">
                     <div className="text-xs sm:text-sm text-gray-500">Overall Score</div>
-                    <div className="text-xl sm:text-2xl font-bold text-slate-600">
+                    <div className="text-xl sm:text-2xl font-bold text-emerald-600">
                       {calculateAverageScore()}/5.0
                     </div>
                   </div>
@@ -328,8 +386,6 @@ export default function CultureForm() {
             className="sticky top-8"
           >
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-              {' '}
-              {/* bg-gray-50을 bg-white로 변경, shadow-sm과 border 추가 */}
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 What your peers are saying
               </h3>
@@ -346,18 +402,18 @@ export default function CultureForm() {
                     className={`
                       bg-white p-5 rounded-xl border-2 transition-all cursor-pointer
                       ${
-                        selectedReview === review.id
-                          ? 'border-slate-400 shadow-lg'
+                        expandedReview === review.id
+                          ? 'border-emerald-400 shadow-lg'
                           : 'border-transparent hover:border-gray-200 hover:shadow-md'
                       }
                     `}
-                    onClick={() => setSelectedReview(review.id)}
+                    onClick={() => setExpandedReview(expandedReview === review.id ? null : review.id)}
                   >
                     {/* Review Header */}
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 
+                          className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 
                                       flex items-center justify-center text-white font-semibold"
                         >
                           {review.name.charAt(0)}
@@ -389,28 +445,28 @@ export default function CultureForm() {
                     {/* Ratings Summary */}
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">👥</span>
+                        <Users className="w-3 h-3 text-gray-400" />
                         <span className="text-xs text-gray-600">Culture:</span>
                         <span className="text-xs font-semibold text-gray-900">
                           {review.unitCulture}/5
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">💰</span>
+                        <DollarSign className="w-3 h-3 text-gray-400" />
                         <span className="text-xs text-gray-600">Benefits:</span>
                         <span className="text-xs font-semibold text-gray-900">
                           {review.benefits}/5
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">📈</span>
+                        <TrendingUp className="w-3 h-3 text-gray-400" />
                         <span className="text-xs text-gray-600">Growth:</span>
                         <span className="text-xs font-semibold text-gray-900">
                           {review.growthOpportunities}/5
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">🏥</span>
+                        <Building2 className="w-3 h-3 text-gray-400" />
                         <span className="text-xs text-gray-600">Quality:</span>
                         <span className="text-xs font-semibold text-gray-900">
                           {review.hospitalQuality}/5
@@ -419,22 +475,29 @@ export default function CultureForm() {
                     </div>
 
                     {/* Feedback Text */}
-                    <div
-                      className={`
-                      overflow-hidden transition-all duration-300
-                      ${selectedReview === review.id ? 'max-h-40' : 'max-h-0'}
-                    `}
-                    >
-                      <p className="text-sm text-gray-600 italic pt-3 border-t border-gray-100">
-                        {review.feedback}
-                      </p>
-                    </div>
+                    <AnimatePresence>
+                      {expandedReview === review.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <p className="text-sm text-gray-600 italic pt-3 border-t border-gray-100">
+                            "{review.feedback}"
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
 
-                    {selectedReview !== review.id && (
-                      <div className="text-xs text-slate-600 font-medium mt-2">
-                        Click to read more →
-                      </div>
-                    )}
+                    {/* Expand/Collapse indicator */}
+                    <motion.div 
+                      className="flex items-center justify-center mt-2"
+                      animate={{ rotate: expandedReview === review.id ? 180 : 0 }}
+                    >
+                      <ChevronDown className="w-4 h-4 text-emerald-400" />
+                    </motion.div>
                   </motion.div>
                 ))}
               </div>

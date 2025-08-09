@@ -7,6 +7,7 @@ import {
 } from '@nivo/bar';
 import type { RegionStates } from 'src/types/location';
 import { findStateByCode } from 'src/api/useLocations';
+import { useTheme } from 'src/contexts/ThemeContext';
 
 // -------------------------------------------
 // Types
@@ -85,7 +86,7 @@ function createTopLabelsLayer(isMobile: boolean) {
             y={bar.y}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill="#374151"
+            fill={document.documentElement.classList.contains('dark') ? '#e2e8f0' : '#374151'}
             fontSize={isMobile ? 9 : 11}
             fontWeight="500"
           >
@@ -137,6 +138,8 @@ function ChartTooltip({
 // -------------------------------------------
 function Chart({ data, states }: ChartProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   useEffect(() => {
     const checkMobile = () => {
@@ -150,7 +153,7 @@ function Chart({ data, states }: ChartProps) {
   // 데이터가 없거나 유효하지 않을 때 처리
   if (!data || data.length === 0) {
     return (
-      <div className="h-[300px] sm:h-[500px] lg:h-[700px] flex items-center justify-center text-gray-500 text-sm sm:text-base">
+      <div className="h-[650px] w-full flex items-center justify-center text-gray-500 dark:text-neutral-400 text-sm sm:text-base">
         No data to display
       </div>
     );
@@ -163,14 +166,14 @@ function Chart({ data, states }: ChartProps) {
 
   if (validData.length === 0) {
     return (
-      <div className="h-[300px] sm:h-[500px] lg:h-[700px] flex items-center justify-center text-gray-500 text-sm sm:text-base">
+      <div className="h-[650px] w-full flex items-center justify-center text-gray-500 dark:text-neutral-400 text-sm sm:text-base">
         No valid data to display
       </div>
     );
   }
 
   return (
-    <div className="h-[300px] sm:h-[500px] lg:h-[700px]">
+    <div className="h-[650px] w-full">
       <ResponsiveBar
         data={validData as NursingBarDatum[]}
         keys={['Base Pay', 'Differential Pay']}
@@ -179,14 +182,14 @@ function Chart({ data, states }: ChartProps) {
         layout="vertical"
         margin={{ 
           top: isMobile ? 40 : 60, 
-          right: isMobile ? 20 : 150, 
+          right: isMobile ? 40 : 80, 
           bottom: isMobile ? 100 : 140, 
-          left: isMobile ? 60 : 100 
+          left: isMobile ? 80 : 120 
         }}
-        padding={0.35}
+        padding={0.25}
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
-        colors={['#7986cb', '#a4b0f5']}
+        colors={isDark ? ['#818cf8', '#a5b4fc'] : ['#7986cb', '#a4b0f5']}
         borderRadius={0}
         borderWidth={0}
         enableLabel={false}
@@ -219,32 +222,32 @@ function Chart({ data, states }: ChartProps) {
         theme={{
           grid: {
             line: {
-              stroke: '#e2e8f0',
+              stroke: isDark ? '#334155' : '#e2e8f0',
               strokeWidth: 1,
             },
           },
           axis: {
             domain: {
               line: {
-                stroke: '#cbd5e1',
+                stroke: isDark ? '#475569' : '#cbd5e1',
                 strokeWidth: 1,
               },
             },
             ticks: {
               line: {
-                stroke: '#cbd5e1',
+                stroke: isDark ? '#475569' : '#cbd5e1',
                 strokeWidth: 1,
               },
               text: {
                 fontSize: isMobile ? 10 : 12,
-                fill: '#64748b',
+                fill: isDark ? '#94a3b8' : '#64748b',
                 fontWeight: 500,
               },
             },
             legend: {
               text: {
                 fontSize: isMobile ? 11 : 13,
-                fill: '#475569',
+                fill: isDark ? '#cbd5e1' : '#475569',
                 fontWeight: 600,
               },
             },
@@ -265,14 +268,14 @@ function Chart({ data, states }: ChartProps) {
             anchor: 'top-right',
             direction: 'column',
             justify: false,
-            translateX: -20,
-            translateY: 0,
-            itemsSpacing: 10,
-            itemWidth: 100,
-            itemHeight: 20,
+            translateX: -10,
+            translateY: 20,
+            itemsSpacing: 12,
+            itemWidth: 120,
+            itemHeight: 22,
             itemDirection: 'left-to-right',
             itemOpacity: 0.85,
-            symbolSize: 12,
+            symbolSize: 14,
             symbolShape: 'circle',
             effects: [
               {

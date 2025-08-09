@@ -1,7 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { Stethoscope, RefreshCw, Moon, Sun, AlertCircle } from 'lucide-react';
+import React, { useState, lazy, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
+import { useTheme } from 'src/contexts/ThemeContext';
+import { ThemeSwitch } from 'src/components/common/ThemeToggle';
 
 import { useMyProfile } from 'src/api/useProfileData';
 import { useMyCompensation } from 'src/api/useCompensation';
@@ -19,22 +22,22 @@ const CareerDashboard = lazy(() => import('src/components/user-page/CareerDashbo
 
 // API에서 가져오지 않는 데이터들은 일단 목 데이터로 유지
 const mockMetrics = {
-  totalCompensation: 8.2,
-  workload: 7.5,
-  experienceLevel: 6.9,
-  careerGrowth: 7.8,
-  marketCompetitiveness: 6.5,
+  totalCompensation: 8.5,
+  workload: 7.2,
+  experienceLevel: 8.0,
+  careerGrowth: 7.5,
+  marketCompetitiveness: 8.8,
 };
 
 const regionalAverages = {
   hourlyRate: 33.2,
   annualSalary: 69056,
   metrics: {
-    totalCompensation: 7.0,
-    workload: 6.5,
-    experienceLevel: 7.0,
-    careerGrowth: 6.8,
-    marketCompetitiveness: 7.0,
+    totalCompensation: 6.5,
+    workload: 6.0,
+    experienceLevel: 6.5,
+    careerGrowth: 6.2,
+    marketCompetitiveness: 6.8,
   },
 };
 
@@ -52,8 +55,9 @@ const metricAnalysis: Record<string, string> = {
 };
 
 export default function UserPage() {
+  const router = useRouter();
   const [dataRefreshDate] = useState(new Date().toLocaleDateString());
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const { theme } = useTheme();
 
   // API 호출
   const {
@@ -92,33 +96,12 @@ export default function UserPage() {
 
   // 차등수당 데이터 API 호출
   const {
-    data: differentialsData,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isDifferentialsLoading,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: differentialsError,
   } = useDifferentialsSummary();
 
-  // 데이터 로깅 - 개발 시 확인용
-  useEffect(() => {
-    if (profileData) {
-      // eslint-disable-next-line no-console
-      console.log('Profile Data:', profileData);
-    }
-  }, [profileData]);
-
-  useEffect(() => {
-    if (compensationData) {
-      // eslint-disable-next-line no-console
-      console.log('Compensation Data:', compensationData);
-      // eslint-disable-next-line no-console
-      console.log('Hourly Rate:', compensationData.hourlyRate);
-      // eslint-disable-next-line no-console
-      console.log('Annual Salary:', compensationData.annualSalary);
-      // eslint-disable-next-line no-console
-      console.log('Differentials:', compensationData.differentials);
-    }
-  }, [compensationData]);
 
   // 임금 분포 데이터 처리
   const enhancedPayData = React.useMemo(() => {
@@ -131,10 +114,9 @@ export default function UserPage() {
     }));
   }, [wageDistributionData, compensationData]);
 
-  // Theme toggle
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
-  };
+  // 실제 지역 평균 데이터 사용 (API에서 가져온 데이터 우선)
+  const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || regionalAverages.hourlyRate;
+  const actualRegionalAvgAnnualSalary = actualRegionalAvgHourlyRate * 2080;
 
   // Simple difference
   const calculateDifference = (user: number, avg: number) =>
@@ -146,17 +128,44 @@ export default function UserPage() {
 
     const diff = calculateDifference(
       compensationData.annualSalary,
-      regionalAverages.annualSalary
+      actualRegionalAvgAnnualSalary
     );
     return diff > 0
       ? `You're about ${diff}% above similar local RNs in total comp. Nice!`
       : `You're about ${Math.abs(diff)}% below average comp. Room to negotiate?`;
   };
 
-  // Calculate monthly differentials from actual data
+  // Calculate potential differentials opportunities
   const calculatePotentialDifferentials = () => {
-    if (!differentialsData) return 0;
-    return differentialsData.estimatedMonthlyDifferentials;
+    const opportunities = [];
+    
+    if (compensationData) {
+      // Check if they have night differential
+      if (!compensationData.differentials?.night || compensationData.differentials.night < 3) {
+        opportunities.push('Night shift differential: +$3-5/hr potential');
+      }
+      
+      // Check if they have weekend differential
+      if (!compensationData.differentials?.weekend || compensationData.differentials.weekend < 2) {
+        opportunities.push('Weekend differential: +$2-4/hr potential');
+      }
+      
+      // Check for certification opportunities
+      if (profileData?.specialty === 'ICU' || profileData?.specialty === 'ER') {
+        opportunities.push('Specialty certification: +$1-2/hr potential');
+      }
+      
+      // Experience-based opportunities
+      if (profileData?.experience && profileData.experience.includes('5+')) {
+        opportunities.push('Senior nurse differential: +$2-3/hr potential');
+      }
+    }
+    
+    if (opportunities.length === 0) {
+      opportunities.push('You are maximizing your differential opportunities!');
+    }
+    
+    return opportunities;
   };
 
   // 로딩 상태
@@ -210,43 +219,30 @@ export default function UserPage() {
   }
 
   return (
-    <div
-      className={`min-h-screen ${
-        theme === 'light' ? 'bg-stone-50' : 'bg-slate-800 text-white'
-      } p-3 sm:p-6`}
-    >
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-800 dark:text-white p-4 sm:p-6 transition-colors">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
           <div className="flex items-center">
-            <div
-              className={`${
-                theme === 'light' ? 'bg-slate-100' : 'bg-slate-700'
-              } p-2 rounded-full mr-3`}
-            >
+            <div className="bg-slate-100 dark:bg-slate-700 p-2 rounded-full mr-3 transition-colors">
               <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-slate-500" />
             </div>
-            <h1
-              className={`text-xl sm:text-2xl lg:text-3xl font-bold ${
-                theme === 'light' ? 'text-slate-700' : 'text-slate-300'
-              }`}
-            >
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-700 dark:text-slate-300 transition-colors">
               Nurse Pay Buddy
             </h1>
           </div>
-          {/* Theme Toggle + Data Refresh Info */}
+          {/* Navigation + Theme Toggle + Data Refresh Info */}
           <div className="flex items-center gap-2 sm:gap-4">
             <button
               type="button"
-              onClick={toggleTheme}
-              className={`p-2 rounded-full ${
-                theme === 'light'
-                  ? 'bg-slate-100 text-slate-500'
-                  : 'bg-slate-700 text-slate-300'
-              }`}
+              onClick={() => router.push('/')}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+              title="Back to Main Page"
             >
-              {theme === 'light' ? <Moon className="w-4 h-4 sm:w-5 sm:h-5" /> : <Sun className="w-4 h-4 sm:w-5 sm:h-5" />}
+              <Home className="w-4 h-4" />
+              <span className="hidden sm:inline">Main Page</span>
             </button>
+            <ThemeSwitch className="" />
             <div className="hidden sm:flex items-center text-sm">
               <RefreshCw className="w-4 h-4 mr-1" />
               <span>Data updated: {dataRefreshDate}</span>
@@ -258,7 +254,7 @@ export default function UserPage() {
         <UserProfileCard userProfile={profileData} theme={theme} />
 
         {/* Two-column: Compensation & Radar */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <CompensationAnalysis
             userProfile={compensationData}
             theme={theme}
@@ -273,24 +269,25 @@ export default function UserPage() {
           />
         </div>
 
-        {/* PredictiveCompChart + CareerPathTimeline */}
-        <div
-          className={`${
-            theme === 'light' ? 'bg-white' : 'bg-slate-700'
-          } rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border ${
-            theme === 'light' ? 'border-slate-100' : 'border-slate-600'
-          }`}
-        >
+        {/* Predictive Compensation Chart */}
+        <div className="mb-4 sm:mb-6">
           <PredictiveCompChart
             payDistributionData={enhancedPayData}
             userHourlyRate={compensationData.hourlyRate}
-            regionalAvgWage={wageDistributionData?.regionalAvgWage || regionalAverages.hourlyRate}
+            regionalAvgWage={actualRegionalAvgHourlyRate}
             theme={theme}
           />
+        </div>
 
+        {/* My Career Journey */}
+        <div className="mb-4 sm:mb-6">
           <Suspense fallback={
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600" />
+            <div className={`${
+              theme === 'light' ? 'bg-white' : 'bg-slate-800'
+            } rounded-xl shadow-lg border ${
+              theme === 'light' ? 'border-gray-200' : 'border-slate-700'
+            } flex items-center justify-center h-64`}>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
             </div>
           }>
             <CareerDashboard theme={theme} />
@@ -298,7 +295,7 @@ export default function UserPage() {
         </div>
 
         {/* Bottom row: AI Career + Next Steps */}
-        <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 mb-4 sm:mb-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <AiCareerInsights theme={theme} />
           <NextSteps theme={theme} />
         </div>

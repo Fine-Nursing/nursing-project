@@ -23,18 +23,22 @@ interface AuthState {
   signOut: () => Promise<void>;
 }
 
-const useAuthStore = create<AuthState>()(
-  devtools(
-    (set) => ({
-      user: null,
-      isLoading: true,
-      isAuthenticated: false, // 추가
+const useAuthStore = create<AuthState>()((set, get) => ({
+  user: null,
+  isLoading: true, // 초기값을 true로 설정하여 첫 로딩 시 깜빡임 방지
+  isAuthenticated: false,
 
-      setUser: (user) =>
-        set({
-          user,
-          isAuthenticated: !!user, // user가 있으면 true
-        }),
+  setUser: (user) => {
+    const currentState = get();
+    if (currentState.user?.id === user?.id && currentState.isAuthenticated === !!user) {
+      return; // 동일한 상태면 업데이트하지 않음
+    }
+    
+    set({
+      user,
+      isAuthenticated: !!user, // user가 있으면 true
+    });
+  },
 
       checkAuth: async () => {
         try {
@@ -48,15 +52,35 @@ const useAuthStore = create<AuthState>()(
 
           if (response.ok) {
             const data = await response.json();
-            // eslint-disable-next-line no-console
-            console.log('Auth check response:', data);
-            const userData = data.user || data;
+            const rawUser = data.user || data;
+            
+            // 사용자 정보 정규화
+            const userData = rawUser ? {
+              id: rawUser.id,
+              email: rawUser.email,
+              firstName: rawUser.firstName || rawUser.first_name || '',
+              lastName: rawUser.lastName || rawUser.last_name || '',
+              hasCompletedOnboarding: rawUser.hasCompletedOnboarding || false,
+            } : null;
+            
+            const currentState = get();
+            // 동일한 상태인지 확인
+            if (currentState.user?.id === userData?.id && 
+                currentState.isAuthenticated === !!userData && 
+                currentState.isLoading === false) {
+              return; // 동일한 상태면 업데이트하지 않음
+            }
+            
             set({
               user: userData,
               isLoading: false,
-              isAuthenticated: true,
+              isAuthenticated: !!userData,
             });
           } else {
+            const currentState = get();
+            if (!currentState.user && !currentState.isAuthenticated && !currentState.isLoading) {
+              return; // 이미 로그아웃 상태면 업데이트하지 않음
+            }
             set({
               user: null,
               isLoading: false,
@@ -64,8 +88,10 @@ const useAuthStore = create<AuthState>()(
             });
           }
         } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Auth check failed:', error);
+          const currentState = get();
+          if (!currentState.user && !currentState.isAuthenticated && !currentState.isLoading) {
+            return; // 이미 로그아웃 상태면 업데이트하지 않음
+          }
           set({
             user: null,
             isLoading: false,
@@ -93,16 +119,9 @@ const useAuthStore = create<AuthState>()(
             // router.push는 컴포넌트에서 처리
           }
         } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('Sign out error:', error);
           toast.error('Failed to sign out');
         }
       },
-    }),
-    {
-      name: 'auth-storage',
-    }
-  )
-);
+}));
 
 export default useAuthStore;

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
@@ -10,12 +10,16 @@ export const metadata: Metadata = {
   description: 'Explore nursing positions, track your career progression, and get personalized insights for your nursing journey.',
   keywords: ['nursing', 'career', 'healthcare', 'jobs', 'compensation'],
   authors: [{ name: 'Nurse Journey Team' }],
-  viewport: 'width=device-width, initial-scale=1',
   openGraph: {
     title: 'Nurse Journey',
     description: 'Your Nursing Career Companion',
     type: 'website',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({

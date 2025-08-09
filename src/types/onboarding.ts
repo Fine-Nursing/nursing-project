@@ -61,6 +61,9 @@ export interface DifferentialPay {
   group: string; // 'Shift-Based', 'Unit-Based' 등
 }
 
+// Alias for compatibility
+export type IndividualDifferentialItem = DifferentialPay;
+
 // Employment - API 명세에 맞게 수정
 export interface EmploymentFormData {
   specialty: string;

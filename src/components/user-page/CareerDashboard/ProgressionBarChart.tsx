@@ -33,17 +33,20 @@ function CustomBracketTooltip({
   const item = payload[0].payload;
   return (
     <div
-      className={`p-2 ${theme === 'light' ? 'bg-white border-slate-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border text-xs rounded shadow-sm`}
+      className={`p-3 ${theme === 'light' ? 'bg-white border-slate-200 shadow-lg' : 'bg-slate-800 border-slate-600 shadow-xl'} border text-sm rounded-lg`}
     >
-      <p className="font-bold">{item.expBracket}</p>
-      <p>
-        Salary: ${item.salary.toLocaleString()}
+      <p className={`font-bold mb-1 ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}>
+        {item.expBracket}
+      </p>
+      <p className={`${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}>
+        Annual Salary: <span className="font-semibold">${item.salary.toLocaleString()}</span>
         {item.isUser && (
           <span
-            className={theme === 'light' ? 'text-slate-600' : 'text-slate-300'}
+            className={`block text-xs mt-1 px-2 py-1 rounded font-medium ${
+              theme === 'light' ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-900/50 text-emerald-300'
+            }`}
           >
-            {' '}
-            ← Your bracket
+            Your current bracket
           </span>
         )}
       </p>
@@ -62,7 +65,7 @@ const customBouncingBar = (props: any, theme = 'light') => {
 
   const isUser = !!payload?.isUser;
   const barRadius = 4;
-  const userFill = theme === 'light' ? '#0d9488' : '#0f766e'; // slate-600 for light, slate-700 for dark
+  const userFill = theme === 'light' ? '#059669' : '#10b981'; // emerald green for user bracket
 
   // TypeScript 에러를 방지하기 위해 숫자 값을 보장
   const xValue = typeof x === 'number' ? x : parseFloat(x || '0');
@@ -104,25 +107,30 @@ export default function ProgressionBarChart({
   const { data: progressionData, isLoading } = useCareerProgression();
   
   const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
-  const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
-  const bgClass = theme === 'light' ? 'bg-mint-50 bg-white' : 'bg-slate-700';
+  const chartTextColor = theme === 'light' ? '#64748b' : '#94a3b8';
+  const bgClass = theme === 'light' ? 'bg-white' : 'bg-slate-800';
   const borderClass =
-    theme === 'light' ? 'border-slate-100' : 'border-slate-600';
-  const textClass = theme === 'light' ? 'text-slate-700' : 'text-slate-300';
-  const textGrayClass = theme === 'light' ? 'text-gray-400' : 'text-gray-500';
-  const barFillColor = theme === 'light' ? '#5eead4' : '#2dd4bf'; // slate-200 for light, slate-400 for dark
+    theme === 'light' ? 'border-slate-200' : 'border-slate-600';
+  const textClass = theme === 'light' ? 'text-slate-800' : 'text-slate-200';
+  const textGrayClass = theme === 'light' ? 'text-slate-600' : 'text-slate-400';
+  const barFillColor = theme === 'light' ? '#e2e8f0' : '#475569'; // light gray for industry average
 
   if (isLoading) {
     return (
       <div
-        className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
+        className={`${bgClass} border ${borderClass} rounded-xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6`}
       >
-        <h4 className={`font-bold ${textClass} text-sm mb-2`}>
-          Career Progression Chart
-        </h4>
-        <div className="flex flex-col items-center justify-center" style={{ height: '280px' }}>
+        <div className="mb-4">
+          <h4 className={`font-bold ${textClass} text-lg sm:text-xl mb-1`}>
+            How You Stack Up
+          </h4>
+          <p className={`text-sm ${textGrayClass}`}>
+            Compare your salary with industry benchmarks by experience level
+          </p>
+        </div>
+        <div className="flex flex-col items-center justify-center h-64 sm:h-80 lg:h-96">
           <div className="w-8 h-8 border-t-2 border-slate-400 border-solid rounded-full animate-spin" />
-          <p className="mt-2 text-sm font-medium text-slate-600">
+          <p className={`mt-2 text-sm font-medium ${textGrayClass}`}>
             Loading progression data...
           </p>
         </div>
@@ -133,12 +141,17 @@ export default function ProgressionBarChart({
   if (!progressionData || !progressionData.progressionData) {
     return (
       <div
-        className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
+        className={`${bgClass} border ${borderClass} rounded-xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6`}
       >
-        <h4 className={`font-bold ${textClass} text-sm mb-2`}>
-          Career Progression Chart
-        </h4>
-        <div className={`text-center ${textGrayClass} py-10 text-sm`} style={{ height: '280px' }}>
+        <div className="mb-4">
+          <h4 className={`font-bold ${textClass} text-lg sm:text-xl mb-1`}>
+            How You Stack Up
+          </h4>
+          <p className={`text-sm ${textGrayClass}`}>
+            Compare your salary with industry benchmarks by experience level
+          </p>
+        </div>
+        <div className={`text-center ${textGrayClass} py-10 text-sm h-64 sm:h-80 lg:h-96`}>
           <AlertCircle className="w-6 h-6 inline-block mr-1" />
           No data to compute progression...
         </div>
@@ -153,16 +166,21 @@ export default function ProgressionBarChart({
 
   return (
     <div
-      className={`${bgClass} border ${borderClass} rounded-lg p-4 shadow-sm mb-6`}
+      className={`${bgClass} border ${borderClass} rounded-xl p-4 sm:p-6 shadow-lg mb-4 sm:mb-6`}
     >
-      <h4 className={`font-bold ${textClass} text-sm mb-2`}>
-        Career Progression Chart
-      </h4>
-      <div className="w-full" style={{ height: '280px' }}>
+      <div className="mb-4">
+        <h4 className={`font-bold ${textClass} text-lg sm:text-xl mb-1`}>
+          How You Stack Up
+        </h4>
+        <p className={`text-sm ${textGrayClass}`}>
+          Compare your salary with industry benchmarks by experience level
+        </p>
+      </div>
+      <div className="w-full h-64 sm:h-80 lg:h-96">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 30, right: 10, bottom: 40, left: 10 }}
+            margin={{ top: 40, right: 10, bottom: 50, left: 40 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke={chartGridColor} />
             <XAxis
@@ -177,6 +195,7 @@ export default function ProgressionBarChart({
               tick={{ fill: chartTextColor, fontSize: 11 }}
             />
             <YAxis
+              width={80}
               label={{
                 value: 'Annual Salary ($)',
                 angle: -90,
@@ -186,6 +205,8 @@ export default function ProgressionBarChart({
               }}
               tick={{ fill: chartTextColor, fontSize: 11 }}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              interval={0}
+              domain={[0, (dataMax: number) => Math.ceil((dataMax * 1.4) / 10000) * 10000]}
             />
 
             {/** (C) custom tooltip with theme */}
@@ -204,13 +225,21 @@ export default function ProgressionBarChart({
       </div>
 
       <div
-        className={`mt-2 text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'} flex flex-wrap gap-4`}
+        className={`mt-3 text-xs sm:text-sm ${textGrayClass} flex flex-wrap gap-3 sm:gap-4`}
       >
         <div className="flex items-center">
           <div
-            className={`w-3 h-3 ${theme === 'light' ? 'bg-slate-600' : 'bg-slate-500'} rounded-sm mr-1`}
+            className="w-3 h-3 rounded-sm mr-2"
+            style={{ backgroundColor: theme === 'light' ? '#059669' : '#10b981' }}
           />
-          <span>Your bracket</span>
+          <span className="font-medium">Your salary bracket</span>
+        </div>
+        <div className="flex items-center">
+          <div
+            className="w-3 h-3 rounded-sm mr-2"
+            style={{ backgroundColor: barFillColor }}
+          />
+          <span className="font-medium">Industry average</span>
         </div>
       </div>
     </div>

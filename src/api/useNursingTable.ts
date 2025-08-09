@@ -75,21 +75,26 @@ const fetchNursingTable = async (
   return data;
 };
 
-// Custom hook
+// Custom hook with enhanced options
 export const useNursingTable = (
   params?: NursingTableParams,
   options?: {
     enabled?: boolean;
+    staleTime?: number;
+    cacheTime?: number;
+    refetchOnWindowFocus?: boolean;
+    refetchOnMount?: boolean;
   }
 ) =>
   useQuery({
     queryKey: queryKeys.nursing.table(params),
     queryFn: () => fetchNursingTable(params),
     enabled: options?.enabled !== false,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: options?.staleTime ?? 1000 * 60 * 5, // 5 minutes default
+    gcTime: options?.cacheTime ?? 1000 * 60 * 10, // 10 minutes default
     placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: options?.refetchOnWindowFocus ?? false,
+    refetchOnMount: options?.refetchOnMount ?? true,
   });
 
 // Prefetch function for SSR/SSG
