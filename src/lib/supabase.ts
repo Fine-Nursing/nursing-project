@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// Supabase를 사용하지 않으므로 placeholder 값 사용
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+// Supabase client를 조건부로 생성 (환경변수가 없으면 null)
+export const supabase = (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     flowType: 'pkce',
     autoRefreshToken: true,
@@ -11,11 +14,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   },
-});
+}) : null as any;
 
 // Google OAuth Sign In
 export const signInWithGoogle = async () => {
   try {
+    if (!supabase) {
+      throw new Error('Supabase is not configured');
+    }
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -38,6 +44,9 @@ export const signInWithGoogle = async () => {
 // Get current session
 export const getSession = async () => {
   try {
+    if (!supabase) {
+      return null;
+    }
     const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
     return session;
@@ -50,6 +59,9 @@ export const getSession = async () => {
 // Sign out
 export const signOut = async () => {
   try {
+    if (!supabase) {
+      return { success: true };
+    }
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     return { success: true };
@@ -60,4 +72,9 @@ export const signOut = async () => {
 };
 
 // Listen to auth state changes
-export const onAuthStateChange = (callback: (event: string, session: any) => void) => supabase.auth.onAuthStateChange(callback);
+export const onAuthStateChange = (callback: (event: string, session: any) => void) => {
+  if (!supabase) {
+    return { data: { subscription: { unsubscribe: () => {} } } };
+  }
+  return supabase.auth.onAuthStateChange(callback);
+};
