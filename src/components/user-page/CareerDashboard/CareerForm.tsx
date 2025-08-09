@@ -14,6 +14,7 @@ interface CareerFormProps {
   onAdd: () => void;
   onAiSuggest: () => void;
   onSalaryTrend: () => void;
+  editingItemId?: number | null;
 }
 
 export default function CareerForm({
@@ -24,6 +25,7 @@ export default function CareerForm({
   onAdd,
   onAiSuggest,
   onSalaryTrend,
+  editingItemId,
 }: CareerFormProps) {
   return (
     <div className="bg-mint-50 border border-slate-100 rounded-lg p-4 space-y-4 shadow-sm mb-6">
@@ -142,7 +144,7 @@ export default function CareerForm({
           <button
             type="button"
             onClick={onAiSuggest}
-            className="inline-flex items-center rounded-full bg-purple-100 text-purple-600 px-3 py-1 hover:bg-purple-200 transition"
+            className="inline-flex items-center rounded-full bg-emerald-100 text-emerald-600 px-3 py-1 hover:bg-emerald-200 transition"
           >
             <Sparkles className="w-4 h-4 mr-1" />
             AI Suggest Role
@@ -162,7 +164,7 @@ export default function CareerForm({
           className="rounded-full bg-slate-500 text-white px-4 py-1.5 hover:bg-slate-600 flex items-center"
         >
           <Plus className="w-4 h-4 mr-1" />
-          Add Career
+          {editingItemId ? 'Update Career' : 'Add Career'}
         </button>
       </div>
     </div>

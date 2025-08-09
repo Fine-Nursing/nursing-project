@@ -1,0 +1,141 @@
+import { useQuery, useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import useAuthStore from 'src/hooks/useAuthStore';
+
+// 직접 AI API 호출
+const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://199.241.139.206:8000';
+const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka';
+
+// AI Insight 타입 정의
+export type SummaryType = 'nurse_summary' | 'culture' | 'skill_transfer';
+
+export interface AiInsight {
+  id: string;
+  user_id: string;
+  summary_type: SummaryType;
+  content: string;
+  input_hash: string;
+  prompt_template_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GenerateInsightResponse {
+  message: string;
+  summary_type: string;
+  summary?: string;
+  input_hash?: string;
+}
+
+// Axios 인스턴스 생성 (직접 AI API 호출)
+const aiApiClient = axios.create({
+  baseURL: AI_API_BASE_URL,
+  headers: {
+    'X-API-Key': AI_API_KEY,
+    'Content-Type': 'application/json'
+  }
+});
+
+// AI Insight 조회 (GET)
+export const useAiInsight = (summaryType: SummaryType, userId?: string) => {
+  return useQuery<AiInsight>({
+    queryKey: ['aiInsight', summaryType, userId],
+    queryFn: async () => {
+      if (!userId) throw new Error('User ID is required');
+      const response = await aiApiClient.get(`/ai_insights/${summaryType}/${userId}`);
+      return response.data;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5분
+    retry: false // CORS 에러로 재시도 비활성화
+  });
+};
+
+// AI Insight 생성/갱신 (POST)
+export const useGenerateAiInsight = () => {
+  const { user } = useAuthStore();
+  
+  return useMutation<GenerateInsightResponse, Error, { summaryType: SummaryType }>({
+    mutationFn: async ({ summaryType }) => {
+      if (!user?.id) throw new Error('User ID is required');
+      const response = await aiApiClient.post(`/ai_insights/${summaryType}/${user.id}`);
+      return response.data;
+    },
+    onError: (error: any) => {
+      // AI Insight generation failed
+    }
+  });
+};
+
+// 모든 AI Insights 한번에 가져오기
+export const useAllAiInsights = (userId?: string) => {
+  return useQuery({
+    queryKey: ['aiInsights', 'all', userId],
+    queryFn: async () => {
+      if (!userId) throw new Error('User ID is required');
+      try {
+        const response = await aiApiClient.get(`/ai_insights/all/${userId}`);
+        return response.data;
+      } catch (error: any) {
+        // CORS 에러나 네트워크 에러 처리
+        if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
+          // AI Insights API is not accessible (CORS/Network error)
+          return null;
+        }
+        throw error;
+      }
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+    retry: false, // CORS 에러로 재시도 비활성화
+    select: (data) => ({
+      nurseSummary: data?.nurse_summary || null,
+      culture: data?.culture || null,
+      skillTransfer: data?.skill_transfer || null,
+      isLoading: false,
+      errors: {}
+    })
+  });
+};
+
+// 모든 AI Insights 생성/갱신
+export const useGenerateAllInsights = () => {
+  const generateInsight = useGenerateAiInsight();
+
+  const generateAll = async () => {
+    try {
+      const summaryTypes: SummaryType[] = ['nurse_summary', 'culture', 'skill_transfer'];
+      
+      const results = await Promise.allSettled(
+        summaryTypes.map(summaryType => 
+          generateInsight.mutateAsync({ summaryType })
+        )
+      );
+
+      const successes = results.filter(r => r.status === 'fulfilled');
+      const failures = results.filter(r => r.status === 'rejected');
+
+      return {
+        successes: successes.length,
+        failures: failures.length,
+        results
+      };
+    } catch (error: any) {
+      // CORS 에러 무시
+      if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
+        // AI Insights generation skipped (CORS/Network error)
+        return {
+          successes: 0,
+          failures: 3,
+          results: []
+        };
+      }
+      throw error;
+    }
+  };
+
+  return {
+    generateAll,
+    isLoading: generateInsight.isPending
+  };
+};

@@ -10,8 +10,6 @@ const useIsMobile = (breakpoint: number = 768) => {
     
     const checkIsMobile = () => {
       const mobile = window.innerWidth < breakpoint;
-      // eslint-disable-next-line no-console
-      console.log(`useIsMobile: width=${window.innerWidth}, breakpoint=${breakpoint}, isMobile=${mobile}`);
       setIsMobile(mobile);
     };
 

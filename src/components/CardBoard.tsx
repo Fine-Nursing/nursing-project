@@ -5,6 +5,7 @@ import type { Variants } from 'framer-motion';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Filter, X } from 'lucide-react';
 import useIsMobile from 'src/hooks/useIsMobile';
+import { useTheme } from 'src/contexts/ThemeContext';
 
 import {
   useCompensationCards,
@@ -15,7 +16,7 @@ import { useSpecialtyList } from 'src/api/useSpecialties';
 import NurseCard from './card/NurseCard';
 
 // Lazy load MobileCardBoard to avoid SSR issues
-const MobileCardBoard = lazy(() => import('./CardBoard/MobileCardBoard'));
+const MobileCardBoard = lazy(() => import('./CardBoard/MobileCardBoardV2'));
 
 function getGridColumns(columns: number): string {
   if (columns === 2) return 'sm:grid-cols-2';
@@ -143,14 +144,16 @@ function FilterPanel({
     onFiltersChange({});
   };
 
+  // Removed unused theme variable
+  
   return (
-    <div className="absolute right-0 top-12 z-10 w-72 sm:w-80 bg-white rounded-lg shadow-lg border border-slate-200 p-3 sm:p-4 max-h-[80vh] overflow-y-auto">
+    <div className="absolute right-0 top-12 z-10 w-72 sm:w-80 bg-white dark:bg-zinc-900/95 rounded-xl shadow-2xl border border-primary-100 dark:border-zinc-700/50 p-3 sm:p-4 max-h-[80vh] overflow-y-auto transition-colors">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="font-semibold text-slate-800">Filters</h3>
+        <h3 className="font-bold text-primary-800 dark:text-zinc-100">Filters</h3>
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 hover:text-slate-600"
+          className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors"
         >
           <X size={20} />
         </button>
@@ -160,7 +163,7 @@ function FilterPanel({
         <div>
           <label
             htmlFor="filter-specialty"
-            className="block text-sm font-medium text-slate-700 mb-1"
+            className="block text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-1"
           >
             Specialty
           </label>
@@ -170,7 +173,7 @@ function FilterPanel({
             onChange={(e) =>
               setLocalFilters({ ...localFilters, specialty: e.target.value })
             }
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-zinc-800/70 text-gray-900 dark:text-zinc-100 transition-colors"
             disabled={isLoadingSpecialties}
           >
             <option value="">All Specialties</option>
@@ -185,7 +188,7 @@ function FilterPanel({
         <div>
           <label
             htmlFor="filter-state"
-            className="block text-sm font-medium text-slate-700 mb-1"
+            className="block text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-1"
           >
             State
           </label>
@@ -195,7 +198,7 @@ function FilterPanel({
             onChange={(e) =>
               setLocalFilters({ ...localFilters, state: e.target.value })
             }
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-zinc-800/70 text-gray-900 dark:text-zinc-100 transition-colors"
           >
             <option value="">All States</option>
             {Object.entries(STATE_MAPPING).map(([code, name]) => (
@@ -209,7 +212,7 @@ function FilterPanel({
         <div>
           <label
             htmlFor="filter-city"
-            className="block text-sm font-medium text-slate-700 mb-1"
+            className="block text-sm font-medium text-zinc-700 dark:text-zinc-200 mb-1"
           >
             City
           </label>
@@ -220,7 +223,7 @@ function FilterPanel({
             onChange={(e) =>
               setLocalFilters({ ...localFilters, city: e.target.value })
             }
-            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full px-3 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 bg-white dark:bg-zinc-800/70 text-gray-900 dark:text-zinc-100 transition-colors"
             placeholder="e.g., Los Angeles"
           />
         </div>
@@ -230,14 +233,14 @@ function FilterPanel({
         <button
           type="button"
           onClick={handleReset}
-          className="flex-1 px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50 transition-colors"
+          className="flex-1 px-4 py-2 border border-zinc-300 dark:border-zinc-700 rounded-md text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
         >
           Reset
         </button>
         <button
           type="button"
           onClick={handleApply}
-          className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+          className="flex-1 px-4 py-2 bg-emerald-600 dark:bg-emerald-600 text-white rounded-md hover:bg-emerald-700 dark:hover:bg-emerald-700 transition-colors"
         >
           Apply
         </button>
@@ -251,8 +254,8 @@ function LoadingState() {
   return (
     <div className="flex items-center justify-center h-96">
       <div className="text-center">
-        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
-        <p className="mt-4 text-slate-600">Loading compensation data...</p>
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 dark:border-emerald-400" />
+        <p className="mt-4 text-zinc-600 dark:text-zinc-300">Loading compensation data...</p>
       </div>
     </div>
   );
@@ -263,11 +266,11 @@ function ErrorState() {
   return (
     <div className="flex items-center justify-center h-96">
       <div className="text-center">
-        <p className="text-red-600">Failed to load compensation data</p>
+        <p className="text-red-600 dark:text-red-400">Failed to load compensation data</p>
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="mt-2 text-purple-600 hover:text-purple-700"
+          className="mt-2 text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300"
         >
           Try again
         </button>
@@ -291,7 +294,7 @@ function NavigationButton({
   const pathD = isPrev ? 'M15 19l-7-7 7-7' : 'M9 5l7 7-7 7';
   const label = isPrev ? 'Previous group' : 'Next group';
 
-  const buttonClass = `absolute ${position} top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center transition-all ${
+  const buttonClass = `absolute ${position} top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white dark:bg-zinc-900 shadow-lg dark:border dark:border-zinc-700 flex items-center justify-center transition-all ${
     disabled
       ? 'opacity-50 cursor-not-allowed'
       : 'hover:shadow-xl hover:scale-110'
@@ -333,6 +336,7 @@ function CardBoard() {
   
   // Check if mobile
   const isMobile = useIsMobile();
+  const { theme } = useTheme();
 
   // API Calls
   const {
@@ -582,7 +586,7 @@ function CardBoard() {
               const groupId = `group-${selectedLevel || 'all'}-${index}`;
               const isActive = index === currentGroupIndex;
               const buttonClass = `w-2 h-2 rounded-full transition-all ${
-                isActive ? 'w-8 bg-purple-600' : 'bg-gray-300 hover:bg-gray-400'
+                isActive ? 'w-8 bg-emerald-600 dark:bg-emerald-400' : 'bg-gray-300 dark:bg-zinc-700 hover:bg-gray-400 dark:hover:bg-zinc-600'
               }`;
 
               return (
@@ -605,9 +609,9 @@ function CardBoard() {
   if (isMobile) {
     return (
       <Suspense fallback={
-        <div className="bg-white rounded-xl shadow-sm p-4">
+        <div className="bg-white dark:bg-zinc-950 rounded-xl shadow-sm p-4 transition-colors dark:border dark:border-zinc-800">
           <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 dark:border-emerald-400" />
           </div>
         </div>
       }>
@@ -620,16 +624,16 @@ function CardBoard() {
   }
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl shadow-sm">
+    <div className="w-full">
       {/* Header */}
-      <div className="border-b border-slate-100 p-3 sm:p-6">
+      <div className="border-b-2 border-zinc-100/30 dark:border-zinc-800/30 p-3 sm:p-6 rounded-t-xl bg-gradient-to-r from-zinc-50/50 to-blue-50/50 dark:from-zinc-950/50 dark:to-black/50 shadow-sm transition-colors">
         <div className="flex flex-col space-y-4">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
             <div>
-              <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-slate-800 dark:text-zinc-100">
                 Compensation Board
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300/70 mt-1">
                 {getHeaderSubtitle()}
               </p>
             </div>
@@ -638,7 +642,7 @@ function CardBoard() {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="px-3 py-1.5 text-sm font-medium rounded bg-rose-500 text-white hover:bg-rose-600 transition-colors"
+                  className="px-3 py-1.5 text-sm font-medium rounded bg-rose-500 dark:bg-rose-600 text-white hover:bg-rose-600 dark:hover:bg-rose-700 transition-colors"
                 >
                   ← Back
                 </button>
@@ -646,12 +650,11 @@ function CardBoard() {
               <button
                 type="button"
                 onClick={() => setShowFilterPanel(!showFilterPanel)}
-                className="px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors flex items-center gap-1"
-              >
+                className="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-zinc-100 transition-colors flex items-center gap-1">
                 <Filter size={16} />
                 Filter
                 {activeFilterCount > 0 && (
-                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">
+                  <span className="ml-1 px-1.5 py-0.5 text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full dark:border dark:border-emerald-700">
                     {activeFilterCount}
                   </span>
                 )}
@@ -668,22 +671,22 @@ function CardBoard() {
           </div>
 
           {/* Stats */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start gap-2 sm:space-x-2 bg-slate-50 p-2 sm:p-3 rounded-lg border border-slate-100">
-            <div className="flex items-center space-x-2 text-purple-600">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start gap-2 sm:space-x-2 bg-slate-50 dark:bg-zinc-900/20 p-2 sm:p-3 rounded-lg border border-slate-100 dark:border-zinc-800/30 transition-colors">
+            <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400">
               <Users size={16} className="sm:w-5 sm:h-5 animate-pulse" />
               <span className="text-base sm:text-lg font-semibold">
                 <AnimatedCounter baseValue={10000} />
               </span>
             </div>
-            <span className="text-xs sm:text-sm text-slate-600">
+            <span className="text-xs sm:text-sm text-slate-600 dark:text-zinc-300/80">
               verified nurses have shared their data
             </span>
             <div className="flex items-center gap-1">
               <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-purple-600" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 dark:bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-600 dark:bg-emerald-400" />
               </span>
-              <span className="text-xs text-purple-600 font-medium ml-1 bg-purple-50 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium ml-1 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
                 Live
               </span>
             </div>
@@ -692,14 +695,14 @@ function CardBoard() {
       </div>
 
       {/* Main Board */}
-      <div className="p-3 sm:p-6">
+      <div className="p-3 sm:p-6 bg-gradient-to-br from-white via-zinc-50/30 to-blue-50/30 dark:from-zinc-950/30 dark:via-zinc-900/40 dark:to-black/30 transition-colors">
         <div
-          className="relative rounded-lg bg-slate-50 p-4 sm:p-8 overflow-hidden"
+          className="relative rounded-xl bg-gradient-to-br from-white via-zinc-50/30 to-blue-50/40 dark:from-zinc-950/60 dark:via-zinc-900/70 dark:to-black/60 p-4 sm:p-8 overflow-hidden border border-zinc-100/30 dark:border-zinc-800/40 shadow-lg transition-all"
           style={{
             minHeight: '400px',
             backgroundImage: `
-              linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px)
+              linear-gradient(rgba(52, 211, 153, 0.03) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(52, 211, 153, 0.03) 1px, transparent 1px)
             `,
             backgroundSize: '20px 20px',
             backgroundPosition: 'center center',
@@ -709,7 +712,7 @@ function CardBoard() {
             className="absolute inset-0 pointer-events-none rounded-lg"
             style={{
               background:
-                'linear-gradient(to right, rgba(255,255,255,0.5), transparent)',
+                theme === 'dark' ? 'none' : 'linear-gradient(to right, rgba(255,255,255,0.5), transparent)',
               opacity: 0.5,
             }}
           />
@@ -718,22 +721,22 @@ function CardBoard() {
 
           {isFetching && (
             <div className="absolute top-4 right-4">
-              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600" />
+              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600 dark:border-emerald-400" />
             </div>
           )}
         </div>
       </div>
 
       {/* Footer */}
-      <div className="border-t border-slate-100 p-3 sm:p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs sm:text-sm text-slate-600">
+      <div className="border-t-2 border-zinc-100/30 dark:border-zinc-800/30 p-3 sm:p-4 rounded-b-xl bg-gradient-to-r from-zinc-50/30 to-blue-50/30 dark:from-zinc-950/50 dark:to-black/50 shadow-sm transition-colors">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300/80">
           <span>{getStatusText()}</span>
           {shouldShowLoadMore && (
             <button
               type="button"
               onClick={handleLoadMore}
               disabled={isFetching}
-              className="text-purple-600 hover:text-purple-700 font-medium transition-colors disabled:opacity-50"
+              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium transition-colors disabled:opacity-50"
             >
               {getLoadMoreButtonText()}
             </button>

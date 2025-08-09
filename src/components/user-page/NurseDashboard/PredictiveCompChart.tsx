@@ -12,7 +12,7 @@ import {
   Bar,
   Cell,
 } from 'recharts';
-import { TrendingUp, User } from 'lucide-react';
+import { TrendingUp, User, BarChart3, Activity } from 'lucide-react';
 import CuteWageLabel from './CuteWageLabel'; // 라벨
 
 interface PayDistributionEntry {
@@ -81,58 +81,89 @@ export default function PredictiveCompChart({
     [theme]
   );
 
+  // Calculate dynamic X-axis domain based on data and user rate
+  const xDomain = React.useMemo(() => {
+    const wages = payDistributionData.map(d => d.wageValue);
+    wages.push(userHourlyRate, regionalAvgWage);
+    const minWage = Math.min(...wages);
+    const maxWage = Math.max(...wages);
+    
+    // Add 10% padding on both sides
+    const padding = (maxWage - minWage) * 0.1;
+    return [
+      Math.floor(minWage - padding),
+      Math.ceil(maxWage + padding)
+    ];
+  }, [payDistributionData, userHourlyRate, regionalAvgWage]);
+
+  // Calculate dynamic Y-axis domain based on count values
+  const yDomain = React.useMemo(() => {
+    const counts = payDistributionData.map(d => d.count);
+    const maxCount = Math.max(...counts);
+    
+    // Add 20% padding on top
+    return [0, Math.ceil(maxCount * 1.2)];
+  }, [payDistributionData]);
+
   return (
     <div
       className={`${
-        theme === 'light' ? 'bg-white' : 'bg-slate-700'
-      } rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-6 mb-4 sm:mb-6 border ${
-        theme === 'light' ? 'border-slate-100' : 'border-slate-600'
+        theme === 'light' ? 'bg-white' : 'bg-slate-800'
+      } rounded-xl shadow-lg border ${
+        theme === 'light' ? 'border-gray-200' : 'border-slate-700'
       }`}
     >
-      <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center gap-2">
-        <div className="flex items-center">
-          <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-slate-500" />
-          <span className="text-sm sm:text-xl">Predictive Compensation Comparison</span>
-        </div>
-        <div className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full w-fit">
-          AI Powered
-        </div>
-      </h2>
-
-      <div
-        className={`mb-4 sm:mb-6 ${
-          theme === 'light'
-            ? 'bg-gradient-to-r from-slate-50 to-cyan-50'
-            : 'bg-slate-600'
-        } rounded-xl sm:rounded-2xl shadow-md p-3 sm:p-5 border ${
-          theme === 'light' ? 'border-slate-100' : 'border-slate-500'
-        }`}
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 sm:mb-4 gap-2">
-          <h3
-            className={`font-bold text-base sm:text-xl ${
-              theme === 'light' ? 'text-gray-800' : 'text-white'
-            } flex items-center`}
-          >
-            ER Average Pay in New York City, NY
-          </h3>
-          <div className="px-2 sm:px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium flex items-center w-fit">
-            Live Data
+      {/* Header */}
+      <div className={`px-6 py-4 border-b ${
+        theme === 'light' ? 'border-gray-100' : 'border-slate-700'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className={`text-lg font-semibold ${
+              theme === 'light' ? 'text-gray-900' : 'text-white'
+            }`}>
+              Predictive Compensation Comparison
+            </h2>
+            <p className={`text-sm mt-0.5 ${
+              theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+            }`}>
+              AI-powered wage analysis for ER nurses in New York City
+            </p>
+          </div>
+          
+          <div className={`px-3 py-2 rounded-lg ${
+            theme === 'light' ? 'bg-green-50' : 'bg-green-900/30'
+          }`}>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Live Data</p>
+                <p className="text-sm font-bold text-green-600 dark:text-green-400">
+                  Updated
+                </p>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="w-full overflow-x-auto">
-          <div style={{ minWidth: '300px', height: window.innerWidth < 640 ? 250 : 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={payDistributionData}
-              margin={{ 
-                top: 30, 
-                right: window.innerWidth < 640 ? 20 : 50, 
-                bottom: 30, 
-                left: window.innerWidth < 640 ? 20 : 50 
-              }}
-            >
+      <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Chart Container */}
+        <div className={`rounded-lg p-3 sm:p-6 ${
+          theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/30'
+        }`}>
+          <div className="w-full">
+            <div className="h-64 sm:h-80 lg:h-96">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={payDistributionData}
+                  margin={{ 
+                    top: 40, 
+                    right: 20, 
+                    bottom: 40, 
+                    left: 20 
+                  }}
+                >
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke={theme === 'light' ? '#f3f4f6' : '#374151'}
@@ -140,32 +171,35 @@ export default function PredictiveCompChart({
               <XAxis
                 type="number"
                 dataKey="wageValue"
-                domain={[24, 46]}
+                domain={xDomain}
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
-                  fontSize: window.innerWidth < 640 ? 10 : 12,
+                  fontSize: 9,
                 }}
                 label={{
                   value: 'Hourly Wage ($)',
-                  position: 'insideBottomRight',
+                  position: 'insideBottom',
                   offset: -5,
                   style: {
+                    textAnchor: 'middle',
                     fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
-                    fontSize: 12,
+                    fontSize: 10,
                   },
                 }}
               />
               <YAxis
                 dataKey="count"
+                domain={yDomain}
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
-                  fontSize: window.innerWidth < 640 ? 10 : 12,
+                  fontSize: 9,
                 }}
                 label={{
-                  value: 'Number of Nurses',
+                  value: 'Nurses',
                   angle: -90,
                   position: 'insideLeft',
                   style: {
+                    textAnchor: 'middle',
                     fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
                     fontSize: 12,
                   },
@@ -174,58 +208,112 @@ export default function PredictiveCompChart({
               <Tooltip content={tooltipRenderer} />
               <ReferenceLine
                 x={userHourlyRate}
-                stroke="#0d9488"
-                strokeWidth={2}
+                stroke="#3b82f6"
+                strokeWidth={3}
                 isFront
                 label={<CuteWageLabel wage={userHourlyRate} />}
               />
               <ReferenceLine
                 x={regionalAvgWage}
-                stroke="#14b8a6"
+                stroke="#6b7280"
                 strokeWidth={2}
-                strokeDasharray="3 3"
+                strokeDasharray="5 5"
                 label={{
                   value: 'Regional Avg',
                   position: 'top',
-                  fill: '#14b8a6',
-                  fontSize: 12,
+                  fill: '#6b7280',
+                  fontSize: 11,
+                  offset: 15,
+                  style: {
+                    textAnchor: 'middle'
+                  }
                 }}
               />
-              <Bar dataKey="count" radius={[3, 3, 0, 0]}>
+              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {payDistributionData.map((entry) => {
-                  let fillColor = '#5eead4'; // Teal-200
+                  let fillColor = theme === 'light' ? '#ddd6fe' : '#5b21b6'; // Purple-200/Purple-800
                   if (entry.isUser)
-                    fillColor = '#0d9488'; // Teal-600
-                  else if (entry.highlight) fillColor = '#14b8a6'; // Teal-500
+                    fillColor = theme === 'light' ? '#3b82f6' : '#60a5fa'; // Blue-500/Blue-400
+                  else if (entry.highlight) 
+                    fillColor = theme === 'light' ? '#8b5cf6' : '#a78bfa'; // Purple-500/Purple-400
                   return <Cell key={`cell-${entry.id}`} fill={fillColor} />;
                 })}
               </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
-        <div
-          className={`mt-3 sm:mt-4 pt-3 sm:pt-4 border-t ${
-            theme === 'light' ? 'border-slate-100' : 'border-slate-500'
-          } flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center sm:gap-0`}
-        >
-          <div className="flex items-center text-xs sm:text-sm">
-            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600 mr-1 sm:mr-2" />
-            <span>
-              Your wage:{' '}
-              <span className="font-semibold">${userHourlyRate}</span> (Top
-              ~15%)
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            <div className="flex items-center">
-              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-slate-600 rounded-sm mr-1" />
-              <span className="text-xs font-medium">Your wage</span>
+        {/* Chart Summary */}
+        <div className={`mt-3 sm:mt-4 pt-3 sm:pt-4 border-t ${
+          theme === 'light' ? 'border-gray-200' : 'border-slate-700'
+        }`}>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+            {/* Your Position */}
+            <div className={`p-2 sm:p-4 rounded-lg ${
+              theme === 'light' ? 'bg-green-50' : 'bg-green-900/20'
+            }`}>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600 dark:text-green-400" />
+                <span className={`text-xs sm:text-sm font-medium ${
+                  theme === 'light' ? 'text-green-700' : 'text-green-400'
+                }`}>
+                  Your Position
+                </span>
+              </div>
+              <p className={`text-base sm:text-lg font-bold ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
+              }`}>
+                ${userHourlyRate}/hr
+              </p>
+              <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">
+                Top 15%
+              </p>
             </div>
-            <div className="flex items-center">
-              <div className="w-6 sm:w-8 border-t-2 border-dashed border-slate-500 mr-1" />
-              <span className="text-xs font-medium">Regional avg wage</span>
+
+            {/* Regional Average */}
+            <div className={`p-2 sm:p-4 rounded-lg ${
+              theme === 'light' ? 'bg-emerald-50' : 'bg-emerald-900/20'
+            }`}>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                <BarChart3 className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
+                <span className={`text-xs sm:text-sm font-medium ${
+                  theme === 'light' ? 'text-emerald-700' : 'text-blue-400'
+                }`}>
+                  Regional Avg
+                </span>
+              </div>
+              <p className={`text-base sm:text-lg font-bold ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
+              }`}>
+                ${regionalAvgWage}/hr
+              </p>
+              <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-400">
+                NYC ER
+              </p>
+            </div>
+
+            {/* Market Analysis */}
+            <div className={`p-2 sm:p-4 rounded-lg ${
+              theme === 'light' ? 'bg-amber-50' : 'bg-amber-900/20'
+            }`}>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                <Activity className="w-3 h-3 sm:w-4 sm:h-4 text-amber-600 dark:text-amber-400" />
+                <span className={`text-xs sm:text-sm font-medium ${
+                  theme === 'light' ? 'text-amber-700' : 'text-amber-400'
+                }`}>
+                  Market
+                </span>
+              </div>
+              <p className={`text-base sm:text-lg font-bold ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
+              }`}>
+                +8.5%
+              </p>
+              <p className="text-[10px] sm:text-xs text-amber-600 dark:text-amber-400">
+                YoY growth
+              </p>
             </div>
           </div>
         </div>

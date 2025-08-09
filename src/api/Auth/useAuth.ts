@@ -28,6 +28,7 @@ interface AuthResponse {
   message?: string;
   user?: User;
   requiresOnboarding?: boolean;
+  session?: any;
 }
 
 const useAuth = () => {
@@ -43,7 +44,7 @@ const useAuth = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
+          credentials: 'include', // 쿠키 포함
           body: JSON.stringify(data),
         }
       );
@@ -53,7 +54,27 @@ const useAuth = () => {
         throw new Error(error.message || 'Failed to create account');
       }
 
-      return await response.json();
+      const result = await response.json();
+      
+      // 회원가입 성공 시 사용자 정보 정규화
+      if (result.user) {
+        const { user } = result;
+        const normalizedUser = {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName || user.first_name || '',
+          lastName: user.lastName || user.last_name || '',
+          hasCompletedOnboarding: user.hasCompletedOnboarding || false,
+        };
+        
+        return {
+          success: true,
+          user: normalizedUser,
+          session: result.session
+        };
+      }
+
+      return { success: false };
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +90,7 @@ const useAuth = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
+          credentials: 'include', // 쿠키 포함 (세션/JWT 토큰)
           body: JSON.stringify(data),
         }
       );
@@ -79,7 +100,28 @@ const useAuth = () => {
         throw new Error(error.message || 'Failed to sign in');
       }
 
-      return await response.json();
+      const result = await response.json();
+      
+      // 로그인 성공 시 사용자 정보 정규화
+      if (result.user) {
+        const { user } = result;
+        // API 응답 형태에 관계없이 일관된 형태로 변환
+        const normalizedUser = {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName || user.first_name || '',
+          lastName: user.lastName || user.last_name || '',
+          hasCompletedOnboarding: user.hasCompletedOnboarding || false,
+        };
+        
+        return {
+          success: true,
+          user: normalizedUser,
+          session: result.session
+        };
+      }
+
+      return { success: false };
     } finally {
       setIsLoading(false);
     }
@@ -102,9 +144,7 @@ const useAuth = () => {
 
       const data = await response.json();
       return data.user || null;
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error checking auth:', error);
+    } catch {
       return null;
     }
   };

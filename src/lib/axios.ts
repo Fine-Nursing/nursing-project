@@ -85,12 +85,12 @@ apiClient.interceptors.response.use(
           duration: 4000,
         });
       }
-    } else {
-      // 다른 모든 에러는 토스트로 표시
+    } else if (error.response?.status !== 404) {
+      // 404는 조용히 처리, 다른 에러만 토스트로 표시
       const errorMessage = getErrorMessage(error);
       
-      // 개발 환경에서는 상세 정보도 콘솔에 출력
-      if (process.env.NODE_ENV === 'development') {
+      // 개발 환경에서는 404가 아닌 경우만 콘솔에 출력
+      if (process.env.NODE_ENV === 'development' && error.response?.status !== 404) {
         // eslint-disable-next-line no-console
         console.error('API Error:', {
           url: error.config?.url,
@@ -101,12 +101,15 @@ apiClient.interceptors.response.use(
         });
       }
       
-      toast.error(errorMessage, {
-        duration: 5000,
-        style: {
-          maxWidth: '500px',
-        },
-      });
+      // 404는 토스트 표시 안 함
+      if (error.response?.status !== 404) {
+        toast.error(errorMessage, {
+          duration: 5000,
+          style: {
+            maxWidth: '500px',
+          },
+        });
+      }
     }
     
     return Promise.reject(error);

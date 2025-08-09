@@ -13,14 +13,15 @@ interface CuteWageLabelProps {
 export default function CuteWageLabel({ viewBox, wage }: CuteWageLabelProps) {
   if (!viewBox) return null;
   const { x = 0, y = 0 } = viewBox;
-  const bubbleX = x - 60;
-  const bubbleY = y - 46;
+  // Safer positioning - ensure it doesn't go outside chart bounds
+  const bubbleX = Math.max(15, x - 50); // Don't go less than 15px from left edge
+  const bubbleY = Math.max(15, y - 35); // Don't go less than 15px from top edge
 
   return (
-    <foreignObject x={bubbleX} y={bubbleY} width={120} height={40}>
-      <div className="flex items-center justify-center bg-pink-100 text-pink-700 px-2 py-1 rounded-full shadow-md text-xs">
-        <Star className="w-3 h-3 mr-1" />
-        <span>Your Wage (${wage.toFixed(2)})</span>
+    <foreignObject x={bubbleX} y={bubbleY} width={100} height={35}>
+      <div className="flex items-center justify-center bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg shadow-lg text-xs font-medium border border-emerald-200">
+        <Star className="w-3 h-3 mr-1 fill-current" />
+        <span>You: ${wage}</span>
       </div>
     </foreignObject>
   );

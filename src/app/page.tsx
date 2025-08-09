@@ -1,75 +1,123 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import type { NursingTableParams } from 'src/api/useNursingTable';
 import { useNursingTable } from 'src/api/useNursingTable';
 import useAuthStore from 'src/hooks/useAuthStore';
-import FloatingOnboardButton from 'src/components/button/FloatingOnboardButton';
-import { LoginModal, SignUpModal } from 'src/components/modal/Modal';
-import CardBoard from 'src/components/CardBoard';
+import useAuth from 'src/api/Auth/useAuth';
+import useIsMobile from 'src/hooks/useIsMobile';
+import { motion } from 'framer-motion';
+import {
+  LoginModal,
+  SignUpModal,
+} from 'src/components/auth/OptimizedAuthModals';
 
-// Lazy load heavy components
-const NursingCompensationTable = lazy(() => import('src/components/table/NursingCompensationTable'));
-const NursingGraph = lazy(() => import('src/components/graph'));
+// Import separated components
+import Header from 'src/components/home/Header';
+import HeroSection from 'src/components/home/HeroSection';
+import CompensationSection from 'src/components/home/CompensationSection';
+import DataSection from 'src/components/home/DataSection';
+import FeaturesSection from 'src/components/home/FeaturesSection';
+import TestimonialsSection from 'src/components/home/TestimonialsSection';
+import Footer from 'src/components/home/Footer';
+import MobileSalaryDiscovery from 'src/components/home/MobileSalaryDiscovery';
+
 
 export default function HomePage() {
   const router = useRouter();
+  const isMobile = useIsMobile();
   const {
     user,
     isLoading: isCheckingAuth,
     signOut,
     checkAuth,
   } = useAuthStore();
+  const { signIn, signUp, isLoading: isAuthLoading } = useAuth();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
 
-  // API 필터 상태
-  const [tableFilters, setTableFilters] = useState<NursingTableParams>({
+  // Greeting data calculation
+  const greetingData = useMemo(() => {
+    const hour = new Date().getHours();
+    const userName = user?.firstName || user?.email?.split('@')[0] || 'Nurse';
+
+    const greetings = {
+      morning: {
+        greeting: `Good morning, ${userName}!`,
+        message: 'Ready to make today amazing?',
+      },
+      afternoon: {
+        greeting: `Good afternoon, ${userName}!`,
+        message: 'Hope your shift is going well.',
+      },
+      evening: {
+        greeting: `Good evening, ${userName}!`,
+        message: 'Time to unwind and explore opportunities.',
+      },
+      night: {
+        greeting: `Still up, ${userName}?`,
+        message: 'Night shift or planning ahead?',
+      },
+      default: {
+        greeting: 'Welcome to Nurse Journey',
+        message: 'Real salary data from real nurses.',
+      },
+    };
+
+    if (!user) return greetings.default;
+    if (hour >= 5 && hour < 12) return greetings.morning;
+    if (hour >= 12 && hour < 17) return greetings.afternoon;
+    if (hour >= 17 && hour < 21) return greetings.evening;
+    return greetings.night;
+  }, [user]);
+
+  const [displayedGreeting, setDisplayedGreeting] = useState('');
+  const [displayedMessage, setDisplayedMessage] = useState('');
+
+  useEffect(() => {
+    setDisplayedGreeting(greetingData.greeting);
+    setDisplayedMessage(greetingData.message);
+  }, [greetingData]);
+
+  // API filter state
+  const [tableFilters, setTableFilters] = useState<NursingTableParams>(() => ({
     page: 1,
     limit: 10,
     sortBy: 'compensation',
     sortOrder: 'desc',
+  }));
+
+  // API data fetching
+  const { data: nursingData } = useNursingTable(tableFilters, {
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
 
-  // API 데이터 가져오기
-  const {
-    data: nursingData,
-    isLoading,
-    isError,
-  } = useNursingTable(tableFilters);
-
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
+    const authStore = useAuthStore.getState();
+    authStore.setUser(null);
     await signOut();
-    router.push('/');
-  };
+  }, [signOut]);
 
-  // 수정된 온보딩 핸들러 - 온보딩 완료 여부 확인 추가
-  const handleOnboardingClick = async () => {
+  const handleOnboardingClick = useCallback(async () => {
     try {
-      // 로그인한 사용자이고 이미 온보딩을 완료했다면
       if (user && user.hasCompletedOnboarding) {
         router.push(`/users/${user.id}`);
-        toast(
-          'You have already completed onboarding! Check out your profile.',
-          {
-            icon: '👤',
-            duration: 3000,
-          }
-        );
+        toast('You have already completed onboarding! Check out your profile.', {
+          icon: '👤',
+          duration: 3000,
+        });
         return;
       }
 
-      // 백엔드 URL 설정 (환경변수가 없을 경우 fallback)
       const API_URL = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
-
-      // 1. 온보딩 세션 초기화 (로그인 여부와 관계없이)
       const response = await fetch(`${API_URL}/api/onboarding/init`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({}),
       });
@@ -79,251 +127,222 @@ export default function HomePage() {
       }
 
       const data = await response.json();
-
-      // 2. LocalStorage에 세션 정보 저장
       localStorage.setItem(
         'onboarding_session',
         JSON.stringify({
           tempUserId: data.tempUserId,
           sessionId: data.sessionId,
           startedAt: new Date().toISOString(),
-          isLoggedIn: !data.tempUserId.startsWith('temp_'), // 로그인 여부 저장
+          isLoggedIn: !data.tempUserId.startsWith('temp_'),
         })
       );
 
-      // 3. 온보딩 페이지로 이동
       router.push('/onboarding');
-
-      // 4. 사용자에게 적절한 메시지 표시
-      if (data.tempUserId.startsWith('temp_')) {
-        toast.success(
-          'Starting onboarding! You can create an account at the end.',
-          {
-            duration: 4000,
-          }
-        );
-      } else {
-        toast.success("Welcome back! Let's continue with your onboarding.", {
-          duration: 3000,
-        });
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('온보딩 시작 실패:', error);
+      toast.success("Let's get started with your nursing career journey!", {
+        icon: '🚀',
+        duration: 3000,
+      });
+    } catch {
       toast.error('Failed to start onboarding. Please try again.');
     }
-  };
+  }, [user, router]);
 
-  const handleSwitchToLogin = () => {
-    setShowSignUpModal(false);
-    setShowLoginModal(true);
-  };
+  const handleLogin = useCallback(
+    async (data: { email: string; password: string }) => {
+      try {
+        const response = await signIn(data);
+        if (response.success && response.user) {
+          useAuthStore.getState().setUser(response.user);
+          setShowLoginModal(false);
+          toast.success('Successfully logged in!');
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to login');
+      }
+    },
+    [signIn]
+  );
 
-  const handleSwitchToSignUp = () => {
-    setShowLoginModal(false);
-    setShowSignUpModal(true);
-  };
+  const handleSignUp = useCallback(
+    async (data: {
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+    }) => {
+      try {
+        const response = await signUp(data);
+        if (response.success && response.user) {
+          useAuthStore.getState().setUser(response.user);
+          await checkAuth();
+          setShowSignUpModal(false);
+          toast.success('Account created successfully!');
+        }
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to create account');
+      }
+    },
+    [signUp, checkAuth]
+  );
 
-  // 페이지 변경 핸들러
-  const handlePageChange = (newPage: number) => {
-    setTableFilters((prev) => ({ ...prev, page: newPage }));
-  };
+  const handlePageChange = useCallback((page: number) => {
+    setTableFilters((prev) => ({ ...prev, page }));
+  }, []);
 
-  // 온보딩 완료 여부 확인
-  const hasCompletedOnboarding = user?.hasCompletedOnboarding || false;
+  // Loading state
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 dark:bg-gradient-to-br dark:from-black dark:via-zinc-900 dark:to-black transition-colors">
+        <div className="flex items-center justify-center min-h-screen">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="text-center"
+          >
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-zinc-400">Loading...</p>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
 
-  // 디버깅용 콘솔 로그
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('=== 온보딩 상태 확인 ===');
-    // eslint-disable-next-line no-console
-    console.log('User 객체:', user);
-    // eslint-disable-next-line no-console
-    console.log('hasCompletedOnboarding:', user?.hasCompletedOnboarding);
-    // eslint-disable-next-line no-console
-    console.log('isCheckingAuth:', isCheckingAuth);
-    // eslint-disable-next-line no-console
-    console.log('====================');
-  }, [user, isCheckingAuth]);
+  // Mobile-specific layout - Optimized for mobile UX
+  if (isMobile && !user) {
+    // Mobile screen for non-logged in users
+    return (
+      <>
+        <MobileSalaryDiscovery
+          onOnboardingClick={() => setShowSignUpModal(true)}
+          onLoginClick={() => setShowLoginModal(true)}
+        />
 
-  return (
-    <main className="min-h-screen flex flex-col font-sans bg-slate-50">
-      {/* Header */}
-      <header className="sticky top-0 z-10 bg-white shadow-sm border-b border-slate-200">
-        <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6">
-          <div className="flex justify-between items-center h-14 sm:h-16">
-            <div className="text-lg sm:text-xl tracking-tight font-semibold">
-              <span className="text-slate-900">Nurse</span>
-              <span className="text-purple-600"> Journey</span>
-            </div>
-            <nav className="overflow-x-auto">
-              <ul className="flex items-center space-x-3 sm:space-x-6 text-xs sm:text-sm font-medium">
-                {isCheckingAuth && (
-                  <li>
-                    <div className="animate-pulse bg-gray-200 h-8 w-20 rounded" />
-                  </li>
-                )}
+        {/* Modals */}
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onSubmit={handleLogin}
+          onSwitchToSignUp={() => {
+            setShowLoginModal(false);
+            setShowSignUpModal(true);
+          }}
+          isLoading={isAuthLoading}
+        />
 
-                {!isCheckingAuth && user && (
-                  <>
-                    <li className="hidden sm:block">
-                      <span className="text-slate-600 truncate max-w-32">
-                        Welcome,{' '}
-                        {user.first_name || user.firstName || user.email}!
-                      </span>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => router.push(`/users/${user.id}`)}
-                        className="text-slate-700 hover:text-purple-600 transition-colors whitespace-nowrap"
-                      >
-                        Profile
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="text-slate-700 hover:text-purple-600 transition-colors whitespace-nowrap"
-                      >
-                        Sign Out
-                      </button>
-                    </li>
-                  </>
-                )}
+        <SignUpModal
+          isOpen={showSignUpModal}
+          onClose={() => setShowSignUpModal(false)}
+          onSubmit={handleSignUp}
+          onSwitchToLogin={() => {
+            setShowSignUpModal(false);
+            setShowLoginModal(true);
+          }}
+          isLoading={isAuthLoading}
+        />
+      </>
+    );
+  }
 
-                {!isCheckingAuth && !user && (
-                  <>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => setShowLoginModal(true)}
-                        className="text-slate-700 hover:text-purple-600 font-medium transition-colors whitespace-nowrap"
-                      >
-                        Sign In
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        onClick={() => setShowSignUpModal(true)}
-                        className="bg-purple-600 text-white px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm whitespace-nowrap"
-                      >
-                        Sign Up
-                      </button>
-                    </li>
-                  </>
-                )}
-              </ul>
-            </nav>
+  // Mobile screen for logged-in users (to be implemented)
+  if (isMobile && user) {
+    return (
+      <>
+        {/* Mobile dashboard for logged-in users - to be implemented */}
+        <div className="min-h-screen bg-gray-50 dark:bg-black p-4">
+          <div className="text-center py-20">
+            <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName || 'Nurse'}!</h1>
+            <button
+              type="button"
+              onClick={() => router.push(`/users/${user.id}`)}
+              className="px-6 py-3 bg-emerald-500 text-white rounded-lg"
+            >
+              View My Profile
+            </button>
           </div>
         </div>
-      </header>
 
-      <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 xl:px-8 py-8 sm:py-12 lg:py-16">
-        {/* Hero Section - 온보딩 완료 여부에 따라 다른 텍스트 표시 */}
-        <section className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 lg:mb-20">
-          <div className="relative h-[48px] flex justify-center mb-4">
-            <FloatingOnboardButton onClick={handleOnboardingClick} isCompleted={hasCompletedOnboarding} />
-          </div>
-          <div className="text-gray-700 px-4">
-            <p className="text-base sm:text-lg font-semibold text-gray-800">
-              {hasCompletedOnboarding
-                ? 'Welcome back! Explore your compensation insights and career opportunities.'
-                : "Start onboarding to see what's possible for your career."}
-            </p>
-            <p className="mt-2 text-sm sm:text-base text-gray-600">
-              {hasCompletedOnboarding
-                ? 'Check out how your compensation compares with other nurses in your area.'
-                : "We'll help you understand where you stand — and where you could go."}
-              {!user && !hasCompletedOnboarding && (
-                <span className="block mt-1 text-xs sm:text-sm text-gray-500">
-                  No account needed to start. You can create one at the end!
-                </span>
-              )}
-            </p>
-          </div>
-        </section>
+        {/* Modals */}
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onSubmit={handleLogin}
+          onSwitchToSignUp={() => {
+            setShowLoginModal(false);
+            setShowSignUpModal(true);
+          }}
+          isLoading={isAuthLoading}
+        />
 
-        {/* NurseBoard */}
-        <section className="mb-12 sm:mb-16 lg:mb-20">
-          <CardBoard />
-        </section>
+        <SignUpModal
+          isOpen={showSignUpModal}
+          onClose={() => setShowSignUpModal(false)}
+          onSubmit={handleSignUp}
+          onSwitchToLogin={() => {
+            setShowSignUpModal(false);
+            setShowLoginModal(true);
+          }}
+          isLoading={isAuthLoading}
+        />
+      </>
+    );
+  }
 
-        {/* Data Visualization */}
-        <section className="space-y-8 sm:space-y-12 lg:space-y-16">
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 lg:p-8">
-            <Suspense fallback={
-              <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
-              </div>
-            }>
-              <NursingGraph />
-            </Suspense>
-          </div>
+  // Desktop layout
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 dark:bg-neutral-950 transition-colors">
+      <Header
+        user={user}
+        onSignOut={handleSignOut}
+        onShowLogin={() => setShowLoginModal(true)}
+        onShowSignUp={() => setShowSignUpModal(true)}
+      />
 
-          {/* Nursing Compensation Table with API Data */}
-          <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-4 sm:p-6 lg:p-8 overflow-hidden">
-            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">
-              Nursing Compensation Data
-            </h2>
+      <main className="pt-16">
+        <HeroSection
+          displayedGreeting={displayedGreeting}
+          displayedMessage={displayedMessage}
+          user={user}
+          onOnboardingClick={handleOnboardingClick}
+        />
 
-            {isLoading && (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-gray-500">
-                  Loading compensation data...
-                </div>
-              </div>
-            )}
+        <CompensationSection />
 
-            {isError && (
-              <div className="flex items-center justify-center h-64">
-                <div className="text-red-500">
-                  Error loading data. Please try again later.
-                </div>
-              </div>
-            )}
+        <DataSection
+          nursingData={nursingData}
+          onPageChange={handlePageChange}
+        />
 
-            {!isLoading && !isError && nursingData && (
-              <>
-                <Suspense fallback={
-                  <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600" />
-                  </div>
-                }>
-                  <NursingCompensationTable
-                    data={nursingData.data}
-                    meta={nursingData.meta}
-                    onPageChange={handlePageChange}
-                  />
-                </Suspense>
+        <FeaturesSection />
 
-                {/* 추가 정보 표시 */}
-                <div className="mt-4 text-sm text-gray-600 text-right">
-                  Total nursing positions:{' '}
-                  {nursingData.meta.total.toLocaleString()}
-                </div>
-              </>
-            )}
-          </div>
-        </section>
-      </div>
+        <TestimonialsSection />
+      </main>
 
-      {/* Auth Modals */}
+      <Footer />
+
+      {/* Login Modal */}
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
-        onSwitchToSignUp={handleSwitchToSignUp}
-        onAuthSuccess={checkAuth}
+        onSubmit={handleLogin}
+        onSwitchToSignUp={() => {
+          setShowLoginModal(false);
+          setShowSignUpModal(true);
+        }}
+        isLoading={isAuthLoading}
       />
 
+      {/* Sign Up Modal */}
       <SignUpModal
         isOpen={showSignUpModal}
         onClose={() => setShowSignUpModal(false)}
-        onSwitchToLogin={handleSwitchToLogin}
-        onAuthSuccess={checkAuth}
+        onSubmit={handleSignUp}
+        onSwitchToLogin={() => {
+          setShowSignUpModal(false);
+          setShowLoginModal(true);
+        }}
+        isLoading={isAuthLoading}
       />
-    </main>
+    </div>
   );
 }

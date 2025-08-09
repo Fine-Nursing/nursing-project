@@ -1,39 +1,19 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import toast from 'react-hot-toast';
 import useCareerHistory from 'src/api/useCareerHistory';
 import { useMyCompensation } from 'src/api/useCompensation';
-import {
-  Sparkles,
-  BarChart4,
-  Plus,
-  History,
-  Award,
-  Briefcase,
-  TrendingUp,
-  Clock,
-  Check,
-  Edit,
-  Trash2,
-  ArrowRight,
-} from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  type TooltipProps,
-} from 'recharts';
 
 import type { CareerItem, NewItemInput } from './types';
+import CareerHeader from './CareerHeader';
+import CareerStatsGrid from './CareerStatsGrid';
+import CareerControlPanel from './CareerControlPanel';
+import CareerForm from './CareerForm';
+import CareerTimeline from './CareerTimeline';
 import AiRoleModal from './AiRoleModal';
 import SalaryTrendModal from './SalaryTrendModal';
 import ProgressionBarChart from './ProgressionBarChart';
@@ -42,63 +22,29 @@ interface CareerDashboardProps {
   theme?: 'light' | 'dark';
 }
 
-/** ★ 커스텀 툴팁 컴포넌트: 렌더 밖에 정의하여 ESLint 경고 해결 */
-function CustomLineTooltip({
-  active,
-  payload,
-  theme = 'light',
-}: TooltipProps<any, any> & { theme?: 'light' | 'dark' }) {
-  if (!active || !payload || !payload.length) return null;
 
-  const data = payload[0].payload;
-  return (
-    <div
-      className={`${theme === 'light' ? 'bg-white border-slate-100 text-gray-700' : 'bg-slate-700 border-slate-600 text-white'} border p-2 rounded-xl shadow-sm text-xs`}
-    >
-      <div
-        className={`font-bold ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}
-      >
-        {data.role} {data.specialty && `(${data.specialty})`}
-      </div>
-      <div className="mb-1">{data.facility}</div>
-      <div
-        className={
-          theme === 'light' ? 'text-sm text-gray-600' : 'text-sm text-gray-300'
-        }
-      >
-        Start: {data.startDate ? dayjs(data.startDate).format('MMM YYYY') : ''}
-        <br />
-        End: {data.endDate ? dayjs(data.endDate).format('MMM YYYY') : 'Now'}
-      </div>
-      <div
-        className={`font-medium mt-1 ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}
-      >
-        ${data.hourlyRate.toFixed(2)}/hr
-      </div>
-    </div>
-  );
-}
-
-// 기간을 표시하는 헬퍼 함수 (중첩된 삼항 연산자를 피하기 위함)
-const renderDuration = (years: number, months: number) => {
-  if (years > 0) {
-    const yearText = `${years}y`;
-    return months > 0 ? `${yearText} ${months}m` : yearText;
-  }
-
-  // 1년 미만인 경우
-  return months > 0 ? `${months}m` : '< 1m';
-};
-
-function CareerDashboard({
-  theme = 'light',
-}: CareerDashboardProps) {
-  /** 1) CAREER HISTORY STATE */
+function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
+  // State
   const [careerData, setCareerData] = useState<CareerItem[]>([]);
+  const [newItem, setNewItem] = useState<NewItemInput>({
+    facility: '',
+    role: '',
+    specialty: '',
+    startDate: new Date(),
+    endDate: null,
+    hourlyRate: '',
+  });
+  const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
+  const [aiReason, setAiReason] = useState<string | null>(null);
+  const [showTrend, setShowTrend] = useState(false);
+  const [trendData, setTrendData] = useState<{ month: string; hourlyRate: number }[]>([]);
+
+  // API calls
   const { data: careerHistoryData, isLoading: isCareerLoading } = useCareerHistory();
   const { data: compensationData, isLoading: isCompensationLoading } = useMyCompensation();
 
-  // API 데이터를 careerData로 변환
+  // Transform API data
   useEffect(() => {
     if (careerHistoryData) {
       const transformedData = careerHistoryData.map((item, index) => ({
@@ -114,18 +60,7 @@ function CareerDashboard({
     }
   }, [careerHistoryData]);
 
-  const [newItem, setNewItem] = useState<NewItemInput>({
-    facility: '',
-    role: '',
-    specialty: '',
-    startDate: new Date(),
-    endDate: null,
-    hourlyRate: '',
-  });
-
-  const [editingItemId, setEditingItemId] = useState<number | null>(null);
-  const [formVisible, setFormVisible] = useState(false);
-
+  // Event handlers
   const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewItem((prev) => ({ ...prev, [name]: value }));
@@ -239,9 +174,8 @@ function CareerDashboard({
     }
   };
 
-  /** 2) AI ROLE SUGGESTION / SALARY TREND MODALS */
-  const [aiReason, setAiReason] = useState<string | null>(null);
-  function getAiRoleRecommendation() {
+  // AI helpers
+  const getAiRoleRecommendation = () => {
     const roles = ['RN', 'Charge Nurse', 'NP', 'Clinical Nurse Educator'];
     const specs = ['ER', 'ICU', 'Pediatrics', 'Oncology'];
     const reasons = [
@@ -254,20 +188,9 @@ function CareerDashboard({
     const rSpec = specs[Math.floor(Math.random() * specs.length)];
     const rReason = reasons[Math.floor(Math.random() * reasons.length)];
     return { role: rRole, specialty: rSpec, reason: rReason };
-  }
-  const handleAiSuggest = () => {
-    const { role, specialty, reason } = getAiRoleRecommendation();
-    setNewItem((prev) => ({ ...prev, role, specialty }));
-    setAiReason(reason);
   };
-  const handleCloseAiModal = () => setAiReason(null);
 
-  // SALARY TREND
-  const [showTrend, setShowTrend] = useState(false);
-  const [trendData, setTrendData] = useState<
-    { month: string; hourlyRate: number }[]
-  >([]);
-  function getAiSalaryTrend() {
+  const getAiSalaryTrend = () => {
     const data = [];
     let base = 35 + Math.random() * 5;
     for (let i = 0; i < 6; i += 1) {
@@ -278,62 +201,60 @@ function CareerDashboard({
       });
     }
     return data;
-  }
+  };
+
+  const handleAiSuggest = () => {
+    const { role, specialty, reason } = getAiRoleRecommendation();
+    setNewItem((prev) => ({ ...prev, role, specialty }));
+    setAiReason(reason);
+  };
+
   const handleSalaryTrend = () => {
     setTrendData(getAiSalaryTrend());
     setShowTrend(true);
   };
+
+  const handleCloseAiModal = () => setAiReason(null);
   const handleCloseTrend = () => setShowTrend(false);
 
-  /** 3) 경력 통계 계산 - Memoized */
-  const sortedCareerData = useMemo(() => 
-    [...careerData].sort(
+  // Computed values
+  const { sortedCareerData, totalYears, remainingMonths, highestHourlyRate, totalPositions, currentRole } = useMemo(() => {
+    const sorted = [...careerData].sort(
       (a, b) => (a.startDate?.getTime() || 0) - (b.startDate?.getTime() || 0)
-    ), [careerData]
-  );
+    );
 
-  const { totalYears, remainingMonths } = useMemo(() => {
-    const months = sortedCareerData.reduce((total, item) => {
-      const startDate = dayjs(item.startDate);
-      const endDate = item.endDate ? dayjs(item.endDate) : dayjs();
-      return total + endDate.diff(startDate, 'month');
-    }, 0);
+    // Calculate stats - 가장 이른 시작일부터 가장 늦은 종료일까지
+    let months = 0;
+    if (sorted.length > 0) {
+      // 가장 이른 시작일
+      const earliestStart = dayjs(sorted[0].startDate);
+      
+      // 가장 늦은 종료일 (null이면 현재 날짜)
+      const latestEnd = sorted.reduce((latest, item) => {
+        const itemEnd = item.endDate ? dayjs(item.endDate) : dayjs();
+        return itemEnd.isAfter(latest) ? itemEnd : latest;
+      }, earliestStart);
+      
+      // 전체 경력 기간 (중복 제거)
+      months = latestEnd.diff(earliestStart, 'month');
+    }
     
+    const highestRate = Math.max(...sorted.map(item => item.hourlyRate), 0);
+    const currentRole = sorted.length ? sorted[sorted.length - 1] : null;
+
     return {
+      sortedCareerData: sorted,
       totalYears: Math.floor(months / 12),
-      remainingMonths: months % 12
+      remainingMonths: months % 12,
+      highestHourlyRate: highestRate,
+      totalPositions: sorted.length,
+      currentRole
     };
-  }, [sortedCareerData]);
+  }, [careerData]);
 
-  const currentRole = useMemo(() => 
-    sortedCareerData.length
-      ? sortedCareerData[sortedCareerData.length - 1]
-      : null,
-    [sortedCareerData]
-  );
-
-  
   const annualSalary = compensationData?.annualSalary || 0;
 
-  /** 4) LINE CHART: CAREER HISTORY Over Time - Memoized */
-  const lineData = useMemo(() => 
-    sortedCareerData.map((item) => ({
-      ...item,
-      xLabel: item.startDate ? dayjs(item.startDate).format('MMM YYYY') : '',
-    })),
-    [sortedCareerData]
-  );
-
-  // 다크모드 조건부 클래스
-  const bgClass = theme === 'light' ? 'bg-white' : 'bg-slate-700';
-
-  const borderClass =
-    theme === 'light' ? 'border-slate-200' : 'border-slate-600';
-
-  const chartGridColor = theme === 'light' ? '#e2e8f0' : '#475569';
-  const chartTextColor = theme === 'light' ? '#0f172a' : '#e2e8f0';
-
-  // 로딩 상태 처리
+  // Loading state
   if (isCareerLoading || isCompensationLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
@@ -346,7 +267,10 @@ function CareerDashboard({
   }
 
   return (
-    <div>
+    <div className={theme === 'light' 
+      ? 'bg-white rounded-xl shadow-lg border border-gray-200' 
+      : 'bg-slate-800 rounded-xl shadow-lg border border-slate-700'}>
+      {/* Modals */}
       <AiRoleModal
         reason={aiReason}
         onClose={handleCloseAiModal}
@@ -359,279 +283,52 @@ function CareerDashboard({
         theme={theme}
       />
 
-      {/* Header & Stats */}
-      <div className="mb-8">
-        <div className="flex items-center mb-3">
-          <Briefcase
-            className={`${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} w-7 h-7 mr-2`}
-          />
-          <h2
-            className={`text-2xl font-bold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}
-          >
-            My Career Journey
-          </h2>
-        </div>
+      {/* Header */}
+      <CareerHeader
+        theme={theme}
+        totalPositions={totalPositions}
+        totalYears={totalYears}
+        highestHourlyRate={highestHourlyRate}
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-          <div
-            className={`${theme === 'light' ? 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200' : 'bg-gradient-to-br from-slate-800 to-slate-700 border-slate-600'} rounded-xl p-4 border flex flex-col`}
-          >
-            <span
-              className={`${theme === 'light' ? 'text-slate-500' : 'text-slate-300'} text-sm font-medium`}
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        {/* Stats Grid */}
+        <CareerStatsGrid
+          theme={theme}
+          totalYears={totalYears}
+          remainingMonths={remainingMonths}
+          currentRole={currentRole}
+          highestHourlyRate={highestHourlyRate}
+          annualSalary={annualSalary}
+        />
+
+        {/* Control Panel */}
+        <CareerControlPanel
+          theme={theme}
+          formVisible={formVisible}
+          setFormVisible={setFormVisible}
+        />
+        
+        {/* Career Form */}
+        <AnimatePresence>
+          {formVisible && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              Total Experience
-            </span>
-            <div className="flex items-center mt-2">
-              <Clock
-                className={`w-5 h-5 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} mr-2`}
+              <CareerForm
+                newItem={newItem}
+                onChangeText={handleChangeText}
+                onChangeStartDate={handleChangeStartDate}
+                onChangeEndDate={handleChangeEndDate}
+                onAdd={editingItemId ? handleUpdate : handleAdd}
+                onAiSuggest={handleAiSuggest}
+                onSalaryTrend={handleSalaryTrend}
+                editingItemId={editingItemId}
               />
-              <span
-                className={`text-xl font-bold ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}
-              >
-                {totalYears} Year{totalYears !== 1 ? 's' : ''}{' '}
-                {remainingMonths > 0
-                  ? `${remainingMonths} Month${remainingMonths !== 1 ? 's' : ''}`
-                  : ''}
-              </span>
-            </div>
-          </div>
-
-          <div
-            className={`${theme === 'light' ? 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200' : 'bg-gradient-to-br from-slate-800 to-blue-900 border-blue-800'} rounded-xl p-4 border flex flex-col`}
-          >
-            <span
-              className={`${theme === 'light' ? 'text-blue-500' : 'text-blue-300'} text-sm font-medium`}
-            >
-              Current Role
-            </span>
-            <div className="flex items-center mt-2">
-              <Award
-                className={`w-5 h-5 ${theme === 'light' ? 'text-blue-600' : 'text-blue-300'} mr-2`}
-              />
-              <span
-                className={`text-xl font-bold ${theme === 'light' ? 'text-blue-800' : 'text-blue-200'}`}
-              >
-                {currentRole
-                  ? `${currentRole.role}${currentRole.specialty ? ` (${currentRole.specialty})` : ''}`
-                  : 'None'}
-              </span>
-            </div>
-          </div>
-
-          <div
-            className={`${theme === 'light' ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200' : 'bg-gradient-to-br from-slate-800 to-purple-900 border-purple-800'} rounded-xl p-4 border flex flex-col`}
-          >
-            <span
-              className={`${theme === 'light' ? 'text-purple-500' : 'text-purple-300'} text-sm font-medium`}
-            >
-              Highest Hourly Rate
-            </span>
-            <div className="flex items-center mt-2">
-              <TrendingUp
-                className={`w-5 h-5 ${theme === 'light' ? 'text-purple-600' : 'text-purple-300'} mr-2`}
-              />
-              <span
-                className={`text-xl font-bold ${theme === 'light' ? 'text-purple-800' : 'text-purple-200'}`}
-              >
-                ${compensationData?.hourlyRate?.toFixed(2) || '0.00'}/hr
-              </span>
-            </div>
-          </div>
-
-          <div
-            className={`${theme === 'light' ? 'bg-gradient-to-br from-slate-50 to-slate-100 border-slate-200' : 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-800'} rounded-xl p-4 border flex flex-col`}
-          >
-            <span
-              className={`${theme === 'light' ? 'text-slate-500' : 'text-slate-300'} text-sm font-medium`}
-            >
-              Est. Annual Salary
-            </span>
-            <div className="flex items-center mt-2">
-              <Award
-                className={`w-5 h-5 ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'} mr-2`}
-              />
-              <span
-                className={`text-xl font-bold ${theme === 'light' ? 'text-slate-800' : 'text-slate-200'}`}
-              >
-                ${Math.round(annualSalary).toLocaleString()}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Add Career Button & Form */}
-      <div className="mb-6">
-        {!formVisible ? (
-          <button
-            type="button"
-            onClick={() => setFormVisible(true)}
-            className="bg-slate-600 text-white px-4 py-2 rounded-lg flex items-center hover:bg-slate-700 transition shadow-sm"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Career Entry
-          </button>
-        ) : (
-          <div
-            className={`${bgClass} border ${borderClass} rounded-lg p-5 shadow-sm`}
-          >
-            <h3
-              className={`text-lg font-bold ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'} mb-4 flex items-center`}
-            >
-              <Briefcase
-                className={`w-5 h-5 mr-2 ${theme === 'light' ? 'text-slate-500' : 'text-slate-300'}`}
-              />
-              {editingItemId ? 'Edit Career Entry' : 'Add New Career Entry'}
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              {/* Facility */}
-              <div>
-                <label
-                  htmlFor="facility"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  Facility/Organization*
-                </label>
-                <input
-                  id="facility"
-                  name="facility"
-                  value={newItem.facility}
-                  onChange={handleChangeText}
-                  placeholder="e.g. NYU Langone"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                  required
-                />
-              </div>
-
-              {/* Role */}
-              <div>
-                <label
-                  htmlFor="role"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  Role/Position*
-                </label>
-                <input
-                  id="role"
-                  name="role"
-                  value={newItem.role}
-                  onChange={handleChangeText}
-                  placeholder="e.g. RN"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                  required
-                />
-              </div>
-
-              {/* Specialty */}
-              <div>
-                <label
-                  htmlFor="specialty"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  Specialty
-                </label>
-                <input
-                  id="specialty"
-                  name="specialty"
-                  value={newItem.specialty}
-                  onChange={handleChangeText}
-                  placeholder="e.g. ER, NICU"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-3 sm:mb-4">
-              {/* Start Date */}
-              <div>
-                <label
-                  htmlFor="startDate"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  Start Date*
-                </label>
-                <DatePicker
-                  id="startDate"
-                  selected={newItem.startDate}
-                  onChange={handleChangeStartDate}
-                  dateFormat="MMM yyyy"
-                  showMonthYearPicker
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                  required
-                />
-              </div>
-
-              {/* End Date */}
-              <div>
-                <label
-                  htmlFor="endDate"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  End Date{' '}
-                  <span
-                    className={
-                      theme === 'light' ? 'text-gray-400' : 'text-gray-500'
-                    }
-                  >
-                    (Leave empty if current)
-                  </span>
-                </label>
-                <DatePicker
-                  id="endDate"
-                  selected={newItem.endDate}
-                  onChange={handleChangeEndDate}
-                  dateFormat="MMM yyyy"
-                  showMonthYearPicker
-                  placeholderText="Ongoing"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                  isClearable
-                />
-              </div>
-
-              {/* Hourly Rate */}
-              <div>
-                <label
-                  htmlFor="hourlyRate"
-                  className={`block mb-1 text-sm font-medium ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}
-                >
-                  Hourly Rate ($)*
-                </label>
-                <input
-                  id="hourlyRate"
-                  name="hourlyRate"
-                  type="number"
-                  step="0.01"
-                  value={newItem.hourlyRate}
-                  onChange={handleChangeText}
-                  placeholder="e.g. 35.5"
-                  className={`w-full px-3 py-2 border ${theme === 'light' ? 'border-gray-200 bg-white text-gray-900' : 'border-slate-600 bg-slate-800 text-white'} rounded-lg text-sm focus:border-slate-500 focus:ring-1 focus:ring-slate-500`}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-between mt-4">
-              <div className="space-x-2">
-                <button
-                  type="button"
-                  onClick={handleAiSuggest}
-                  className={`inline-flex items-center rounded-lg ${theme === 'light' ? 'bg-purple-100 text-purple-600 hover:bg-purple-200' : 'bg-purple-900 text-purple-200 hover:bg-purple-800'} px-3 py-2 transition text-sm`}
-                >
-                  <Sparkles className="w-4 h-4 mr-1" />
-                  AI Suggest Role
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSalaryTrend}
-                  className={`inline-flex items-center rounded-lg ${theme === 'light' ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-blue-900 text-blue-200 hover:bg-blue-800'} px-3 py-2 transition text-sm`}
-                >
-                  <BarChart4 className="w-4 h-4 mr-1" />
-                  Salary Trend
-                </button>
-              </div>
-
-              <div className="space-x-2">
+              <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
                   onClick={handleCancel}
@@ -639,270 +336,26 @@ function CareerDashboard({
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={editingItemId ? handleUpdate : handleAdd}
-                  className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 text-sm"
-                >
-                  {editingItemId ? 'Update' : 'Add'} Career Entry
-                </button>
               </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Career Timeline */}
+        <CareerTimeline
+          theme={theme}
+          careerData={careerData}
+          filteredAndSortedCareerData={sortedCareerData}
+          highestHourlyRate={highestHourlyRate}
+          setFormVisible={setFormVisible}
+          filterRole=""
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+
+        {/* Progression Bar Chart */}
+        <ProgressionBarChart careerData={careerData} theme={theme} />
       </div>
-
-      {/* Combined Timeline & Graph */}
-      {/* Combined Timeline & Graph */}
-      <div
-        className={`mb-8 ${bgClass} border ${borderClass} rounded-xl shadow-sm overflow-hidden`}
-      >
-        <div className="p-4 bg-gradient-to-r from-slate-500 to-slate-600">
-          <h3 className="text-lg font-bold text-white mb-1 flex items-center">
-            <History className="w-5 h-5 mr-2" />
-            Career Journey Timeline
-          </h3>
-          <p className="text-slate-100 text-sm">
-            Your professional growth visualized
-          </p>
-        </div>
-
-        {careerData.length === 0 ? (
-          <div
-            className={`p-12 text-center ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'}`}
-          >
-            <Briefcase className="w-16 h-16 mx-auto mb-4 opacity-25" />
-            <p className="text-lg font-medium">Your career timeline is empty</p>
-            <p className="text-sm">
-              Add your first career entry to see your journey visualized
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            {/* Left side: Timeline */}
-            <div
-              className={`p-6 ${theme === 'light' ? 'border-r border-gray-100' : 'border-r border-slate-600'}`}
-            >
-              <div
-                className={`relative pl-8 space-y-8 before:absolute before:left-4 before:top-0 before:h-full before:w-0.5 ${theme === 'light' ? 'before:bg-slate-200' : 'before:bg-slate-700'}`}
-              >
-                {sortedCareerData.map((item, index) => {
-                  const startDate = dayjs(item.startDate);
-                  const endDate = item.endDate ? dayjs(item.endDate) : dayjs();
-                  const durationMonths = endDate.diff(startDate, 'month');
-                  const durationYears = Math.floor(durationMonths / 12);
-                  const remainingDurationMonths = durationMonths % 12;
-                  const ongoing = !item.endDate;
-
-                  // Determine marker color based on role level
-                  let markerColor =
-                    theme === 'light' ? 'bg-slate-500' : 'bg-slate-600';
-                  if (
-                    item.role.toLowerCase().includes('senior') ||
-                    item.role.toLowerCase().includes('director') ||
-                    item.role.toLowerCase().includes('manager')
-                  ) {
-                    markerColor =
-                      theme === 'light' ? 'bg-purple-500' : 'bg-purple-600';
-                  } else if (
-                    item.role.toLowerCase().includes('charge') ||
-                    item.role.toLowerCase().includes('lead')
-                  ) {
-                    markerColor =
-                      theme === 'light' ? 'bg-blue-500' : 'bg-blue-600';
-                  }
-
-                  return (
-                    <div key={item.id} className="relative">
-                      {/* Timeline marker */}
-                      <div
-                        className={`absolute -left-8 top-0 w-8 h-8 rounded-full ${markerColor} flex items-center justify-center shadow-md`}
-                      >
-                        {index === sortedCareerData.length - 1 && ongoing ? (
-                          <Clock className="w-4 h-4 text-white" />
-                        ) : (
-                          <Check className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-
-                      {/* Content */}
-                      <div
-                        className={`
-                        p-4 rounded-lg border transition-all
-                        ${
-                          // eslint-disable-next-line no-nested-ternary
-                          ongoing
-                            ? theme === 'light'
-                              ? 'border-slate-200 bg-slate-50 shadow-sm'
-                              : 'border-slate-800 bg-slate-800 shadow-sm'
-                            : theme === 'light'
-                              ? 'border-gray-100 hover:border-slate-200 hover:shadow-sm'
-                              : 'border-slate-600 hover:border-slate-700 hover:shadow-sm'
-                        }
-                      `}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4
-                              className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'} flex items-center`}
-                            >
-                              {item.role}
-                              {item.specialty && (
-                                <span
-                                  className={
-                                    theme === 'light'
-                                      ? 'text-gray-500 ml-1'
-                                      : 'text-gray-400 ml-1'
-                                  }
-                                >
-                                  ({item.specialty})
-                                </span>
-                              )}
-                            </h4>
-                            <div
-                              className={
-                                theme === 'light'
-                                  ? 'text-gray-600 mt-1'
-                                  : 'text-gray-300 mt-1'
-                              }
-                            >
-                              {item.facility}
-                            </div>
-                          </div>
-
-                          {/* Action buttons */}
-                          <div className="flex space-x-1">
-                            <button
-                              type="button"
-                              onClick={() => handleEdit(item.id)}
-                              className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-slate-600' : 'text-gray-500 hover:text-slate-300'} rounded`}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(item.id)}
-                              className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-red-600' : 'text-gray-500 hover:text-red-400'} rounded`}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div
-                          className={`flex items-center mt-2 text-sm ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'}`}
-                        >
-                          <Clock
-                            className={`w-3.5 h-3.5 mr-1 ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'}`}
-                          />
-                          <span>
-                            {startDate.format('MMM YYYY')} -{' '}
-                            {ongoing ? 'Present' : endDate.format('MMM YYYY')}{' '}
-                            <span
-                              className={`font-medium ${theme === 'light' ? 'text-slate-600' : 'text-slate-300'}`}
-                            >
-                              (
-                              {renderDuration(
-                                durationYears,
-                                remainingDurationMonths
-                              )}
-                              )
-                            </span>
-                          </span>
-                        </div>
-
-                        <div className="mt-2 flex items-center">
-                          <TrendingUp
-                            className={`w-3.5 h-3.5 mr-1 ${theme === 'light' ? 'text-slate-500' : 'text-slate-300'}`}
-                          />
-                          <span
-                            className={`text-sm font-medium ${theme === 'light' ? 'text-slate-700' : 'text-slate-300'}`}
-                          >
-                            ${item.hourlyRate.toFixed(2)}/hr
-                          </span>
-                        </div>
-
-                        {index < sortedCareerData.length - 1 && (
-                          <div
-                            className={`mt-3 text-xs ${theme === 'light' ? 'text-gray-400' : 'text-gray-500'} flex items-center`}
-                          >
-                            <ArrowRight className="w-3 h-3 mr-1" />
-                            {dayjs(sortedCareerData[index + 1].startDate).diff(
-                              endDate,
-                              'month'
-                            ) > 1 ? (
-                              <span>
-                                {dayjs(
-                                  sortedCareerData[index + 1].startDate
-                                ).diff(endDate, 'month')}{' '}
-                                month gap
-                              </span>
-                            ) : (
-                              <span>Direct transition</span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Right side: Salary Chart */}
-            <div className="p-6" style={{ height: '400px' }}>
-              <h4
-                className={`text-sm font-bold ${theme === 'light' ? 'text-gray-700' : 'text-gray-200'} mb-3`}
-              >
-                Salary Progression
-              </h4>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={lineData}
-                  margin={{ top: 10, right: 10, bottom: 20, left: 20 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    stroke={chartGridColor}
-                  />
-                  <XAxis
-                    dataKey="xLabel"
-                    tick={{ fill: chartTextColor, fontSize: 12 }}
-                    angle={-15}
-                  />
-                  <YAxis
-                    tick={{ fill: chartTextColor, fontSize: 12 }}
-                    label={{
-                      value: 'Hourly Rate($)',
-                      angle: -90,
-                      position: 'insideLeft',
-                      style: { fill: chartTextColor, fontSize: 12 },
-                    }}
-                  />
-                  <Tooltip content={<CustomLineTooltip theme={theme} />} />
-                  <Line
-                    type="monotone"
-                    dataKey="hourlyRate"
-                    stroke={theme === 'light' ? '#14b8a6' : '#2dd4bf'} // 라이트모드: slate-500, 다크모드: slate-400
-                    strokeWidth={3}
-                    dot={{
-                      r: 5,
-                      fill: theme === 'light' ? '#14b8a6' : '#2dd4bf',
-                    }}
-                    activeDot={{
-                      r: 8,
-                      fill: theme === 'light' ? '#0f766e' : '#5eead4',
-                    }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Progression Bar Chart */}
-      <ProgressionBarChart careerData={careerData} theme={theme} />
     </div>
   );
 }

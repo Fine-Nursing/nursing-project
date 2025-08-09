@@ -83,9 +83,7 @@ export const useParsedNextSteps = () => {
       }
 
       return result;
-    } catch (parseError) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to parse next steps:', parseError);
+    } catch {
       return {
         steps: [
           'Review your career progression and identify areas for improvement',

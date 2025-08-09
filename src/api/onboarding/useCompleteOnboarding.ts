@@ -59,20 +59,17 @@ const useCompleteOnboarding = () => {
       // Refresh user authentication
       try {
         await checkAuth();
-      } catch (authError) {
-        // eslint-disable-next-line no-console
-        console.error('Failed to refresh auth after onboarding:', authError);
+      } catch {
         // Continue even if auth refresh fails - the user can try logging in again
       }
 
       toast.success('Onboarding completed successfully!');
 
-      // 사용자 상세 페이지로 이동
+      // 분석 화면으로 이동 (userId 전달)
       if (result.userId) {
-        router.push(`/users/${result.userId}`);
+        router.push(`/onboarding/analyzing?userId=${result.userId}`);
       } else {
-        // userId가 없으면 대시보드로 이동
-        router.push('/dashboard');
+        router.push('/onboarding/analyzing');
       }
 
       return result;
@@ -88,8 +85,6 @@ const useCompleteOnboarding = () => {
         toast.error(errorMessage);
       }
 
-      // eslint-disable-next-line no-console
-      console.error('Onboarding completion error:', error);
       throw error;
     } finally {
       setIsLoading(false);

@@ -40,6 +40,10 @@ const queryClient = new QueryClient({
 if (process.env.NODE_ENV === 'development') {
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'updated' && event.action?.type === 'error') {
+      // Ignore 404 errors (no data found)
+      const error = event.action.error as any;
+      if (error?.response?.status === 404) return;
+      
       // eslint-disable-next-line no-console
       console.error('Query Error:', {
         queryKey: event.query.queryKey,

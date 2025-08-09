@@ -3,6 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import type { Column, CellProps, Row } from 'react-table';
 import { useTable, useSortBy } from 'react-table';
+import { motion } from 'framer-motion';
 import {
   Settings2,
   Layout,
@@ -33,7 +34,7 @@ interface NursingCompensationTableProps {
 
 function UserCell({ value }: CellProps<NursingPosition, string>) {
   if (!value) return <span className="text-gray-400">-</span>;
-  return <span className="font-medium">User {value.slice(-4)}</span>;
+  return <span className="font-medium text-sm">#{value.slice(-4)}</span>;
 }
 
 function ShiftCell({
@@ -42,7 +43,7 @@ function ShiftCell({
   const shiftColors = {
     Day: 'bg-yellow-100 text-yellow-800',
     Night: 'bg-blue-100 text-blue-800',
-    Evening: 'bg-purple-100 text-purple-800',
+    Evening: 'bg-zinc-100 text-zinc-800',
     Rotating: 'bg-gray-100 text-gray-800',
   };
 
@@ -50,7 +51,7 @@ function ShiftCell({
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${bgColor}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${bgColor}`}
     >
       {value}
     </span>
@@ -85,7 +86,7 @@ function CombinedPayCell({ row }: { row: Row<NursingPosition> }) {
                         ? 'bottom-full right-0 mb-2'
                         : 'top-0 right-full mr-2'
                     }
-                    bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl min-w-[200px]`}
+                    bg-gray-900 text-white text-xs rounded-lg px-2 py-1 shadow-xl min-w-[180px]`}
       >
         <div
           className={`absolute border-4 border-transparent
@@ -166,7 +167,7 @@ export default function NursingCompensationTable({
   const allColumns = useMemo<Column<NursingPosition>[]>(
     () => [
       {
-        Header: 'User',
+        Header: 'ID',
         accessor: 'id',
         Cell: UserCell,
       },
@@ -179,7 +180,7 @@ export default function NursingCompensationTable({
         accessor: 'location',
       },
       {
-        Header: 'Experience',
+        Header: 'Exp.',
         accessor: 'experience',
         Cell: ExperienceCell,
       },
@@ -189,7 +190,7 @@ export default function NursingCompensationTable({
         Cell: ShiftCell,
       },
       {
-        Header: 'Compensation',
+        Header: 'Pay/Hr',
         accessor: (row) => row.compensation?.hourly || 0,
         Cell: CombinedPayCell,
         id: 'compensation',
@@ -237,14 +238,24 @@ export default function NursingCompensationTable({
   };
 
   return (
-    <div className="space-y-4">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="space-y-4"
+    >
       {/* Desktop controls - hidden on mobile */}
-      <div className="hidden md:flex justify-between items-center">
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="hidden md:flex justify-between items-center"
+      >
         <div className="flex space-x-2">
           <button
             type="button"
             onClick={() => setShowCustomize(!showCustomize)}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className="inline-flex items-center px-3 py-2 border border-blue-200 rounded-xl shadow-sm text-sm font-medium text-blue-700 bg-white/80 backdrop-blur-sm hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
           >
             <Settings2 className="w-4 h-4 mr-2" />
             Customize Columns
@@ -253,10 +264,10 @@ export default function NursingCompensationTable({
             <button
               type="button"
               onClick={() => setViewMode('table')}
-              className={`px-3 py-2 rounded-l-md border text-sm font-medium ${
+              className={`px-3 py-2 rounded-l-xl border text-sm font-medium transition-all duration-200 ${
                 viewMode === 'table'
-                  ? 'bg-purple-100 text-purple-700 border-purple-500'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-blue-100 to-teal-100 text-blue-700 border-blue-300 shadow-sm'
+                  : 'border-blue-200 text-blue-600 hover:bg-blue-50 bg-white/80 backdrop-blur-sm'
               }`}
             >
               <Layout className="w-4 h-4 inline mr-2" />
@@ -265,10 +276,10 @@ export default function NursingCompensationTable({
             <button
               type="button"
               onClick={() => setViewMode('compact')}
-              className={`px-3 py-2 rounded-r-md border text-sm font-medium ${
+              className={`px-3 py-2 rounded-r-xl border text-sm font-medium transition-all duration-200 ${
                 viewMode === 'compact'
-                  ? 'bg-purple-100 text-purple-700 border-purple-500'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-blue-100 to-teal-100 text-blue-700 border-blue-300 shadow-sm'
+                  : 'border-blue-200 text-blue-600 hover:bg-blue-50 bg-white/80 backdrop-blur-sm'
               }`}
             >
               <List className="w-4 h-4 inline mr-2" />
@@ -276,19 +287,19 @@ export default function NursingCompensationTable({
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {showCustomize && (
         <CustomizePanel
           activeColumns={activeColumns}
           setActiveColumns={setActiveColumns}
           allColumns={[
-            { Header: 'User', accessor: 'id' as ColumnId },
+            { Header: 'ID', accessor: 'id' as ColumnId },
             { Header: 'Specialty', accessor: 'specialty' as ColumnId },
             { Header: 'Location', accessor: 'location' as ColumnId },
-            { Header: 'Experience', accessor: 'experience' as ColumnId },
+            { Header: 'Exp.', accessor: 'experience' as ColumnId },
             { Header: 'Shift', accessor: 'shiftType' as ColumnId },
-            { Header: 'Compensation', accessor: 'compensation' as ColumnId },
+            { Header: 'Pay/Hr', accessor: 'compensation' as ColumnId },
           ]}
           setShowCustomize={setShowCustomize}
         />
@@ -301,7 +312,7 @@ export default function NursingCompensationTable({
               prepareRow(row);
               return (
                 <MobileCompensationCard
-                  key={row.id}
+                  key={row.id || `row-${row.index}`}
                   position={row.original}
                 />
               );
@@ -309,8 +320,8 @@ export default function NursingCompensationTable({
           </div>
         }
         desktopContent={
-          <div className="shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-            <div className="overflow-x-auto max-w-full">
+          <div className="shadow-xl ring-1 ring-blue-200/50 ring-opacity-20 rounded-2xl bg-white/50 backdrop-blur-sm border border-blue-100/30 overflow-hidden">
+            <div className="w-full overflow-hidden">
               {viewMode === 'table' ? (
                 <TableView
                   headerGroups={headerGroups}
@@ -348,7 +359,7 @@ export default function NursingCompensationTable({
             type="button"
             onClick={handlePreviousPage}
             disabled={!meta || meta.page <= 1}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-zinc-600 text-sm font-medium rounded-md text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -363,12 +374,12 @@ export default function NursingCompensationTable({
             type="button"
             onClick={handleNextPage}
             disabled={!meta || meta.page >= meta.totalPages}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-zinc-600 text-sm font-medium rounded-md text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

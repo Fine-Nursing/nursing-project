@@ -35,8 +35,9 @@ export default function TableView({
   };
 
   return (
-    <table {...getTableProps()} className="w-full divide-y divide-gray-300">
-      <thead className="bg-gray-50">
+    <div className="max-h-[650px] overflow-y-auto">
+      <table {...getTableProps()} className="w-full divide-y divide-gray-300 dark:divide-zinc-700">
+      <thead className="bg-gray-50 dark:bg-zinc-900 sticky top-0 z-10">
         {headerGroups.map((headerGroup) => {
           const { key: groupKey, ...restGroupProps } =
             headerGroup.getHeaderGroupProps();
@@ -56,7 +57,7 @@ export default function TableView({
                   <th
                     key={columnKey}
                     {...restColumnProps}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-zinc-300 uppercase tracking-wider"
                   >
                     <div className="flex items-center space-x-2">
                       <span>{column.render('Header')}</span>
@@ -71,20 +72,20 @@ export default function TableView({
       </thead>
       <tbody
         {...getTableBodyProps()}
-        className="bg-white divide-y divide-gray-200"
+        className="bg-white dark:bg-zinc-950 divide-y divide-gray-200 dark:divide-zinc-700"
       >
         {page.map((row) => {
           prepareRow(row);
           const { key: rowKey, ...restRowProps } = row.getRowProps();
           return (
-            <tr key={rowKey} {...restRowProps} className="hover:bg-gray-50">
+            <tr key={rowKey} {...restRowProps} className="hover:bg-gray-50 dark:hover:bg-zinc-900">
               {row.cells.map((cell) => {
                 const { key: cellKey, ...restCellProps } = cell.getCellProps();
                 return (
                   <td
                     key={cellKey}
                     {...restCellProps}
-                    className="px-6 py-4 whitespace-nowrap"
+                    className="px-4 py-3 text-sm whitespace-nowrap dark:text-zinc-200"
                   >
                     {cell.render('Cell')}
                   </td>
@@ -95,5 +96,6 @@ export default function TableView({
         })}
       </tbody>
     </table>
+    </div>
   );
 }

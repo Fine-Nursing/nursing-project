@@ -8,8 +8,15 @@ import useOnboardingStore from 'src/store/onboardingStores';
 import type { EducationLevel, NursingRole } from 'src/types/onboarding';
 import useBasicInfoMutation from 'src/api/onboarding/useBasicInfoMutation';
 import toast from 'react-hot-toast';
+import { User, GraduationCap, Briefcase, Clock } from 'lucide-react';
 import QuestionContent from '../components/QuestionContent';
 import AnswersSection from '../components/AnswerSection';
+import EnhancedTypingEffect from '../components/EnhancedTypingEffect';
+import AnimatedInput from '../components/AnimatedInput';
+import SelectionCard from '../components/SelectionCard';
+import AnimatedProgressBar from '../components/AnimatedProgressBar';
+import SummaryCard from '../components/SummaryCard';
+import CustomDropdown from '../components/CustomDropdown';
 
 type BasicQuestion = {
   key: 'name' | 'education' | 'nursingRole' | 'experienceYears';
@@ -94,7 +101,7 @@ export default function BasicInfoForm() {
   );
 
   const activeQuestion = questions[activeQuestionIndex];
-  const progress = (activeQuestionIndex / questions.length) * 100;
+  const progress = ((activeQuestionIndex + 1) / questions.length) * 100;
 
   const handleTypingComplete = useCallback(() => {
     setIsTypingComplete(true);
@@ -195,98 +202,36 @@ export default function BasicInfoForm() {
         className="max-w-3xl mx-auto px-4 py-6 sm:py-12"
       >
         <div className="text-center mb-6 sm:mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
             Perfect! Let&apos;s Review Your Information
           </h2>
-          <p className="text-gray-500 text-base sm:text-lg">
+          <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">
             Please review your details and make any changes if needed.
           </p>
         </div>
 
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-8 mb-6 sm:mb-10">
-          {questions.map((q, index) => (
-            <div
-              key={q.key}
-              className={`group py-4 sm:py-6 ${
-                index !== questions.length - 1 ? 'border-b border-gray-100' : ''
-              }`}
-            >
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-                  {getFieldLabel(q.key)}
-                </h3>
-                {editingField !== q.key && (
-                  <button
-                    type="button"
-                    onClick={() => setEditingField(q.key)}
-                    className="text-sm text-slate-600 hover:text-slate-700 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center gap-2"
-                  >
-                    <span>Edit</span>
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      className="transition-transform group-hover:translate-x-0.5"
-                    >
-                      <path
-                        d="M6 12L10 8L6 4"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </button>
-                )}
-              </div>
-
-              {editingField === q.key ? (
-                <div className="mt-2">
-                  {q.options ? (
-                    <select
-                      value={getFormDataValue(q.key)}
-                      onChange={(e) => {
-                        updateFormData({ [q.key]: e.target.value });
-                        setEditingField(null);
-                      }}
-                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
-                    >
-                      {q.options.map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      type={q.inputType || 'text'}
-                      value={getFormDataValue(q.key)}
-                      onChange={(e) =>
-                        updateFormData({ [q.key]: e.target.value })
-                      }
-                      onBlur={() => setEditingField(null)}
-                      className="w-full p-3 text-lg bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all"
-                      placeholder={
-                        q.key === 'experienceYears'
-                          ? 'Enter years'
-                          : `Enter your ${q.key}`
-                      }
-                      min={q.key === 'experienceYears' ? 0 : undefined}
-                      max={q.key === 'experienceYears' ? 50 : undefined}
-                    />
-                  )}
-                </div>
-              ) : (
-                <p className="text-xl text-gray-900 font-medium mt-1">
-                  {q.key === 'experienceYears'
-                    ? formatExperience(getFormDataValue(q.key))
-                    : getFormDataValue(q.key)}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
+        <SummaryCard
+          title="Your Information"
+          items={questions.map((q) => ({
+            label: getFieldLabel(q.key),
+            value: q.key === 'experienceYears' 
+              ? getFormDataValue(q.key)
+              : getFormDataValue(q.key),
+            icon: q.key === 'name' ? <User className="w-4 h-4" /> :
+                  q.key === 'education' ? <GraduationCap className="w-4 h-4" /> :
+                  q.key === 'nursingRole' ? <Briefcase className="w-4 h-4" /> :
+                  <Clock className="w-4 h-4" />,
+            options: q.options,
+            inputType: q.inputType
+          }))}
+          onEdit={(label, newValue) => {
+            const question = questions.find(q => getFieldLabel(q.key) === label);
+            if (question) {
+              updateFormData({ [question.key]: newValue });
+            }
+          }}
+          className="mb-6 sm:mb-10"
+        />
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
           <div className="flex gap-4 order-2 sm:order-1">
@@ -327,18 +272,17 @@ export default function BasicInfoForm() {
   // 질문 입력 화면
   return (
     <div className="max-w-3xl mx-auto px-4">
-      <div className="mb-8">
-        <div className="flex justify-between mb-2">
-          <span className="text-sm text-gray-500">Your Progress</span>
-          <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
-        </div>
-        <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-slate-500"
-            initial={{ width: '0%' }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.5 }}
-          />
+      <div className="mb-6">
+        <AnimatedProgressBar 
+          progress={progress} 
+          showPercentage={false}
+          height="h-1"
+          className="max-w-md mx-auto"
+        />
+        <div className="text-center mt-2">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Question {activeQuestionIndex + 1} of {questions.length}
+          </p>
         </div>
       </div>
 
@@ -352,27 +296,100 @@ export default function BasicInfoForm() {
             transition={{ duration: 0.3 }}
             className="space-y-6"
           >
-            <QuestionContent
-              title={activeQuestion.title}
-              subtitle={activeQuestion.subtitle}
-              isTypingComplete={isTypingComplete}
-              onTypingComplete={handleTypingComplete}
-            />
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                <EnhancedTypingEffect 
+                  text={activeQuestion.title} 
+                  onComplete={handleTypingComplete}
+                  speed={30}
+                  showCursor
+                />
+              </h2>
+              {activeQuestion.subtitle && (
+                <motion.p
+                  className="text-gray-500 dark:text-gray-400"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: isTypingComplete ? 1 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {activeQuestion.subtitle}
+                </motion.p>
+              )}
+            </div>
 
             {isTypingComplete && (
-              <AnswersSection
-                options={activeQuestion.options}
-                currentValue={getFormDataValue(activeQuestion.key)}
-                isTypingComplete={isTypingComplete}
-                onValueChange={handleValueChange}
-                onSubmit={handleValueSubmit}
-                placeholder={
-                  activeQuestion.key === 'experienceYears'
-                    ? 'Enter years of experience'
-                    : `Enter your ${activeQuestion.key}`
-                }
-                inputType={activeQuestion.inputType}
-              />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {activeQuestion.options ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {activeQuestion.options.map((option, index) => (
+                      <motion.div
+                        key={option}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <SelectionCard
+                          value={option}
+                          label={option}
+                          isSelected={getFormDataValue(activeQuestion.key) === option}
+                          onClick={() => handleValueSubmit(option)}
+                          icon={
+                            activeQuestion.key === 'education' ? <GraduationCap className="w-4 h-4 text-slate-600" /> :
+                            activeQuestion.key === 'nursingRole' ? <Briefcase className="w-4 h-4 text-slate-600" /> :
+                            null
+                          }
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <AnimatedInput
+                      value={getFormDataValue(activeQuestion.key)}
+                      onChange={handleValueChange}
+                      placeholder={
+                        activeQuestion.key === 'experienceYears'
+                          ? 'Enter years of experience'
+                          : `Enter your ${activeQuestion.key}`
+                      }
+                      type={activeQuestion.inputType}
+                      icon={
+                        activeQuestion.key === 'name' ? <User className="w-5 h-5" /> :
+                        activeQuestion.key === 'experienceYears' ? <Clock className="w-5 h-5" /> :
+                        null
+                      }
+                      maxLength={activeQuestion.key === 'name' ? 50 : undefined}
+                      onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                        if (e.key === 'Enter') {
+                          const value = getFormDataValue(activeQuestion.key);
+                          if (value && (!activeQuestion.validation || activeQuestion.validation(value))) {
+                            handleValueSubmit(value);
+                          }
+                        }
+                      }}
+                    />
+                    <div className="mt-8">
+                    <ActionButton
+                      onClick={() => {
+                        const value = getFormDataValue(activeQuestion.key);
+                        if (value && (!activeQuestion.validation || activeQuestion.validation(value))) {
+                          handleValueSubmit(value);
+                        }
+                      }}
+                      disabled={!getFormDataValue(activeQuestion.key) || 
+                               (activeQuestion.validation && !activeQuestion.validation(getFormDataValue(activeQuestion.key)))}
+                      className="w-full"
+                    >
+                      Continue →
+                    </ActionButton>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
             )}
           </motion.div>
         </AnimatePresence>

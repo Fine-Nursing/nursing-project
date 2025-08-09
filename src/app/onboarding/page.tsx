@@ -7,9 +7,11 @@ import BasicInfoForm from 'src/components/onboarding/pages/BasicInfoForm';
 import CultureForm from 'src/components/onboarding/pages/CultureForm';
 import EmploymentForm from 'src/components/onboarding/pages/EmploymentForm';
 import WelcomePage from 'src/components/onboarding/pages/WelcomePage';
+import StepTransition from 'src/components/onboarding/components/StepTransition';
 import { ONBOARDING_STEPS } from 'src/constants/onboarding';
 import useOnboardingStore from 'src/store/onboardingStores';
 import type { OnboardingStep } from 'src/types/onboarding';
+import { ThemeSwitch } from 'src/components/common/ThemeToggle';
 
 const pageVariants = {
   initial: { opacity: 0, x: 20 },
@@ -42,37 +44,12 @@ export default function OnboardingFlow() {
     (s) => s.id === currentStep
   );
 
-  const getCircleClassName = (isCompleted: boolean, isActive: boolean) => {
-    const baseClasses =
-      'relative z-10 flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-full';
-
-    if (isCompleted) {
-      return `${baseClasses} bg-slate-600 text-white`;
-    }
-    if (isActive) {
-      return `${baseClasses} bg-slate-100 text-slate-800 border-2 border-slate-600`;
-    }
-    return `${baseClasses} bg-white border-2 border-gray-300 text-gray-400`;
-  };
-
-  const getTitleClassName = (isCompleted: boolean, isActive: boolean) => {
-    const baseClasses = 'text-xs sm:text-sm font-semibold whitespace-nowrap';
-
-    if (isActive) {
-      return `${baseClasses} text-slate-700`;
-    }
-    if (isCompleted) {
-      return `${baseClasses} text-slate-600`;
-    }
-    return `${baseClasses} text-gray-500`;
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Preparing your onboarding...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 dark:border-slate-400 mx-auto" />
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Preparing your onboarding...</p>
         </div>
       </div>
     );
@@ -81,13 +58,13 @@ export default function OnboardingFlow() {
   // 에러 발생 시
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error.message}</p>
+          <p className="text-red-600 dark:text-red-400 mb-4">{error.message}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-slate-600 text-white rounded-md hover:bg-slate-700"
+            className="px-4 py-2 bg-slate-600 dark:bg-slate-700 text-white rounded-md hover:bg-slate-700 dark:hover:bg-slate-600"
           >
             Try Again
           </button>
@@ -97,72 +74,29 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      {/* Theme Toggle Button - Fixed position */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeSwitch />
+      </div>
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Progress Steps - Welcome 단계일 때는 숨김 */}
         {currentStep !== 'welcome' && (
-          <div className="py-4 sm:py-8 px-4 sm:px-0 overflow-x-auto">
-            <nav aria-label="Progress" className="min-w-0">
-              <ol className="flex items-center justify-between sm:justify-center gap-2 sm:gap-4 min-w-[320px] sm:min-w-0">
-                {ONBOARDING_STEPS.filter((step) => step.id !== 'welcome').map(
-                  (step, index) => {
-                    const actualIndex = ONBOARDING_STEPS.findIndex(
-                      (s) => s.id === step.id
-                    );
-                    const isCompleted = actualIndex < currentStepIndex;
-                    const isActive = actualIndex === currentStepIndex;
-
-                    return (
-                      <li
-                        key={step.id}
-                        className="relative flex-shrink-0 flex items-center"
-                      >
-                        {index > 0 && (
-                          <div
-                            className={`hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 h-0.5 w-full ${
-                              isCompleted ? 'bg-slate-600' : 'bg-gray-200'
-                            }`}
-                          />
-                        )}
-
-                        <div
-                          className={getCircleClassName(isCompleted, isActive)}
-                        >
-                          {isCompleted ? (
-                            <svg
-                              className="h-4 w-4 sm:h-5 sm:w-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={3}
-                                d="M5 13l4 4L19 7"
-                              />
-                            </svg>
-                          ) : (
-                            <span className="text-sm font-medium">
-                              {index + 1}
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="ml-2 sm:ml-3 text-left">
-                          <p
-                            className={getTitleClassName(isCompleted, isActive)}
-                          >
-                            <span className="hidden sm:inline">{step.title}</span>
-                            <span className="sm:hidden">{step.title.split(' ')[0]}</span>
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  }
-                )}
-              </ol>
-            </nav>
+          <div className="py-4 sm:py-8 px-4 sm:px-0">
+            <StepTransition
+              steps={ONBOARDING_STEPS.filter((step) => step.id !== 'welcome').map((step) => {
+                const actualIndex = ONBOARDING_STEPS.findIndex((s) => s.id === step.id);
+                return {
+                  id: step.id,
+                  title: step.title,
+                  description: step.description,
+                  isCompleted: actualIndex < currentStepIndex,
+                  isActive: actualIndex === currentStepIndex,
+                };
+              })}
+              currentStep={currentStepIndex - 1}
+            />
           </div>
         )}
 
