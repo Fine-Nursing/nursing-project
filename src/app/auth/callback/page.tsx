@@ -13,7 +13,7 @@ export default function AuthCallback() {
     const handleCallback = async () => {
       try {
         // OAuth is not configured for this project, redirect to home
-        toast.info('OAuth authentication is not configured');
+        toast('OAuth authentication is not configured');
         router.push('/');
         return;
         
