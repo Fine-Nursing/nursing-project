@@ -6,7 +6,7 @@ import { useState } from 'react';
 import queryClient from './queryClient';
 
 export default function QueryProvider({ children }: { children: ReactNode }) {
-  // 공통 queryClient 사용
+  // Use shared queryClient instance
   const [client] = useState(() => queryClient);
 
   return (

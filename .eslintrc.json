@@ -9,11 +9,11 @@
     "project": "./tsconfig.json"
   },
   "rules": {
-    // React 17+ 버전에서는 React import 불필요
+    // React import not required in React 17+ versions
     "react/react-in-jsx-scope": "off",
-    // props spreading 허용 (Next.js에서 자주 사용)
+    // Allow props spreading (frequently used in Next.js)
     "react/jsx-props-no-spreading": "off",
-    // 일관된 타입 import 스타일
+    // Consistent type import style
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
@@ -23,7 +23,7 @@
       }
     ],
     "react/require-default-props": "off",
-    // 함수 컴포넌트만 사용
+    // Use function components only
     "react/function-component-definition": [
       "error",
       { "namedComponents": "function-declaration" }

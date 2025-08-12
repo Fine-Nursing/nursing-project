@@ -517,8 +517,8 @@ export default function EmploymentForm() {
         organizationCity: formData.organizationCity || '',
         organizationState: formData.organizationState || '',
         specialty: formData.specialty || '',
-        subSpecialty: formData.subSpecialty || undefined, // 추가
-        // 경력 연수를 기반으로 시작 연도 계산 (예: 4년 경력 = 2021년 시작)
+        subSpecialty: formData.subSpecialty || undefined, // Added
+        // Calculate start year based on experience years (e.g.: 4 years experience = started in 2021)
         employmentStartYear: new Date().getFullYear() - (formData.experienceYears || 0),
         employmentType: formData.employmentType as EmploymentType,
         shiftType: formData.shiftType as ShiftType,

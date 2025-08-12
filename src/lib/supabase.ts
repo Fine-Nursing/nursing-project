@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase를 사용하지 않으므로 placeholder 값 사용
+// Use placeholder values since Supabase is not used
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-// Supabase client를 조건부로 생성 (환경변수가 없으면 null)
+// Conditionally create Supabase client (null if no environment variables)
 export const supabase = (supabaseUrl && supabaseAnonKey && supabaseUrl !== 'https://placeholder.supabase.co') 
   ? createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

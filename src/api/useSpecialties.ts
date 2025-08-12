@@ -7,7 +7,7 @@ import type {
 import type { ExperienceGroup, SortOrder } from 'src/types/common';
 import { apiClient } from 'src/lib/axios';
 
-// API 파라미터
+// API parameters
 interface SpecialtyCompensationParams {
   states?: string[];
   experienceGroups?: ExperienceGroup[];
@@ -17,7 +17,7 @@ interface SpecialtyCompensationParams {
   sortOrder?: SortOrder;
 }
 
-// API 응답 - 실제 응답에 맞게 수정
+// API response - modify according to actual response
 
 interface SpecialtyListResponse {
   specialties: string[];
@@ -27,16 +27,16 @@ interface SpecialtyListResponse {
 const fetchSpecialtyAverageCompensation = async (
   params?: SpecialtyCompensationParams
 ): Promise<SpecialtyCompensation[]> => {
-  // URLSearchParams를 사용하여 배열 파라미터 처리
+  // Handle array parameters using URLSearchParams
   const queryParams = new URLSearchParams();
 
-  // 배열 파라미터 처리 - states=NY&states=CA 형식
+  // Handle array parameters - format: states=NY&states=CA
   params?.states?.forEach((state) => queryParams.append('states', state));
   params?.experienceGroups?.forEach((group) =>
     queryParams.append('experienceGroups', group)
   );
 
-  // 단일 파라미터 처리
+  // Handle single parameters
   if (params?.search) queryParams.append('search', params.search);
   if (params?.limit) queryParams.append('limit', params.limit.toString());
   if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
@@ -46,7 +46,7 @@ const fetchSpecialtyAverageCompensation = async (
     `/api/specialties/average-compensation?${queryParams.toString()}`
   );
 
-  // API 응답의 data 필드 반환
+  // Return data field from API response
   return data.data;
 };
 
@@ -73,7 +73,7 @@ export const useSpecialtyAverageCompensation = (
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 10, // 10 minutes
     placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false, // 창 포커스 시 재요청 안함
+    refetchOnWindowFocus: false, // Do not refetch on window focus
   });
 
 export const useSpecialtyList = (search?: string) =>

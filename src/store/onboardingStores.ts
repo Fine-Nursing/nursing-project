@@ -119,8 +119,8 @@ const useOnboardingStore = create<OnboardingStore>()(
           } else if (!state.existingProgress.accountCompleted) {
             nextStep = 'account';
           } else {
-            // 모든 단계가 완료된 경우
-            // 온보딩이 이미 완료되었으므로 대시보드로 리다이렉트
+            // All steps completed
+            // Onboarding already completed, redirect to dashboard
             window.location.href = '/dashboard';
             return state;
           }
