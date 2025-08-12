@@ -11,10 +11,14 @@ interface CulturePayload {
 }
 
 const useCultureMutation = () => {
-  const { setStep } = useOnboardingStore();
+  const { setStep, tempUserId } = useOnboardingStore();
 
   return useMutation({
     mutationFn: async (data: CulturePayload) => {
+      // Get tempUserId from store or localStorage
+      const storedTempUserId = tempUserId || 
+        JSON.parse(localStorage.getItem('onboarding_session') || '{}').tempUserId;
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/culture`,
         {
@@ -23,7 +27,10 @@ const useCultureMutation = () => {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ...data,
+            tempUserId: storedTempUserId,
+          }),
         }
       );
 
