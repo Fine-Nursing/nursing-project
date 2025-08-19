@@ -4,7 +4,7 @@ import useAuthStore from 'src/hooks/useAuthStore';
 
 // 직접 AI API 호출
 const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://199.241.139.206:8000';
-const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka';
+const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka-p3r4d6-8v9m3c-v5t7eu-w8y9za-b1c2d3-e4f5g6-h7i8j9-k0l1m2-n3o4p5-q6r7s8-t9u0v1';
 
 // AI Insight 타입 정의
 export type SummaryType = 'nurse_summary' | 'culture' | 'skill_transfer';
@@ -42,7 +42,7 @@ export const useAiInsight = (summaryType: SummaryType, userId?: string) => {
     queryKey: ['aiInsight', summaryType, userId],
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
-      const response = await aiApiClient.get(`/ai_insights/${summaryType}/${userId}`);
+      const response = await aiApiClient.get(`/generate/${summaryType}?user_id=${userId}`);
       return response.data;
     },
     enabled: !!userId,
@@ -58,7 +58,7 @@ export const useGenerateAiInsight = () => {
   return useMutation<GenerateInsightResponse, Error, { summaryType: SummaryType }>({
     mutationFn: async ({ summaryType }) => {
       if (!user?.id) throw new Error('User ID is required');
-      const response = await aiApiClient.post(`/ai_insights/${summaryType}/${user.id}`);
+      const response = await aiApiClient.post(`/generate/${summaryType}?user_id=${user.id}`);
       return response.data;
     },
     onError: (error: any) => {
@@ -74,8 +74,24 @@ export const useAllAiInsights = (userId?: string) => {
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
       try {
-        const response = await aiApiClient.get(`/ai_insights/all/${userId}`);
-        return response.data;
+        // 각 summary type을 개별적으로 호출
+        const summaryTypes: SummaryType[] = ['nurse_summary', 'culture', 'skill_transfer'];
+        const results = await Promise.allSettled(
+          summaryTypes.map(type => 
+            aiApiClient.get(`/generate/${type}?user_id=${userId}`)
+              .then(res => ({ type, data: res.data }))
+          )
+        );
+        
+        const insights: any = {};
+        results.forEach((result) => {
+          if (result.status === 'fulfilled') {
+            const { type, data } = result.value;
+            insights[type] = data;
+          }
+        });
+        
+        return insights;
       } catch (error: any) {
         // CORS 에러나 네트워크 에러 처리
         if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
