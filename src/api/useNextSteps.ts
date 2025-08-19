@@ -21,8 +21,17 @@ export const useNextStepsInsight = () =>
   useQuery<NextStepsInsight>({
     queryKey: ['ai-insights', 'next_steps'],
     queryFn: async () => {
-      const { data } = await apiClient.get('/api/ai-insights/next_steps');
-      return data.data;
+      // 백엔드 서버가 준비될 때까지 임시 데이터 사용
+      // TODO: 백엔드 서버 복구 후 주석 해제
+      // const { data } = await apiClient.get('/api/ai-insights/next_steps');
+      // return data.data;
+      
+      // 임시 목업 데이터
+      return {
+        insight: "1. CCRN certification (3-6 months) - 10-15% salary increase potential\n2. Consider float pool position - Additional $5-10/hr differential\n3. Explore travel nursing opportunities - 30-50% income boost\n4. Pursue BSN completion (if applicable) - Opens leadership paths\n5. Network with specialty units for transfer opportunities",
+        summary_type: 'next_steps',
+        user_id: 'mock-user-id',
+      };
     },
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분

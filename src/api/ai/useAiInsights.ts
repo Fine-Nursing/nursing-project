@@ -3,7 +3,7 @@ import axios from 'axios';
 import useAuthStore from 'src/hooks/useAuthStore';
 
 // 직접 AI API 호출
-const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://199.241.139.206:8000';
+const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'https://199.241.139.206:8000';
 const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka-p3r4d6-8v9m3c-v5t7eu-w8y9za-b1c2d3-e4f5g6-h7i8j9-k0l1m2-n3o4p5-q6r7s8-t9u0v1';
 
 // AI Insight 타입 정의
