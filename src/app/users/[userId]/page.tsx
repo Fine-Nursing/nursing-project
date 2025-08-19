@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, lazy, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { ThemeSwitch } from 'src/components/common/ThemeToggle';
@@ -56,6 +56,8 @@ const metricAnalysis: Record<string, string> = {
 
 export default function UserPage() {
   const router = useRouter();
+  const params = useParams();
+  const userId = params?.userId as string;
   const [dataRefreshDate] = useState(new Date().toLocaleDateString());
   const { theme } = useTheme();
 
@@ -266,6 +268,7 @@ export default function UserPage() {
             avgMetrics={metricsData?.regionalAverageMetrics || regionalAverages.metrics}
             theme={theme}
             metricAnalysis={metricAnalysis}
+            userId={userId}
           />
         </div>
 

@@ -13,13 +13,14 @@ import {
   Zap,
   Award
 } from 'lucide-react';
-import { useAllAiInsights } from 'src/api/useAiInsights';
+import { useAllAiInsights } from 'src/api/ai/useAiInsights';
 
 interface RadarAnalyticsProps {
   userMetrics: Record<string, number>;
   avgMetrics: Record<string, number>;
   theme: 'light' | 'dark';
   metricAnalysis: Record<string, string>;
+  userId?: string;
 }
 
 interface RadarPoint {
@@ -77,10 +78,11 @@ export default function RadarAnalytics({
   avgMetrics,
   theme,
   metricAnalysis,
+  userId,
 }: RadarAnalyticsProps) {
   const [hoveredMetric, setHoveredMetric] = useState<string | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
-  const { data: allInsights, isLoading: isInsightsLoading } = useAllAiInsights();
+  const { data: allInsights, isLoading: isInsightsLoading } = useAllAiInsights(userId);
 
   // Memoized calculations for performance
   const maxRadius = 80; // Reduced to leave more space for labels
@@ -479,7 +481,7 @@ export default function RadarAnalytics({
                       : ' Consider focusing on areas marked in red for improvement.'}
                   </p>
                   
-                  {allInsights?.market && (
+                  {allInsights?.skillTransfer && (
                     <div className={`flex items-start gap-3 pt-2 pl-4 border-l-4 ${
                       theme === 'light' ? 'border-amber-300' : 'border-amber-600'
                     }`}>
@@ -487,7 +489,7 @@ export default function RadarAnalytics({
                       <span className={`text-sm sm:text-base ${
                         theme === 'light' ? 'text-gray-700' : 'text-gray-300'
                       }`}>
-                        {allInsights.market}
+                        {allInsights.skillTransfer}
                       </span>
                     </div>
                   )}

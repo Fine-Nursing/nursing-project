@@ -13,7 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAiInsight } from 'src/api/useAiInsights';
+import { useAiInsight } from 'src/api/ai/useAiInsights';
 import SimpleBeanHead, { 
   type SimpleBeanHeadConfig as BeanHeadConfig, 
   PRESET_STYLES
@@ -21,6 +21,7 @@ import SimpleBeanHead, {
 import CustomizeSectionUpdated from './CustomizeSectionUpdated';
 
 interface UserProfile {
+  id?: string;
   name: string;
   role: string;
   specialty: string;
@@ -41,7 +42,7 @@ export default function UserProfileCard({
   userProfile,
   theme,
 }: UserProfileCardProps) {
-  const { data: careerInsight, isLoading } = useAiInsight('career');
+  const { data: careerInsight, isLoading } = useAiInsight('nurse_summary', userProfile?.id);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [currentTab, setCurrentTab] = useState('preset');
   const [avatarConfig, setAvatarConfig] = useState<BeanHeadConfig>({
@@ -225,8 +226,8 @@ export default function UserProfileCard({
                         if (isLoading) {
                           return <span className="animate-pulse">Analyzing your career trajectory...</span>;
                         }
-                        if (careerInsight?.insight) {
-                          return careerInsight.insight;
+                        if (careerInsight?.content) {
+                          return careerInsight.content;
                         }
                         return "You're on track for a 3-5% salary increase. Consider trauma specialization for additional 8-12% market value.";
                       })()}
