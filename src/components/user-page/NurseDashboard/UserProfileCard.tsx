@@ -13,7 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAiInsight } from 'src/api/useAiInsights';
+import { useAiInsight } from 'src/api/ai/useAiInsights';
 import SimpleBeanHead, { 
   type SimpleBeanHeadConfig as BeanHeadConfig, 
   PRESET_STYLES
@@ -41,7 +41,7 @@ export default function UserProfileCard({
   userProfile,
   theme,
 }: UserProfileCardProps) {
-  const { data: careerInsight, isLoading } = useAiInsight('career');
+  const { data: careerInsight, isLoading } = useAiInsight('nurse_summary', userProfile?.id);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [currentTab, setCurrentTab] = useState('preset');
   const [avatarConfig, setAvatarConfig] = useState<BeanHeadConfig>({

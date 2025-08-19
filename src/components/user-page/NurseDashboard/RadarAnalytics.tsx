@@ -13,7 +13,7 @@ import {
   Zap,
   Award
 } from 'lucide-react';
-import { useAllAiInsights } from 'src/api/useAiInsights';
+import { useAllAiInsights } from 'src/api/ai/useAiInsights';
 
 interface RadarAnalyticsProps {
   userMetrics: Record<string, number>;
