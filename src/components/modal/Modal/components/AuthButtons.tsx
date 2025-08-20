@@ -1,26 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from 'src/hooks/useAuthStore';
-import { LoginModal } from './LoginModal';
-import { SignUpModal } from './SignUpModal';
+import { AuthModal, useAuth } from 'src/components/auth';
 
 export function AuthButtons() {
   const router = useRouter();
   const { user, isLoading, checkAuth, signOut } = useAuthStore();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
-
-  const handleSwitchToLogin = () => {
-    setShowSignUpModal(false);
-    setShowLoginModal(true);
-  };
-
-  const handleSwitchToSignUp = () => {
-    setShowLoginModal(false);
-    setShowSignUpModal(true);
-  };
+  const { isModalOpen, authMode, openAuth, closeAuth, switchAuthMode } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -69,7 +57,7 @@ export function AuthButtons() {
               <li>
                 <button
                   type="button"
-                  onClick={() => setShowLoginModal(true)}
+                  onClick={() => openAuth('login')}
                   className="text-purple-600 hover:text-purple-700 font-medium"
                 >
                   Sign In
@@ -78,7 +66,7 @@ export function AuthButtons() {
               <li>
                 <button
                   type="button"
-                  onClick={() => setShowSignUpModal(true)}
+                  onClick={() => openAuth('signup')}
                   className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors font-medium"
                 >
                   Sign Up
@@ -89,19 +77,13 @@ export function AuthButtons() {
         </ul>
       </nav>
 
-      {/* Modals */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSwitchToSignUp={handleSwitchToSignUp}
+      {/* Unified Auth Modal */}
+      <AuthModal
+        isOpen={isModalOpen}
+        onClose={closeAuth}
+        mode={authMode}
         onAuthSuccess={checkAuth}
-      />
-
-      <SignUpModal
-        isOpen={showSignUpModal}
-        onClose={() => setShowSignUpModal(false)}
-        onSwitchToLogin={handleSwitchToLogin}
-        onAuthSuccess={checkAuth}
+        onModeSwitch={switchAuthMode}
       />
     </>
   );

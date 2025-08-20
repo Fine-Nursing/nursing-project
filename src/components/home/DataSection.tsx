@@ -3,7 +3,7 @@
 import React, { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 
-const NursingGraph = lazy(() => import('src/components/graph'));
+const NursingGraph = lazy(() => import('src/components/graph/NursingGraph'));
 const NursingCompensationTable = lazy(
   () => import('src/components/table/NursingCompensationTable')
 );
