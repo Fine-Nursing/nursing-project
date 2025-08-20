@@ -44,10 +44,22 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   const { data: careerHistoryData, isLoading: isCareerLoading } = useCareerHistory();
   const { data: compensationData, isLoading: isCompensationLoading } = useMyCompensation();
 
-  // Transform API data
+  // Transform API data and remove duplicates
   useEffect(() => {
     if (careerHistoryData) {
-      const transformedData = careerHistoryData.map((item, index) => ({
+      // Remove duplicates based on all fields except id
+      const uniqueData = careerHistoryData.filter((item, index, self) => 
+        index === self.findIndex((t) => (
+          t.facility === item.facility &&
+          t.role === item.role &&
+          t.specialty === item.specialty &&
+          t.startDate === item.startDate &&
+          t.endDate === item.endDate &&
+          t.hourlyRate === item.hourlyRate
+        ))
+      );
+      
+      const transformedData = uniqueData.map((item, index) => ({
         id: index + 1,
         facility: item.facility,
         role: item.role,
@@ -56,6 +68,7 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
         endDate: item.endDate ? new Date(item.endDate) : null,
         hourlyRate: item.hourlyRate,
       }));
+      
       setCareerData(transformedData);
     }
   }, [careerHistoryData]);

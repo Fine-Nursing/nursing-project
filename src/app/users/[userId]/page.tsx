@@ -77,15 +77,12 @@ export default function UserPage() {
   } = useMyCompensation();
 
   // 임금 분포 데이터 API 호출
+  // 너무 구체적인 필터를 사용하면 데이터가 적어지므로 일단 필터 없이 호출
   const {
     data: wageDistributionData,
     isLoading: isWageDistributionLoading,
     error: wageDistributionError,
-  } = useWageDistribution({
-    state: profileData?.location?.split(', ')[1],
-    city: profileData?.location?.split(', ')[0],
-    specialty: profileData?.specialty,
-  });
+  } = useWageDistribution();
 
   // 사용자 메트릭 데이터 API 호출
   const {
