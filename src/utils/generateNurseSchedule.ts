@@ -129,7 +129,21 @@ function generateNurseSchedule(opts: GenerateNurseScheduleOptions) {
     preceptorDuty,
   } = opts;
 
-  const events: any[] = [];
+  interface ScheduleEvent {
+    title: string;
+    start: Date;
+    end: Date;
+    resource: {
+      earning: number;
+      hourlyRate: number;
+      basePay: number;
+      differentials: string[];
+      hours: number;
+      isHoliday: boolean;
+    };
+  }
+  
+  const events: ScheduleEvent[] = [];
   let totalEarnings = 0;
 
   const dayMs = 24 * 60 * 60 * 1000;

@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import queryKeys from 'src/constants/queryKeys';
 import type { RegionStates } from 'src/types/location';
@@ -21,7 +22,7 @@ export const useStates = () =>
   });
 
 // Prefetch functions for SSR/SSG
-export const prefetchStates = async (queryClient: any) => {
+export const prefetchStates = async (queryClient: QueryClient) => {
   await queryClient.prefetchQuery({
     queryKey: queryKeys.location.states(),
     queryFn: fetchStates,

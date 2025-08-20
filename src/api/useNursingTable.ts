@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import queryKeys from 'src/constants/queryKeys';
 import type { SortOrder, ExperienceGroup } from 'src/types/common';
@@ -99,7 +100,7 @@ export const useNursingTable = (
 
 // Prefetch function for SSR/SSG
 export const prefetchNursingTable = async (
-  queryClient: any,
+  queryClient: QueryClient,
   params?: NursingTableParams
 ) => {
   await queryClient.prefetchQuery({

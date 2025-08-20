@@ -28,7 +28,7 @@ interface AuthResponse {
   message?: string;
   user?: User;
   requiresOnboarding?: boolean;
-  session?: any;
+  session?: { access_token?: string; expires_at?: string; } | null;
 }
 
 const useAuth = () => {

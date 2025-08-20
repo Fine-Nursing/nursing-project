@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import queryKeys from 'src/constants/queryKeys';
 import type { CompensationCard } from 'src/types/dashboard';
@@ -85,7 +86,7 @@ export const useCompensationCardsByLevel = (
 
 // Optional: Prefetch functions for SSR/SSG
 export const prefetchCompensationCards = async (
-  queryClient: any,
+  queryClient: QueryClient,
   params?: CompensationCardsParams
 ) => {
   await queryClient.prefetchQuery({
@@ -95,7 +96,7 @@ export const prefetchCompensationCards = async (
 };
 
 export const prefetchCompensationCardsByLevel = async (
-  queryClient: any,
+  queryClient: QueryClient,
   params: CompensationCardsByLevelParams
 ) => {
   const { experienceLevel, ...filterParams } = params;

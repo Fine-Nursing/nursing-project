@@ -73,13 +73,9 @@ export default function HomePage() {
     return greetings.night;
   }, [user]);
 
-  const [displayedGreeting, setDisplayedGreeting] = useState('');
-  const [displayedMessage, setDisplayedMessage] = useState('');
-
-  useEffect(() => {
-    setDisplayedGreeting(greetingData.greeting);
-    setDisplayedMessage(greetingData.message);
-  }, [greetingData]);
+  // Remove unnecessary state and useEffect that cause infinite loops
+  const displayedGreeting = greetingData.greeting;
+  const displayedMessage = greetingData.message;
 
   // API filter state
   const [tableFilters, setTableFilters] = useState<NursingTableParams>(() => ({
@@ -156,8 +152,9 @@ export default function HomePage() {
           setShowLoginModal(false);
           toast.success('Successfully logged in!');
         }
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to login');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to login';
+        toast.error(message);
       }
     },
     [signIn]
@@ -178,8 +175,9 @@ export default function HomePage() {
           setShowSignUpModal(false);
           toast.success('Account created successfully!');
         }
-      } catch (error: any) {
-        toast.error(error.message || 'Failed to create account');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to create account';
+        toast.error(message);
       }
     },
     [signUp, checkAuth]

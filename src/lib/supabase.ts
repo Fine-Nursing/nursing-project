@@ -1,3 +1,4 @@
+import type { Session, AuthChangeEvent } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
 
 // Use placeholder values since Supabase is not used
@@ -35,9 +36,10 @@ export const signInWithGoogle = async () => {
 
     if (error) throw error;
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error) {
     // Google sign in error
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return { success: false, error: errorMessage };
   }
 };
 
@@ -65,14 +67,15 @@ export const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
     return { success: true };
-  } catch (error: any) {
+  } catch (error) {
     // Sign out error
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return { success: false, error: errorMessage };
   }
 };
 
 // Listen to auth state changes
-export const onAuthStateChange = (callback: (event: string, session: any) => void) => {
+export const onAuthStateChange = (callback: (event: AuthChangeEvent, session: Session | null) => void) => {
   if (!supabase) {
     return { data: { subscription: { unsubscribe: () => {} } } };
   }

@@ -110,7 +110,7 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
                 <p className={`text-sm leading-relaxed ${
                   theme === 'light' ? 'text-emerald-700' : 'text-emerald-200'
                 }`}>
-                  {nurseSummary || "Analyzing your nursing career profile..."}
+                  {nurseSummary?.content || "Analyzing your nursing career profile..."}
                 </p>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
                   <div className={`text-sm leading-relaxed ${
                     theme === 'light' ? 'text-blue-700' : 'text-blue-200'
                   }`}>
-                    {culture.split('•').map((point: string, idx: number) => point.trim() && (
+                    {culture.content.split('•').map((point: string, idx: number) => point.trim() && (
                       <div key={idx} className="flex items-start gap-2 mb-1">
                         <span className="text-blue-500">•</span>
                         <span>{point.trim()}</span>
@@ -168,7 +168,7 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
                   <div className={`text-sm leading-relaxed ${
                     theme === 'light' ? 'text-purple-700' : 'text-purple-200'
                   }`}>
-                    {skillTransfer.split('•').map((point: string, idx: number) => point.trim() && (
+                    {skillTransfer.content.split('•').map((point: string, idx: number) => point.trim() && (
                       <div key={idx} className="flex items-start gap-2 mb-1">
                         <span className="text-purple-500">•</span>
                         <span>{point.trim()}</span>

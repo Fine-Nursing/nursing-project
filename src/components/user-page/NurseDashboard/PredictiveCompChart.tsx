@@ -1,6 +1,7 @@
 // components/NurseDashboard/PredictiveCompChart.tsx
 import React from 'react';
 import type { TooltipProps } from 'recharts';
+import { getThemeClass, useThemeClasses } from 'src/utils/theme';
 import {
   CartesianGrid,
   XAxis,
@@ -42,11 +43,15 @@ function CustomTooltip(
     const { count, label, isUser } = payload[0].payload as PayDistributionEntry;
     return (
       <div
-        className={`p-3 ${
-          themeMode === 'light' ? 'bg-white' : 'bg-slate-700'
-        } shadow-lg rounded-2xl border ${
-          themeMode === 'light' ? 'border-slate-100' : 'border-slate-600'
-        }`}
+        className={`p-3 ${getThemeClass(
+          themeMode,
+          'bg-white',
+          'bg-slate-700'
+        )} shadow-lg rounded-2xl border ${getThemeClass(
+          themeMode,
+          'border-slate-100',
+          'border-slate-600'
+        )}`}
       >
         <p className="font-semibold">Wage: {label}</p>
         <p className="text-slate-600 font-medium flex items-center">
@@ -75,6 +80,7 @@ export default function PredictiveCompChart({
   regionalAvgWage,
   theme,
 }: PredictiveCompChartProps) {
+  const tc = useThemeClasses(theme);
   // theme에 따라 적절한 렌더러 함수 선택
   const tooltipRenderer = React.useMemo(
     () => createTooltipRenderer(theme),
@@ -106,34 +112,23 @@ export default function PredictiveCompChart({
   }, [payDistributionData]);
 
   return (
-    <div
-      className={`${
-        theme === 'light' ? 'bg-white' : 'bg-slate-800'
-      } rounded-xl shadow-lg border ${
-        theme === 'light' ? 'border-gray-200' : 'border-slate-700'
-      }`}
-    >
+    <div className={`${tc.bg.card} rounded-xl shadow-lg border ${tc.border.default}`}>
       {/* Header */}
-      <div className={`px-6 py-4 border-b ${
-        theme === 'light' ? 'border-gray-100' : 'border-slate-700'
-      }`}>
+      <div className={`px-6 py-4 border-b ${tc.border.light}`}>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className={`text-lg font-semibold ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
+            <h2 className={`text-lg font-semibold ${tc.text.primary}`}>
               Predictive Compensation Comparison
             </h2>
-            <p className={`text-sm mt-0.5 ${
-              theme === 'light' ? 'text-gray-500' : 'text-gray-400'
-            }`}>
+            <p className={`text-sm mt-0.5 ${tc.text.muted}`}>
               AI-powered wage analysis for ER nurses in New York City
             </p>
           </div>
           
-          <div className={`px-3 py-2 rounded-lg ${
-            theme === 'light' ? 'bg-green-50' : 'bg-green-900/30'
-          }`}>
+          <div className={`px-3 py-2 rounded-lg ${tc.getClass(
+            'bg-green-50',
+            'bg-green-900/30'
+          )}`}>
             <div className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
               <div>

@@ -1,8 +1,20 @@
 const queryKeys = {
   compensation: {
     all: ['compensation'] as const,
-    cards: (params?: any) => ['compensation', 'cards', params] as const,
-    byLevel: (level: string, params?: any) =>
+    cards: (params?: {
+      specialty?: string;
+      state?: string;
+      city?: string;
+      page?: number;
+      limit?: number;
+    }) => ['compensation', 'cards', params] as const,
+    byLevel: (level: string, params?: {
+      specialty?: string;
+      state?: string;
+      city?: string;
+      page?: number;
+      limit?: number;
+    }) =>
       ['compensation', 'cards', level, params] as const,
   },
   specialty: {
