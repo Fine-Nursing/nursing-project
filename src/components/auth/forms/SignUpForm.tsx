@@ -56,9 +56,16 @@ function SignUpForm({ onSuccess, onSubmit, isLoading: externalLoading }: SignUpF
       return;
     }
 
+    console.log('SignUpForm handleSubmit called, onSubmit:', onSubmit);
+    
     if (onSubmit) {
       // Use external submit handler (기존 로직)
       try {
+        console.log('Calling onSubmit with data:', {
+          email: formData.email,
+          firstName: formData.firstName,
+          lastName: formData.lastName
+        });
         await onSubmit({
           email: formData.email,
           password: formData.password,
@@ -67,10 +74,12 @@ function SignUpForm({ onSuccess, onSubmit, isLoading: externalLoading }: SignUpF
         });
         onSuccess?.();
       } catch (err: any) {
+        console.error('SignUp error:', err);
         // Error handling is done by parent component
       }
     } else {
       // Fallback to internal logic (if needed)
+      console.error('No onSubmit handler provided!');
       setInternalLoading(true);
       try {
         toast.error('No authentication handler provided');

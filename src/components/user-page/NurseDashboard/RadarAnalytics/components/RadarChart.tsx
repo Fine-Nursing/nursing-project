@@ -35,35 +35,50 @@ export function RadarChart({
   const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
 
   return (
-    <svg viewBox="0 0 350 350" className="w-full h-full">
-      {/* Grid circles */}
-      {gridLevels.map((level) => (
-        <circle
-          key={level}
-          cx={centerX}
-          cy={centerY}
-          r={maxRadius * level}
-          fill="none"
-          stroke={tc.theme === 'light' ? '#e5e7eb' : '#475569'}
-          strokeWidth="1"
-          strokeDasharray="2 2"
-          opacity="0.5"
-        />
-      ))}
+    <svg 
+      width="350" 
+      height="350" 
+      viewBox="0 0 350 350" 
+      className="w-full h-auto max-w-[280px] sm:max-w-sm"
+    >
+      {/* Definitions */}
+      <defs>
+        <radialGradient id="userGradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.1" />
+        </radialGradient>
+      </defs>
+
+      {/* Background circles */}
+      <g className="opacity-20">
+        {[80, 60, 40, 20].map((r) => (
+          <circle
+            key={r}
+            cx="175"
+            cy="175"
+            r={r}
+            fill="none"
+            stroke={theme === 'light' ? '#9ca3af' : '#475569'}
+            strokeWidth="1"
+          />
+        ))}
+      </g>
 
       {/* Axis lines */}
-      {categories.map((_, i) => {
+      {Object.keys(userMetrics).map((_, i) => {
+        const angleSlice = (Math.PI * 2) / Object.keys(userMetrics).length;
         const angle = angleSlice * i - Math.PI / 2;
-        const x = centerX + maxRadius * Math.cos(angle);
-        const y = centerY + maxRadius * Math.sin(angle);
+        const x2 = 175 + 80 * Math.cos(angle);
+        const y2 = 175 + 80 * Math.sin(angle);
+        
         return (
           <line
             key={i}
-            x1={centerX}
-            y1={centerY}
-            x2={x}
-            y2={y}
-            stroke={tc.theme === 'light' ? '#e5e7eb' : '#475569'}
+            x1="175"
+            y1="175"
+            x2={x2}
+            y2={y2}
+            stroke={theme === 'light' ? '#d1d5db' : '#475569'}
             strokeWidth="1"
             opacity="0.5"
           />
@@ -72,84 +87,110 @@ export function RadarChart({
 
       {/* Average polygon */}
       <motion.polygon
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.3 }}
         points={createPolygonPoints(avgPoints)}
-        fill={tc.theme === 'light' ? '#9ca3af' : '#64748b'}
-        stroke={tc.theme === 'light' ? '#6b7280' : '#94a3b8'}
+        fill="none"
+        stroke={theme === 'light' ? '#9ca3af' : '#6b7280'}
         strokeWidth="2"
+        strokeDasharray="4,4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
       />
 
       {/* User polygon */}
       <motion.polygon
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 0.7, scale: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
         points={createPolygonPoints(userPoints)}
-        fill={tc.theme === 'light' ? '#10b981' : '#34d399'}
-        stroke={tc.theme === 'light' ? '#059669' : '#10b981'}
-        strokeWidth="2.5"
+        fill="url(#userGradient)"
+        stroke="#3b82f6"
+        strokeWidth="2"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ 
+          delay: 0.3, 
+          type: "spring", 
+          stiffness: 100, 
+          damping: 15 
+        }}
+        style={{ transformOrigin: '175px 175px' }}
       />
 
-      {/* Data points and labels */}
-      {userPoints.map((point, i) => {
-        const category = categories[i];
-        const labelAngle = angleSlice * i - Math.PI / 2;
-        const labelX = centerX + (maxRadius + 25) * Math.cos(labelAngle);
-        const labelY = centerY + (maxRadius + 25) * Math.sin(labelAngle);
-        const isHovered = hoveredMetric === category;
-
-        return (
-          <g key={category}>
-            {/* User data point */}
-            <motion.circle
-              cx={point.x}
-              cy={point.y}
-              r={isHovered ? 6 : 4}
-              fill={tc.theme === 'light' ? '#059669' : '#10b981'}
-              stroke="white"
-              strokeWidth="2"
-              whileHover={{ scale: 1.5 }}
-              onMouseEnter={() => setHoveredMetric(category)}
-              onMouseLeave={() => setHoveredMetric(null)}
-              style={{ cursor: 'pointer' }}
-            />
-
-            {/* Label */}
-            <text
-              x={labelX}
-              y={labelY}
-              fill={isHovered 
-                ? (tc.theme === 'light' ? '#059669' : '#10b981')
-                : (tc.theme === 'light' ? '#6b7280' : '#9ca3af')
-              }
-              fontSize={isHovered ? "14" : "12"}
-              fontWeight={isHovered ? "600" : "400"}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              style={{ cursor: 'pointer' }}
-              onMouseEnter={() => setHoveredMetric(category)}
-              onMouseLeave={() => setHoveredMetric(null)}
-            >
-              {metricDisplayNames[category] || category}
-            </text>
-
-            {/* Value on hover */}
-            {isHovered && (
-              <motion.text
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                x={labelX}
-                y={labelY + 15}
-                fill={tc.theme === 'light' ? '#059669' : '#10b981'}
-                fontSize="11"
-                fontWeight="600"
+      {/* Data points */}
+      {userPoints.map((pt, i) => (
+        <g key={pt.label}>
+          <motion.circle
+            cx={pt.x}
+            cy={pt.y}
+            r="5"
+            fill="#3b82f6"
+            stroke="white"
+            strokeWidth="2"
+            className="cursor-pointer"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              delay: 0.4 + i * 0.02,
+              type: "spring",
+              stiffness: 200,
+              damping: 10
+            }}
+            whileHover={{ 
+              scale: 1.3,
+              transition: { duration: 0.15 }
+            }}
+            onMouseEnter={() => setHoveredMetric(pt.label || null)}
+            onMouseLeave={() => setHoveredMetric(null)}
+          />
+          
+          {/* Hover tooltip */}
+          {hoveredMetric === pt.label && (
+            <g>
+              <rect
+                x={pt.x - 20}
+                y={pt.y - 30}
+                width="40"
+                height="20"
+                rx="3"
+                fill={theme === 'light' ? 'white' : '#1e293b'}
+                stroke="#3b82f6"
+                strokeWidth="1"
+              />
+              <text
+                x={pt.x}
+                y={pt.y - 15}
                 textAnchor="middle"
+                fontSize="12"
+                fontWeight="bold"
+                fill="#3b82f6"
               >
-                {point.value?.toFixed(1)}
-              </motion.text>
-            )}
-          </g>
+                {pt.value?.toFixed(1)}
+              </text>
+            </g>
+          )}
+        </g>
+      ))}
+
+      {/* Labels */}
+      {Object.keys(userMetrics).map((cat, i) => {
+        const angleSlice = (Math.PI * 2) / Object.keys(userMetrics).length;
+        const angle = angleSlice * i - Math.PI / 2;
+        const labelRadius = 100;
+        const x = 175 + labelRadius * Math.cos(angle);
+        const y = 175 + labelRadius * Math.sin(angle);
+        
+        return (
+          <text
+            key={cat}
+            x={x}
+            y={y}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fontSize="10"
+            fill={theme === 'light' ? '#4b5563' : '#d1d5db'}
+            fontWeight="500"
+            className="select-none"
+          >
+            {metricDisplayNames[cat] || cat}
+          </text>
         );
       })}
     </svg>

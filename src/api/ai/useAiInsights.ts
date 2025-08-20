@@ -4,7 +4,8 @@ import axios from 'axios';
 import useAuthStore from 'src/hooks/useAuthStore';
 
 // 직접 AI API 호출
-const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'https://199.241.139.206:8000';
+// AI API는 SSL 인증서가 없어서 HTTP 사용 (하드코딩)
+const AI_API_BASE_URL = 'http://199.241.139.206:8000';
 const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka-p3r4d6-8v9m3c-v5t7eu-w8y9za-b1c2d3-e4f5g6-h7i8j9-k0l1m2-n3o4p5-q6r7s8-t9u0v1';
 
 // AI Insight 타입 정의
@@ -71,14 +72,36 @@ export const useAllAiInsights = (userId?: string) => useQuery({
     queryKey: ['aiInsights', 'all', userId],
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
+      
       try {
+        console.log('Calling AI API with userId:', userId);
         // 각 summary type을 개별적으로 호출
         const summaryTypes: SummaryType[] = ['nurse_summary', 'culture', 'skill_transfer'];
         const results = await Promise.allSettled(
-          summaryTypes.map(type => 
-            aiApiClient.get(`/generate/${type}?user_id=${userId}`)
-              .then(res => ({ type, data: res.data }))
-          )
+          summaryTypes.map(async type => {
+            console.log(`Fetching AI insight: ${type}`);
+            try {
+              // 먼저 GET으로 조회 시도
+              const response = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
+              return { type, data: response.data };
+            } catch (err: any) {
+              // 404인 경우 POST로 생성 시도
+              if (err.response?.status === 404) {
+                console.log(`${type} not found, generating new insight...`);
+                try {
+                  const postResponse = await aiApiClient.post(`/generate/${type}?user_id=${userId}`);
+                  // POST 성공 후 다시 GET으로 조회
+                  const getResponse = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
+                  return { type, data: getResponse.data };
+                } catch (postErr) {
+                  console.error(`Failed to generate ${type}:`, postErr);
+                  throw postErr;
+                }
+              }
+              console.error(`Failed to fetch ${type}:`, err.message);
+              throw err;
+            }
+          })
         );
         
         const insights: Record<SummaryType, AiInsight | null> = {
@@ -90,6 +113,9 @@ export const useAllAiInsights = (userId?: string) => useQuery({
           if (result.status === 'fulfilled') {
             const { type, data } = result.value;
             insights[type] = data;
+            console.log(`Successfully fetched ${type}`);
+          } else {
+            console.log(`Failed to fetch insight:`, result.reason);
           }
         });
         
@@ -97,11 +123,21 @@ export const useAllAiInsights = (userId?: string) => useQuery({
       } catch (error) {
         // CORS 에러나 네트워크 에러 처리
         const axiosError = error as AxiosError;
+        console.error('AI API Error:', axiosError.message);
         if (axiosError.code === 'ERR_NETWORK' || axiosError.message?.includes('CORS')) {
           // AI Insights API is not accessible (CORS/Network error)
-          return null;
+          return {
+            nurse_summary: null,
+            culture: null,
+            skill_transfer: null
+          };
         }
-        throw error;
+        // 다른 에러도 null 반환하여 앱이 중단되지 않도록
+        return {
+          nurse_summary: null,
+          culture: null,
+          skill_transfer: null
+        };
       }
     },
     enabled: !!userId,

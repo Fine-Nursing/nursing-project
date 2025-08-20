@@ -148,10 +148,15 @@ export default function HomePage() {
           useAuthStore.getState().setUser(response.user);
           setShowAuthModal(false);
           toast.success('Successfully logged in!');
+        } else {
+          // 로그인 실패 시 에러를 throw하여 LoginForm에서 onSuccess가 호출되지 않도록 함
+          throw new Error('Login failed');
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to login';
         toast.error(message);
+        // 에러를 다시 throw하여 LoginForm에서 catch할 수 있도록 함
+        throw error;
       }
     },
     [signIn]
@@ -171,10 +176,15 @@ export default function HomePage() {
           await checkAuth();
           setShowAuthModal(false);
           toast.success('Account created successfully!');
+        } else {
+          // 회원가입 실패 시 에러를 throw하여 SignUpForm에서 onSuccess가 호출되지 않도록 함
+          throw new Error('Sign up failed');
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Failed to create account';
         toast.error(message);
+        // 에러를 다시 throw하여 SignUpForm에서 catch할 수 있도록 함
+        throw error;
       }
     },
     [signUp, checkAuth]
@@ -220,6 +230,7 @@ export default function HomePage() {
         />
 
         {/* Auth Modal */}
+        {console.log('page.tsx rendering AuthModal, handleSignUp:', handleSignUp, 'authMode:', authMode)}
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -256,6 +267,7 @@ export default function HomePage() {
         </div>
 
         {/* Auth Modal */}
+        {console.log('page.tsx rendering AuthModal, handleSignUp:', handleSignUp, 'authMode:', authMode)}
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -321,6 +333,9 @@ export default function HomePage() {
           checkAuth();
         }}
         onModeSwitch={setAuthMode}
+        onLogin={handleLogin}
+        onSignUp={handleSignUp}
+        isLoading={isAuthLoading}
       />
     </div>
   );

@@ -3,6 +3,7 @@
 import React, { useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeSwitch } from 'src/components/common/ThemeToggle';
+import ActionButton from 'src/components/button/ActionButton';
 
 interface User {
   id: string;
@@ -50,13 +51,13 @@ const Header = memo(({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderProps
                 >
                   Profile
                 </button>
-                <button
-                  type="button"
+                <ActionButton
                   onClick={onSignOut}
-                  className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gray-100 dark:bg-zinc-900 text-gray-700 dark:text-zinc-300 rounded-md hover:bg-gray-200 dark:hover:bg-zinc-800 transition-colors"
+                  variant="outline"
+                  className="px-3 sm:px-4 py-2 text-sm sm:text-base"
                 >
                   Sign Out
-                </button>
+                </ActionButton>
               </>
             ) : (
               <>

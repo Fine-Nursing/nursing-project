@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, memo } from 'react';
 import { X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import LoginForm from './forms/LoginForm';
 import SignUpForm from './forms/SignUpForm';
 import SocialAuthButtons from './components/SocialAuthButtons';
@@ -35,7 +36,13 @@ export const AuthModal = memo(({
   onSignUp,
   isLoading = false,
 }: AuthModalProps) => {
+  console.log('AuthModal received props:', { onLogin, onSignUp, mode, isOpen });
   const [currentMode, setCurrentMode] = useState<AuthMode>(mode);
+  
+  // Sync internal state with external mode prop
+  React.useEffect(() => {
+    setCurrentMode(mode);
+  }, [mode]);
 
   const handleModeSwitch = useCallback(() => {
     const newMode = currentMode === 'login' ? 'signup' : 'login';
@@ -102,7 +109,10 @@ export const AuthModal = memo(({
           ) : (
             <SignUpForm 
               onSuccess={handleSuccess} 
-              onSubmit={onSignUp}
+              onSubmit={onSignUp || (async () => {
+                console.error('No onSignUp handler provided to AuthModal!');
+                toast.error('Authentication setup error');
+              })}
               isLoading={isLoading}
             />
           )}

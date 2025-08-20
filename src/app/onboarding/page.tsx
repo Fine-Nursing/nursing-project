@@ -2,11 +2,11 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import useInitializeOnboarding from 'src/api/onboarding/useInitializeOnboarding';
-import AccountForm from 'src/components/onboarding/pages/AccountForm';
-import BasicInfoForm from 'src/components/onboarding/pages/BasicInfoForm';
-import CultureForm from 'src/components/onboarding/pages/CultureForm';
-import EmploymentForm from 'src/components/onboarding/pages/EmploymentForm';
-import WelcomePage from 'src/components/onboarding/pages/WelcomePage';
+import AccountForm from 'src/components/onboarding/AccountForm';
+import BasicInfoForm from 'src/components/onboarding/BasicInfoForm';
+import CultureForm from 'src/components/onboarding/CultureForm';
+import EmploymentForm from 'src/components/onboarding/EmploymentForm';
+import WelcomePage from 'src/components/onboarding/WelcomePage';
 import StepTransition from 'src/components/onboarding/components/StepTransition';
 import { ONBOARDING_STEPS } from 'src/constants/onboarding';
 import useOnboardingStore from 'src/store/onboardingStores';
