@@ -9,10 +9,7 @@ import useAuthStore from 'src/hooks/useAuthStore';
 import useAuth from 'src/api/Auth/useAuth';
 import useIsMobile from 'src/hooks/useIsMobile';
 import { motion } from 'framer-motion';
-import {
-  LoginModal,
-  SignUpModal,
-} from 'src/components/auth/OptimizedAuthModals';
+import { AuthModal, useAuth as useAuthModal } from 'src/components/auth';
 
 // Import separated components
 import Header from 'src/components/home/Header';
@@ -35,8 +32,8 @@ export default function HomePage() {
     checkAuth,
   } = useAuthStore();
   const { signIn, signUp, isLoading: isAuthLoading } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
 
   // Greeting data calculation
   const greetingData = useMemo(() => {
@@ -149,7 +146,7 @@ export default function HomePage() {
         const response = await signIn(data);
         if (response.success && response.user) {
           useAuthStore.getState().setUser(response.user);
-          setShowLoginModal(false);
+          setShowAuthModal(false);
           toast.success('Successfully logged in!');
         }
       } catch (error) {
@@ -172,7 +169,7 @@ export default function HomePage() {
         if (response.success && response.user) {
           useAuthStore.getState().setUser(response.user);
           await checkAuth();
-          setShowSignUpModal(false);
+          setShowAuthModal(false);
           toast.success('Account created successfully!');
         }
       } catch (error) {
@@ -212,30 +209,28 @@ export default function HomePage() {
     return (
       <>
         <MobileSalaryDiscovery
-          onOnboardingClick={() => setShowSignUpModal(true)}
-          onLoginClick={() => setShowLoginModal(true)}
+          onOnboardingClick={() => {
+            setAuthMode('signup');
+            setShowAuthModal(true);
+          }}
+          onLoginClick={() => {
+            setAuthMode('login');
+            setShowAuthModal(true);
+          }}
         />
 
-        {/* Modals */}
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onSubmit={handleLogin}
-          onSwitchToSignUp={() => {
-            setShowLoginModal(false);
-            setShowSignUpModal(true);
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          mode={authMode}
+          onAuthSuccess={() => {
+            setShowAuthModal(false);
+            checkAuth();
           }}
-          isLoading={isAuthLoading}
-        />
-
-        <SignUpModal
-          isOpen={showSignUpModal}
-          onClose={() => setShowSignUpModal(false)}
-          onSubmit={handleSignUp}
-          onSwitchToLogin={() => {
-            setShowSignUpModal(false);
-            setShowLoginModal(true);
-          }}
+          onModeSwitch={setAuthMode}
+          onLogin={handleLogin}
+          onSignUp={handleSignUp}
           isLoading={isAuthLoading}
         />
       </>
@@ -260,26 +255,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Modals */}
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onSubmit={handleLogin}
-          onSwitchToSignUp={() => {
-            setShowLoginModal(false);
-            setShowSignUpModal(true);
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          mode={authMode}
+          onAuthSuccess={() => {
+            setShowAuthModal(false);
+            checkAuth();
           }}
-          isLoading={isAuthLoading}
-        />
-
-        <SignUpModal
-          isOpen={showSignUpModal}
-          onClose={() => setShowSignUpModal(false)}
-          onSubmit={handleSignUp}
-          onSwitchToLogin={() => {
-            setShowSignUpModal(false);
-            setShowLoginModal(true);
-          }}
+          onModeSwitch={setAuthMode}
+          onLogin={handleLogin}
+          onSignUp={handleSignUp}
           isLoading={isAuthLoading}
         />
       </>
@@ -292,8 +279,14 @@ export default function HomePage() {
       <Header
         user={user}
         onSignOut={handleSignOut}
-        onShowLogin={() => setShowLoginModal(true)}
-        onShowSignUp={() => setShowSignUpModal(true)}
+        onShowLogin={() => {
+          setAuthMode('login');
+          setShowAuthModal(true);
+        }}
+        onShowSignUp={() => {
+          setAuthMode('signup');
+          setShowAuthModal(true);
+        }}
       />
 
       <main className="pt-16">
@@ -318,28 +311,16 @@ export default function HomePage() {
 
       <Footer />
 
-      {/* Login Modal */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onSubmit={handleLogin}
-        onSwitchToSignUp={() => {
-          setShowLoginModal(false);
-          setShowSignUpModal(true);
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        mode={authMode}
+        onAuthSuccess={() => {
+          setShowAuthModal(false);
+          checkAuth();
         }}
-        isLoading={isAuthLoading}
-      />
-
-      {/* Sign Up Modal */}
-      <SignUpModal
-        isOpen={showSignUpModal}
-        onClose={() => setShowSignUpModal(false)}
-        onSubmit={handleSignUp}
-        onSwitchToLogin={() => {
-          setShowSignUpModal(false);
-          setShowLoginModal(true);
-        }}
-        isLoading={isAuthLoading}
+        onModeSwitch={setAuthMode}
       />
     </div>
   );
