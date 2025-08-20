@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -13,7 +14,7 @@ export const apiClient = axios.create({
 });
 
 // 에러 메시지 파싱 함수
-const getErrorMessage = (error: any): string => {
+const getErrorMessage = (error: AxiosError<{ message?: string; detail?: string }>): string => {
   // 백엔드에서 보낸 에러 메시지가 있는 경우
   if (error.response?.data?.message) {
     return error.response.data.message;

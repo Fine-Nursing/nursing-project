@@ -45,9 +45,8 @@ const useWageDistribution = (params?: WageDistributionParams) =>
           `/api/dashboard/wage-distribution?${queryParams.toString()}`
         );
         return data;
-      } catch (error) {
+      } catch {
         // 서버 오류 시 임시 데이터 반환
-        console.warn('Wage distribution API failed, using mock data');
         return {
           payDistributionData: [
             { label: '$25-30', wageValue: 27, count: 15, id: '1' },

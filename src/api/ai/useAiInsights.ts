@@ -1,4 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import axios from 'axios';
 import useAuthStore from 'src/hooks/useAuthStore';
 
@@ -37,8 +38,7 @@ const aiApiClient = axios.create({
 });
 
 // AI Insight 조회 (GET)
-export const useAiInsight = (summaryType: SummaryType, userId?: string) => {
-  return useQuery<AiInsight>({
+export const useAiInsight = (summaryType: SummaryType, userId?: string) => useQuery<AiInsight>({
     queryKey: ['aiInsight', summaryType, userId],
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
@@ -49,7 +49,6 @@ export const useAiInsight = (summaryType: SummaryType, userId?: string) => {
     staleTime: 5 * 60 * 1000, // 5분
     retry: false // CORS 에러로 재시도 비활성화
   });
-};
 
 // AI Insight 생성/갱신 (POST)
 export const useGenerateAiInsight = () => {
@@ -61,15 +60,14 @@ export const useGenerateAiInsight = () => {
       const response = await aiApiClient.post(`/generate/${summaryType}?user_id=${user.id}`);
       return response.data;
     },
-    onError: (error: any) => {
+    onError: () => {
       // AI Insight generation failed
     }
   });
 };
 
 // 모든 AI Insights 한번에 가져오기
-export const useAllAiInsights = (userId?: string) => {
-  return useQuery({
+export const useAllAiInsights = (userId?: string) => useQuery({
     queryKey: ['aiInsights', 'all', userId],
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
@@ -83,7 +81,11 @@ export const useAllAiInsights = (userId?: string) => {
           )
         );
         
-        const insights: any = {};
+        const insights: Record<SummaryType, AiInsight | null> = {
+          nurse_summary: null,
+          culture: null,
+          skill_transfer: null
+        };
         results.forEach((result) => {
           if (result.status === 'fulfilled') {
             const { type, data } = result.value;
@@ -92,9 +94,10 @@ export const useAllAiInsights = (userId?: string) => {
         });
         
         return insights;
-      } catch (error: any) {
+      } catch (error) {
         // CORS 에러나 네트워크 에러 처리
-        if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
+        const axiosError = error as AxiosError;
+        if (axiosError.code === 'ERR_NETWORK' || axiosError.message?.includes('CORS')) {
           // AI Insights API is not accessible (CORS/Network error)
           return null;
         }
@@ -112,7 +115,6 @@ export const useAllAiInsights = (userId?: string) => {
       errors: {}
     })
   });
-};
 
 // 모든 AI Insights 생성/갱신
 export const useGenerateAllInsights = () => {
@@ -136,9 +138,10 @@ export const useGenerateAllInsights = () => {
         failures: failures.length,
         results
       };
-    } catch (error: any) {
+    } catch (error) {
       // CORS 에러 무시
-      if (error.code === 'ERR_NETWORK' || error.message?.includes('CORS')) {
+      const axiosError = error as AxiosError;
+      if (axiosError.code === 'ERR_NETWORK' || axiosError.message?.includes('CORS')) {
         // AI Insights generation skipped (CORS/Network error)
         return {
           successes: 0,

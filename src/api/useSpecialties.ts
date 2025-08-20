@@ -1,3 +1,4 @@
+import type { QueryClient } from '@tanstack/react-query';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import queryKeys from 'src/constants/queryKeys';
 import type {
@@ -86,7 +87,7 @@ export const useSpecialtyList = (search?: string) =>
 
 // Prefetch functions for SSR/SSG
 export const prefetchSpecialtyAverageCompensation = async (
-  queryClient: any,
+  queryClient: QueryClient,
   params?: SpecialtyCompensationParams
 ) => {
   await queryClient.prefetchQuery({
@@ -96,7 +97,7 @@ export const prefetchSpecialtyAverageCompensation = async (
 };
 
 export const prefetchSpecialtyList = async (
-  queryClient: any,
+  queryClient: QueryClient,
   search?: string
 ) => {
   await queryClient.prefetchQuery({

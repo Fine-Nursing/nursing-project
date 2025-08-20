@@ -25,7 +25,7 @@ interface AuthState {
 
 const useAuthStore = create<AuthState>()((set, get) => ({
   user: null,
-  isLoading: true, // 초기값을 true로 설정하여 첫 로딩 시 깜빡임 방지
+  isLoading: false, // 초기값을 false로 변경
   isAuthenticated: false,
 
   setUser: (user) => {
@@ -41,6 +41,9 @@ const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
       checkAuth: async () => {
+        // 로딩 상태 설정
+        set({ isLoading: true });
+        
         try {
           const baseUrl =
             process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';

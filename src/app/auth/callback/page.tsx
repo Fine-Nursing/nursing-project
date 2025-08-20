@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 // import { supabase } from 'src/lib/supabase';
 import toast from 'react-hot-toast';
-import useAuthStore from 'src/hooks/useAuthStore';
+// import useAuthStore from 'src/hooks/useAuthStore';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function AuthCallback() {
         // OAuth is not configured for this project, redirect to home
         toast('OAuth authentication is not configured');
         router.push('/');
-        return;
+        
         
         // Below code is for Supabase OAuth (currently disabled)
         /* 
@@ -69,8 +69,8 @@ export default function AuthCallback() {
           throw new Error('No session found');
         }
         */
-      } catch (error: any) {
-        console.error('Auth callback error:', error);
+      } catch (error) {
+        // Auth callback error
         toast.error('Authentication failed. Please try again.');
         router.push('/');
       }

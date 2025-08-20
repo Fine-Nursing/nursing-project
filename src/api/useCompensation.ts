@@ -1,4 +1,5 @@
 // src/hooks/api/useCompensationApi.ts
+import type { QueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import axiosApiClient from 'src/lib/axios';
 import queryKeys from 'src/constants/queryKeys';
@@ -45,7 +46,7 @@ export const useMyCompensation = () =>
   });
 
 // Optional: Prefetch function for SSR/SSG
-export const prefetchMyCompensation = async (queryClient: any) => {
+export const prefetchMyCompensation = async (queryClient: QueryClient) => {
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user.compensation(),
     queryFn: fetchMyCompensation,

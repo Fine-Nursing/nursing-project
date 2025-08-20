@@ -29,7 +29,7 @@ function AuthInit() {
     return () => {
       isMounted = false;
     };
-  }, [checkAuth]); // checkAuth 의존성 추가
+  }, []); // 빈 dependency array로 변경 - 한 번만 실행
 
   return null;
 }

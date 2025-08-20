@@ -4,8 +4,15 @@ import React, { useCallback, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThemeSwitch } from 'src/components/common/ThemeToggle';
 
+interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 interface HeaderProps {
-  user: any;
+  user: User | null;
   onSignOut: () => void;
   onShowLogin: () => void;
   onShowSignUp: () => void;
@@ -15,8 +22,10 @@ const Header = memo(({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderProps
   const router = useRouter();
 
   const handleProfileClick = useCallback(() => {
-    router.push(`/users/${user.id}`);
-  }, [router, user?.id]);
+    if (user) {
+      router.push(`/users/${user.id}`);
+    }
+  }, [router, user]);
 
   return (
     <header className="bg-white dark:bg-black/95 backdrop-blur-sm border-b border-gray-200 dark:border-zinc-800 shadow-sm fixed top-0 w-full z-50 transition-colors">

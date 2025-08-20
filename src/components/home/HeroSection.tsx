@@ -2,15 +2,25 @@
 
 import React, { memo, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
+import { useTheme } from 'src/hooks/useTheme';
+import { useTheme as useThemeContext } from 'src/contexts/ThemeContext';
 
 const FloatingOnboardButton = lazy(
   () => import('src/components/button/FloatingOnboardButton')
 );
 
+interface User {
+  id?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  hasCompletedOnboarding?: boolean;
+}
+
 interface HeroSectionProps {
   displayedGreeting: string;
   displayedMessage: string;
-  user: any;
+  user: User | null;
   onOnboardingClick: () => void;
 }
 
@@ -19,13 +29,17 @@ const HeroSection = memo(({
   displayedMessage, 
   user, 
   onOnboardingClick 
-}: HeroSectionProps) => (
-  <section
-    id="hero"
-    className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-emerald-50/20 to-white dark:bg-gradient-to-b dark:from-black dark:via-zinc-950 dark:to-black overflow-hidden transition-colors"
-  >
-    {/* Background decoration - Simplified for mobile */}
-    <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/20 via-transparent to-blue-50/20 dark:from-emerald-900/10 dark:via-transparent dark:to-blue-900/10" />
+}: HeroSectionProps) => {
+  const { theme } = useThemeContext();
+  const { bg } = useTheme(theme);
+  
+  return (
+    <section
+      id="hero"
+      className={`relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden transition-colors ${bg.gradient}`}
+    >
+      {/* Background decoration - Simplified for mobile */}
+      <div className={`absolute inset-0 ${bg.decorative}`} />
     
     <div className="relative max-w-7xl mx-auto text-center">
       <motion.div
@@ -79,7 +93,8 @@ const HeroSection = memo(({
       </div>
     </div>
   </section>
-));
+  );
+});
 
 HeroSection.displayName = 'HeroSection';
 

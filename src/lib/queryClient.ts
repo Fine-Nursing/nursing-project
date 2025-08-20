@@ -5,9 +5,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // Number of automatic retries on error
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, error: unknown) => {
         // Do not retry 401, 403, 404 errors
-        if (error?.response?.status && [401, 403, 404].includes(error.response.status)) {
+        const axiosError = error as { response?: { status?: number } };
+        if (axiosError?.response?.status && [401, 403, 404].includes(axiosError.response.status)) {
           return false;
         }
         // Retry other errors up to 2 times
@@ -41,7 +42,7 @@ if (process.env.NODE_ENV === 'development') {
   queryClient.getQueryCache().subscribe((event) => {
     if (event.type === 'updated' && event.action?.type === 'error') {
       // Ignore 404 errors (no data found)
-      const error = event.action.error as any;
+      const error = event.action.error as { response?: { status?: number } };
       if (error?.response?.status === 404) return;
       
       // eslint-disable-next-line no-console

@@ -36,9 +36,8 @@ const useCareerProgression = () =>
           '/api/profile/career-progression'
         );
         return data.data;
-      } catch (error) {
+      } catch {
         // 서버 오류 시 임시 데이터 반환
-        console.warn('Career progression API failed, using mock data');
         return {
           totalYears: 5,
           progressionData: [

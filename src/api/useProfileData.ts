@@ -1,4 +1,5 @@
 // src/hooks/api/useProfileApi.ts
+import type { QueryClient } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import axiosApiClient from 'src/lib/axios';
 
@@ -42,7 +43,7 @@ export const useMyProfile = () =>
   });
 
 // Optional: Prefetch function for SSR/SSG
-export const prefetchMyProfile = async (queryClient: any) => {
+export const prefetchMyProfile = async (queryClient: QueryClient) => {
   await queryClient.prefetchQuery({
     queryKey: queryKeys.user.me(),
     queryFn: fetchMyProfile,
