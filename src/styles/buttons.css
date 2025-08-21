@@ -1,0 +1,62 @@
+/* Common Button Styles for Consistency */
+
+/* Primary CTA Button */
+.btn-primary {
+  @apply inline-flex items-center justify-center px-6 py-3 
+    bg-gradient-to-r from-emerald-500 to-emerald-600 
+    hover:from-emerald-600 hover:to-emerald-700 
+    text-white font-semibold rounded-xl 
+    shadow-lg hover:shadow-xl 
+    transform transition-all duration-200 
+    hover:-translate-y-0.5 
+    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply inline-flex items-center justify-center px-5 py-2.5 
+    border border-emerald-200 dark:border-zinc-700 
+    bg-white dark:bg-zinc-800 
+    hover:bg-emerald-50 dark:hover:bg-zinc-700/50 
+    text-emerald-700 dark:text-emerald-400 
+    font-medium rounded-xl 
+    shadow-sm hover:shadow-md 
+    transition-all duration-200 
+    focus:outline-none focus:ring-2 focus:ring-emerald-500;
+}
+
+/* Filter Button */
+.btn-filter {
+  @apply inline-flex items-center gap-2 px-3 py-2 
+    border border-emerald-200 dark:border-zinc-700 
+    bg-white/80 dark:bg-zinc-800/70 
+    hover:bg-emerald-50 hover:border-emerald-300 
+    dark:hover:bg-zinc-700/50 dark:hover:border-zinc-600
+    text-sm font-medium text-emerald-700 dark:text-zinc-300 
+    rounded-xl shadow-sm 
+    backdrop-blur-sm transition-all duration-200;
+}
+
+/* Active Filter State */
+.btn-filter-active {
+  @apply border-emerald-400 dark:border-emerald-600 
+    bg-gradient-to-r from-emerald-50 to-blue-50 
+    dark:from-zinc-800 dark:to-zinc-700 
+    text-emerald-700 dark:text-emerald-400;
+}
+
+/* Icon Button */
+.btn-icon {
+  @apply p-2 rounded-lg 
+    hover:bg-emerald-100 dark:hover:bg-zinc-700 
+    transition-colors duration-150 
+    focus:outline-none focus:ring-2 focus:ring-emerald-500;
+}
+
+/* Text Button */
+.btn-text {
+  @apply text-emerald-600 hover:text-emerald-700 
+    dark:text-emerald-400 dark:hover:text-emerald-300 
+    font-medium transition-colors duration-150 
+    focus:outline-none focus:underline;
+}
