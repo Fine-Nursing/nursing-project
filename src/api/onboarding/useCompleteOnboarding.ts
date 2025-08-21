@@ -14,7 +14,7 @@ interface CompleteOnboardingResult {
 const useCompleteOnboarding = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { tempUserId, resetForm } = useOnboardingStore();
+  const { tempUserId } = useOnboardingStore();
   const checkAuth = useAuthStore((state) => state.checkAuth);
 
   const completeOnboarding = async (): Promise<CompleteOnboardingResult> => {
@@ -52,9 +52,9 @@ const useCompleteOnboarding = () => {
 
       const result = await response.json();
 
-      // Clear onboarding data
+      // Clear onboarding session data
       localStorage.removeItem('onboarding_session');
-      resetForm();
+      // resetForm() is now handled in analyzing page to prevent navigation issues
 
       // Refresh user authentication
       try {

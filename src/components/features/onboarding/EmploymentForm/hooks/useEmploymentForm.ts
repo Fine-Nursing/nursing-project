@@ -3,6 +3,7 @@ import useOnboardingStore from 'src/store/onboardingStores';
 import useEmploymentMutation from 'src/api/onboarding/useEmploymentMutation';
 import toast from 'react-hot-toast';
 import type { SectionInfo } from '../types';
+import type { EmploymentType, ShiftType } from 'src/types/onboarding';
 import { validateCompensationSection } from '../utils/calculations';
 
 export function useEmploymentForm() {
@@ -96,22 +97,24 @@ export function useEmploymentForm() {
       }
 
       const payload = {
-        organizationName: formData.organizationName,
-        organizationCity: formData.organizationCity,
-        organizationState: formData.organizationState,
-        employmentType: formData.employmentType,
-        specialty: formData.specialty,
-        subSpecialty: formData.subSpecialty,
-        baseSalary: Number((formData as any).baseSalary),
-        salaryUnit: (formData as any).salaryUnit,
-        shiftType: (formData as any).shiftType,
-        nurseName: (formData as any).nurseName,
-        experienceInSpecialty: Number((formData as any).experienceInSpecialty),
-        nurseToPatientRatio: (formData as any).nurseToPatientRatio,
-        differentials: (formData as any).differentials || [],
+        organizationName: formData.organizationName || '',
+        organizationCity: formData.organizationCity || '',
+        organizationState: formData.organizationState || '',
+        specialty: formData.specialty || '',
+        subSpecialty: formData.subSpecialty || undefined,
+        // Calculate start year based on experience years from BasicInfo
+        employmentStartYear: new Date().getFullYear() - (formData.experienceYears || 0),
+        employmentType: formData.employmentType as EmploymentType,
+        shiftType: formData.shiftType as ShiftType,
+        nurseToPatientRatio: formData.nurseToPatientRatio || '',
+        basePay: formData.basePay || 0,
+        paymentFrequency: formData.paymentFrequency || 'hourly',
+        isUnionized: formData.isUnionized || false,
+        individualDifferentials: formData.individualDifferentials || [],
+        differentialsFreeText: formData.differentialsFreeText || undefined,
       };
 
-      await employmentMutation.mutateAsync(payload as any);
+      await employmentMutation.mutateAsync(payload);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to save employment information'

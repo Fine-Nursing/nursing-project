@@ -4,6 +4,7 @@ import WorkplaceSection from './components/WorkplaceSection';
 import RoleSection from './components/RoleSection';
 import CompensationSection from './components/CompensationSection';
 import { useEmploymentForm } from './hooks/useEmploymentForm';
+import { useDifferentialPayroll } from './hooks/useDifferentialPayroll';
 import { validateCompensationSection } from './utils/calculations';
 
 export default function EmploymentForm() {
@@ -39,18 +40,33 @@ export default function EmploymentForm() {
     updateFormData,
   } = useEmploymentForm();
 
+  const {
+    differentialInput,
+    setDifferentialInput,
+    showDifferentialSuggestions,
+    setShowDifferentialSuggestions,
+    customDiff,
+    setCustomDiff,
+    differentialFilteredList,
+    totalDifferentials,
+    addDifferential,
+    addCustomDifferential,
+    removeDifferential,
+    editDifferential,
+  } = useDifferentialPayroll(formData, updateFormData);
+
   const isLoading = employmentMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+    <div className="py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 lg:p-12">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-4">
               Employment Information
             </h2>
-            <p className="text-gray-600">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
               Tell us about your workplace and professional details
             </p>
           </div>
@@ -102,6 +118,18 @@ export default function EmploymentForm() {
                   isLoading={isLoading}
                   customRatio={customRatio}
                   setCustomRatio={setCustomRatio}
+                  differentialInput={differentialInput}
+                  setDifferentialInput={setDifferentialInput}
+                  showDifferentialSuggestions={showDifferentialSuggestions}
+                  setShowDifferentialSuggestions={setShowDifferentialSuggestions}
+                  customDiff={customDiff}
+                  setCustomDiff={setCustomDiff}
+                  differentialFilteredList={differentialFilteredList}
+                  totalDifferentials={totalDifferentials}
+                  addDifferential={addDifferential}
+                  addCustomDifferential={addCustomDifferential}
+                  removeDifferential={removeDifferential}
+                  editDifferential={editDifferential}
                 />
               )}
             </AnimatePresence>

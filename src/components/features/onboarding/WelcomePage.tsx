@@ -69,8 +69,8 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-950 dark:to-slate-900 transition-colors">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         {/* Existing Session Alert */}
         {hasExistingSession && existingProgress && (
           <div className="mb-12 max-w-2xl mx-auto">
@@ -107,129 +107,65 @@ export default function WelcomePage() {
         )}
 
         {/* Header Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="text-center mb-20">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6">
             Welcome to <span className="text-emerald-600 dark:text-emerald-400">Nurse Journey</span>
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             Connect, Share, and Grow with Our Healthcare Community
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {/* Real-time Compensation Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-            <div className="p-8">
-              <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-emerald-100 dark:bg-emerald-800 p-4 rounded-2xl transition-colors">
-                  <Eye className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
+          {/* Know Your Worth Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group min-h-[320px] flex flex-col">
+            <div className="p-8 lg:p-10 flex-1 flex flex-col">
+              <div className="flex justify-center mb-8">
+                <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Eye className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900 dark:text-white">
-                Real-time Compensation data
+              <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                Know Your Worth, Now
               </h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    See how your pay compares in real time and drive
-                    transparency.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Help build a pay dashboard that empowers nurses.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Contribute to real-time insights for fair nurse
-                    compensation.
-                  </p>
-                </div>
-              </div>
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center leading-relaxed flex-1">
+                See how your pay compares in real time. Your input builds an honest, nationwide picture of nurse compensation and pushes for fairness.
+              </p>
             </div>
           </div>
 
-          {/* Listen to Nurse Stories Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-            <div className="p-8">
-              <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-emerald-100 dark:bg-emerald-800 p-4 rounded-2xl transition-colors">
-                  <Ear className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+          {/* Your Story Matters Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group min-h-[320px] flex flex-col">
+            <div className="p-8 lg:p-10 flex-1 flex flex-col">
+              <div className="flex justify-center mb-8">
+                <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Ear className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900 dark:text-white">
-                Listen to Nurse Stories
+              <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                Your Story Matters
               </h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Hear real stories from nurses about their workplaces and
-                    cultures.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Join a community where experiences are shared and valued.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Share your voice to shape a supportive network for nurses.
-                  </p>
-                </div>
-              </div>
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center leading-relaxed flex-1">
+                Hear real nurse experiences and share your own. Together we create a trusted space where nurses learn from and support each other.
+              </p>
             </div>
           </div>
 
-          {/* Dedicated Career Partner Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-            <div className="p-8">
-              <div className="flex justify-center mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                <div className="bg-emerald-100 dark:bg-emerald-800 p-4 rounded-2xl transition-colors">
-                  <Handshake className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
+          {/* Guidance for Your Next Step Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group min-h-[320px] flex flex-col">
+            <div className="p-8 lg:p-10 flex-1 flex flex-col">
+              <div className="flex justify-center mb-8">
+                <div className="bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-900 p-5 rounded-2xl transform group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Handshake className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
                 </div>
               </div>
-              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4 text-center text-gray-900 dark:text-white">
-                Dedicated Career Partner
+              <h3 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+                Guidance for Your Next Step
               </h3>
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Get personalized guidance for every step of your career.
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center mt-0.5">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400 ml-2">
-                    Access tailored insights to achieve your goals.
-                  </p>
-                </div>
-              </div>
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center leading-relaxed flex-1">
+                Get advice tailored to your role, specialty, and goals — whether you're exploring new units, planning further education, or looking for a healthier work environment.
+              </p>
             </div>
           </div>
         </div>

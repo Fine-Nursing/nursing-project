@@ -57,11 +57,11 @@ export default function AccountForm() {
   // Sign In Form
   if (isSignIn) {
     return (
-      <div className="max-w-md mx-auto px-4 py-6 sm:py-8">
+      <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+          className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
         >
           <FormHeader isSignIn />
 
@@ -137,11 +137,11 @@ export default function AccountForm() {
 
   // Sign Up Form
   return (
-    <div className="max-w-md mx-auto py-8">
+    <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+        className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
       >
         <FormHeader isSignIn={false} />
 

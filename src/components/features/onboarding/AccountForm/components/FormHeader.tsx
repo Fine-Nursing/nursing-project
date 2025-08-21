@@ -19,10 +19,10 @@ export function FormHeader({ isSignIn }: FormHeaderProps) {
         >
           <User className="w-8 h-8 text-slate-600" />
         </motion.div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-3">
+        <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
           Welcome back!
         </h2>
-        <p className="text-gray-600">
+        <p className="text-lg text-gray-600 dark:text-gray-400">
           Sign in to save your onboarding progress
         </p>
       </div>
@@ -39,10 +39,10 @@ export function FormHeader({ isSignIn }: FormHeaderProps) {
       >
         <Check className="w-8 h-8 text-white" />
       </motion.div>
-      <h2 className="text-3xl font-bold text-gray-900 mb-3">
+      <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
         Final Step!
       </h2>
-      <p className="text-gray-600">
+      <p className="text-lg text-gray-600 dark:text-gray-400">
         Create your account to save all your information
       </p>
       <div className="mt-4">

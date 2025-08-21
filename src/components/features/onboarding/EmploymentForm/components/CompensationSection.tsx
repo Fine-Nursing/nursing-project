@@ -5,7 +5,6 @@ import AnimatedInput from '../../components/AnimatedInput';
 import SelectionCard from '../../components/SelectionCard';
 import CustomDropdown from '../../components/CustomDropdown';
 import { SHIFT_TYPE_OPTIONS, NURSE_RATIO_OPTIONS, POPULAR_DIFFERENTIALS } from '../constants';
-import { useDifferentialPayroll } from '../hooks/useDifferentialPayroll';
 import { formatCurrency } from '../utils/calculations';
 import type { ShiftType, IndividualDifferentialItem } from 'src/types/onboarding';
 
@@ -18,6 +17,18 @@ interface CompensationSectionProps {
   isLoading: boolean;
   customRatio: string;
   setCustomRatio: (value: string) => void;
+  differentialInput: string;
+  setDifferentialInput: (value: string) => void;
+  showDifferentialSuggestions: boolean;
+  setShowDifferentialSuggestions: (value: boolean) => void;
+  customDiff: any;
+  setCustomDiff: (value: any) => void;
+  differentialFilteredList: any[];
+  totalDifferentials: any;
+  addDifferential: (differential: any) => void;
+  addCustomDifferential: () => void;
+  removeDifferential: (index: number) => void;
+  editDifferential: (index: number, field: string, value: any) => void;
 }
 
 export default function CompensationSection({
@@ -29,21 +40,19 @@ export default function CompensationSection({
   isLoading,
   customRatio,
   setCustomRatio,
+  differentialInput,
+  setDifferentialInput,
+  showDifferentialSuggestions,
+  setShowDifferentialSuggestions,
+  customDiff,
+  setCustomDiff,
+  differentialFilteredList,
+  totalDifferentials,
+  addDifferential,
+  addCustomDifferential,
+  removeDifferential,
+  editDifferential,
 }: CompensationSectionProps) {
-  const {
-    differentialInput,
-    setDifferentialInput,
-    showDifferentialSuggestions,
-    setShowDifferentialSuggestions,
-    customDiff,
-    setCustomDiff,
-    differentialFilteredList,
-    totalDifferentials,
-    addDifferential,
-    addCustomDifferential,
-    removeDifferential,
-    editDifferential,
-  } = useDifferentialPayroll(formData, updateFormData);
 
   const shiftTypeOptionsWithIcons = SHIFT_TYPE_OPTIONS.map(option => ({
     ...option,
@@ -54,10 +63,10 @@ export default function CompensationSection({
   }));
 
   const handleDifferentialSelectAndSet = (diffType: string) => {
-    const exists = formData.differentials?.some((d: IndividualDifferentialItem) => d.type === diffType);
+    const exists = formData.individualDifferentials?.some((d: IndividualDifferentialItem) => d.type === diffType);
     if (exists) {
-      const filtered = formData.differentials.filter((d: IndividualDifferentialItem) => d.type !== diffType);
-      updateFormData({ differentials: filtered });
+      const filtered = formData.individualDifferentials.filter((d: IndividualDifferentialItem) => d.type !== diffType);
+      updateFormData({ individualDifferentials: filtered });
       return;
     }
 
@@ -94,8 +103,8 @@ export default function CompensationSection({
               Base Salary/Pay
             </label>
             <AnimatedInput
-              value={formData.baseSalary || ''}
-              onChange={(value) => updateFormData({ baseSalary: value })}
+              value={formData.basePay || ''}
+              onChange={(value) => updateFormData({ basePay: parseFloat(value) || 0 })}
               placeholder="e.g., 35"
               type="number"
               icon={<DollarSign className="w-5 h-5" />}
@@ -107,9 +116,9 @@ export default function CompensationSection({
               Pay Unit
             </label>
             <CustomDropdown
-              value={formData.salaryUnit || ''}
-              onChange={(value) => updateFormData({ salaryUnit: value })}
-              options={['hourly', 'annually']}
+              value={formData.paymentFrequency || ''}
+              onChange={(value) => updateFormData({ paymentFrequency: value as 'hourly' | 'yearly' })}
+              options={['hourly', 'yearly']}
               placeholder="Select unit"
               className="w-full"
             />
@@ -136,32 +145,44 @@ export default function CompensationSection({
           </div>
         </div>
 
-        {/* Unit/Department */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Unit/Department Name
-          </label>
-          <AnimatedInput
-            value={formData.nurseName || ''}
-            onChange={(value) => updateFormData({ nurseName: value })}
-            placeholder="e.g., ICU, Emergency Department, Medical-Surgical"
-            icon={<Heart className="w-5 h-5" />}
-          />
-        </div>
+        {/* Union Checkbox - From Original */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-100"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <motion.div
+                animate={{ scale: formData.isUnionized ? [1, 1.2, 1] : 1 }}
+                transition={{ duration: 0.3 }}
+                className="text-2xl"
+              >
+                {formData.isUnionized ? '🤝' : '🏢'}
+              </motion.div>
+              <div>
+                <label htmlFor="isUnionized" className="text-lg font-medium text-gray-900 cursor-pointer">
+                  Are you in a union?
+                </label>
+                <p className="text-sm text-gray-600 mt-1">
+                  Union membership can affect your benefits and pay structure
+                </p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="isUnionized"
+                checked={formData.isUnionized || false}
+                onChange={(e) => updateFormData({ isUnionized: e.target.checked })}
+                className="sr-only peer"
+              />
+              <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600" />
+            </label>
+          </div>
+        </motion.div>
 
-        {/* Experience in Specialty */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Years of Experience in This Specialty
-          </label>
-          <AnimatedInput
-            value={formData.experienceInSpecialty || ''}
-            onChange={(value) => updateFormData({ experienceInSpecialty: value })}
-            placeholder="e.g., 3"
-            type="number"
-            icon={<Clock className="w-5 h-5" />}
-          />
-        </div>
 
         {/* Nurse-to-Patient Ratio */}
         <div className="space-y-3">
@@ -216,17 +237,22 @@ export default function CompensationSection({
           )}
         </div>
 
-        {/* Differential Pay Section */}
-        <motion.div
+        {/* Differential Pay Section - From Original */}
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-br from-emerald-50 to-blue-50 rounded-xl p-6 space-y-6"
+          transition={{ delay: 0.3 }}
+          className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 space-y-4 border-2 border-green-100"
         >
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-emerald-200 rounded-lg">
-                <Plus className="w-5 h-5 text-emerald-700" />
-              </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                className="text-3xl"
+              >
+                💰
+              </motion.div>
               <div>
                 <h4 className="text-lg font-semibold text-gray-900">
                   Boost Your Total Compensation
@@ -248,7 +274,7 @@ export default function CompensationSection({
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {POPULAR_DIFFERENTIALS.map((diffType) => {
-                const isAdded = formData.differentials?.some((d: IndividualDifferentialItem) => d.type === diffType);
+                const isAdded = formData.individualDifferentials?.some((d: IndividualDifferentialItem) => d.type === diffType);
                 const isSelected = customDiff.type === diffType;
                 
                 return (
@@ -324,11 +350,11 @@ export default function CompensationSection({
           )}
 
           {/* Current Differentials List */}
-          {formData.differentials && formData.differentials.length > 0 && (
+          {formData.individualDifferentials && formData.individualDifferentials.length > 0 && (
             <div className="space-y-2">
               <h5 className="font-medium text-gray-900">Your Differentials:</h5>
               <div className="space-y-2">
-                {formData.differentials.map((diff: IndividualDifferentialItem, index: number) => (
+                {formData.individualDifferentials.map((diff: IndividualDifferentialItem, index: number) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
                     <div>
                       <span className="font-medium text-gray-900">{diff.type}</span>

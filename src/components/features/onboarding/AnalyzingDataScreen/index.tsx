@@ -4,6 +4,7 @@ import { Activity, BarChart3, Binary, CircuitBoard, Cpu, Database, GitBranch, Ne
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { useGenerateAllInsights } from 'src/api/ai/useAiInsights';
+import useOnboardingStore from 'src/store/onboardingStores';
 
 function AnalyzingDataScreen() {
   const router = useRouter();
@@ -12,6 +13,7 @@ function AnalyzingDataScreen() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { generateAll } = useGenerateAllInsights();
+  const resetForm = useOnboardingStore((state) => state.resetForm);
   
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -113,7 +115,15 @@ function AnalyzingDataScreen() {
       clearTimeout(progressTimer);
       clearTimeout(stepTimer);
     };
-  }, [router]);
+  }, [router, userId, generateAll, aiGenerationStarted]);
+
+  // Reset onboarding form when component unmounts or user navigates away
+  useEffect(() => {
+    return () => {
+      // Clean up onboarding data when leaving the analyzing page
+      resetForm();
+    };
+  }, [resetForm]);
 
   // Counter animation for data points
   useEffect(() => {

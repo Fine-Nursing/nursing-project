@@ -24,12 +24,12 @@ export function useDifferentialPayroll(formData: any, updateFormData: (data: any
   }, [differentialInput]);
 
   const totalDifferentials = useMemo(() => {
-    const differentials = formData.differentials || [];
+    const differentials = formData.individualDifferentials || [];
     return calculateTotalDifferentials(differentials);
-  }, [formData.differentials]);
+  }, [formData.individualDifferentials]);
 
   const addDifferential = useCallback((differential: any) => {
-    const currentDifferentials = formData.differentials || [];
+    const currentDifferentials = formData.individualDifferentials || [];
     const exists = currentDifferentials.some((d: IndividualDifferentialItem) => 
       d.type === differential.type
     );
@@ -43,13 +43,13 @@ export function useDifferentialPayroll(formData: any, updateFormData: (data: any
       };
       
       updateFormData({
-        differentials: [...currentDifferentials, newDifferential]
+        individualDifferentials: [...currentDifferentials, newDifferential]
       });
     }
     
     setDifferentialInput('');
     setShowDifferentialSuggestions(false);
-  }, [formData.differentials, updateFormData]);
+  }, [formData.individualDifferentials, updateFormData]);
 
   const addCustomDifferential = useCallback(() => {
     if (customDiff.type && customDiff.amount > 0) {
@@ -63,19 +63,19 @@ export function useDifferentialPayroll(formData: any, updateFormData: (data: any
   }, [customDiff, addDifferential]);
 
   const removeDifferential = useCallback((index: number) => {
-    const currentDifferentials = formData.differentials || [];
+    const currentDifferentials = formData.individualDifferentials || [];
     const newDifferentials = currentDifferentials.filter((_: any, i: number) => i !== index);
-    updateFormData({ differentials: newDifferentials });
-  }, [formData.differentials, updateFormData]);
+    updateFormData({ individualDifferentials: newDifferentials });
+  }, [formData.individualDifferentials, updateFormData]);
 
   const editDifferential = useCallback((index: number, field: keyof IndividualDifferentialItem, value: any) => {
-    const currentDifferentials = [...(formData.differentials || [])];
+    const currentDifferentials = [...(formData.individualDifferentials || [])];
     currentDifferentials[index] = {
       ...currentDifferentials[index],
       [field]: value
     };
-    updateFormData({ differentials: currentDifferentials });
-  }, [formData.differentials, updateFormData]);
+    updateFormData({ individualDifferentials: currentDifferentials });
+  }, [formData.individualDifferentials, updateFormData]);
 
   return {
     differentialInput,
