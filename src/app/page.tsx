@@ -9,17 +9,17 @@ import useAuthStore from 'src/hooks/useAuthStore';
 import useAuth from 'src/api/Auth/useAuth';
 import useIsMobile from 'src/hooks/useIsMobile';
 import { motion } from 'framer-motion';
-import { AuthModal, useAuth as useAuthModal } from 'src/components/auth';
+import { AuthModal, useAuth as useAuthModal } from 'src/components/features/auth';
 
 // Import separated components
-import Header from 'src/components/home/Header';
-import HeroSection from 'src/components/home/HeroSection';
-import CompensationSection from 'src/components/home/CompensationSection';
-import DataSection from 'src/components/home/DataSection';
-import FeaturesSection from 'src/components/home/FeaturesSection';
-import TestimonialsSection from 'src/components/home/TestimonialsSection';
-import Footer from 'src/components/home/Footer';
-import MobileSalaryDiscovery from 'src/components/home/MobileSalaryDiscovery';
+import Header from 'src/components/features/landing/Header';
+import HeroSection from 'src/components/features/landing/HeroSection';
+import CompensationSection from 'src/components/features/landing/CompensationSection';
+import DataSection from 'src/components/features/landing/DataSection';
+import FeaturesSection from 'src/components/features/landing/FeaturesSection';
+import TestimonialsSection from 'src/components/features/landing/TestimonialsSection';
+import Footer from 'src/components/features/landing/Footer';
+import MobileSalaryDiscovery from 'src/components/features/landing/MobileSalaryDiscovery';
 
 
 export default function HomePage() {
@@ -197,7 +197,7 @@ export default function HomePage() {
   // Loading state
   if (isCheckingAuth) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 dark:bg-gradient-to-br dark:from-black dark:via-zinc-900 dark:to-black transition-colors">
+      <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-950 dark:via-zinc-900 dark:to-black transition-colors">
         <div className="flex items-center justify-center min-h-screen">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -205,7 +205,7 @@ export default function HomePage() {
             transition={{ duration: 0.3 }}
             className="text-center"
           >
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto mb-4" />
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4" />
             <p className="text-gray-600 dark:text-zinc-400">Loading...</p>
           </motion.div>
         </div>
@@ -287,7 +287,7 @@ export default function HomePage() {
 
   // Desktop layout
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 dark:bg-neutral-950 transition-colors">
+    <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-950 dark:via-zinc-900 dark:to-black transition-colors">
       <Header
         user={user}
         onSignOut={handleSignOut}

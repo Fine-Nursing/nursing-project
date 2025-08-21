@@ -2,16 +2,17 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import useInitializeOnboarding from 'src/api/onboarding/useInitializeOnboarding';
-import AccountForm from 'src/components/onboarding/AccountForm';
-import BasicInfoForm from 'src/components/onboarding/BasicInfoForm';
-import CultureForm from 'src/components/onboarding/CultureForm';
-import EmploymentForm from 'src/components/onboarding/EmploymentForm';
-import WelcomePage from 'src/components/onboarding/WelcomePage';
-import StepTransition from 'src/components/onboarding/components/StepTransition';
+import AccountForm from 'src/components/features/onboarding/AccountForm';
+import BasicInfoForm from 'src/components/features/onboarding/BasicInfoForm';
+import CultureForm from 'src/components/features/onboarding/CultureForm';
+import EmploymentForm from 'src/components/features/onboarding/EmploymentForm';
+import WelcomePage from 'src/components/features/onboarding/WelcomePage';
+import StepTransition from 'src/components/features/onboarding/components/StepTransition';
+import { LoadingState } from 'src/components/ui/feedback';
 import { ONBOARDING_STEPS } from 'src/constants/onboarding';
 import useOnboardingStore from 'src/store/onboardingStores';
 import type { OnboardingStep } from 'src/types/onboarding';
-import { ThemeSwitch } from 'src/components/common/ThemeToggle';
+import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 
 const pageVariants = {
   initial: { opacity: 0, x: 20 },
@@ -47,10 +48,7 @@ export default function OnboardingFlow() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 dark:border-slate-400 mx-auto" />
-          <p className="mt-4 text-gray-600 dark:text-gray-400">Preparing your onboarding...</p>
-        </div>
+        <LoadingState size="lg" color="slate" text="Preparing your onboarding..." fullHeight />
       </div>
     );
   }

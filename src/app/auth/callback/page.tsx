@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 // import { supabase } from 'src/lib/supabase';
 import toast from 'react-hot-toast';
+import { LoadingState } from 'src/components/ui/feedback';
 // import useAuthStore from 'src/hooks/useAuthStore';
 
 export default function AuthCallback() {
@@ -81,10 +82,7 @@ export default function AuthCallback() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-teal-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-400 mx-auto mb-4" />
-        <p className="text-gray-600 text-lg">Completing sign in...</p>
-      </div>
+      <LoadingState size="lg" color="emerald" text="Completing sign in..." fullHeight />
     </div>
   );
 }

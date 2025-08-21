@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 
 const AnalyzingDataScreen = dynamic(
-  () => import('src/components/onboarding/AnalyzingDataScreen'),
+  () => import('src/components/features/onboarding/AnalyzingDataScreen'),
   { ssr: false }
 );
 

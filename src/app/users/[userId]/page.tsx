@@ -4,21 +4,21 @@ import React, { useState, lazy, Suspense } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
 import { useTheme } from 'src/contexts/ThemeContext';
-import { ThemeSwitch } from 'src/components/common/ThemeToggle';
+import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 
 import { useMyProfile } from 'src/api/useProfileData';
 import { useMyCompensation } from 'src/api/useCompensation';
 import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
-import UserProfileCard from 'src/components/user-page/NurseDashboard/UserProfileCard';
-import CompensationAnalysis from 'src/components/user-page/NurseDashboard/CompensationAnalysis';
-import RadarAnalytics from 'src/components/user-page/NurseDashboard/RadarAnalytics';
-import PredictiveCompChart from 'src/components/user-page/NurseDashboard/PredictiveCompChart';
-import AiCareerInsights from 'src/components/user-page/NurseDashboard/AiCareerInsights';
-import NextSteps from 'src/components/user-page/NurseDashboard/NextSteps';
+import UserProfileCard from 'src/components/features/dashboard/UserProfileCard';
+import CompensationAnalysis from 'src/components/features/dashboard/CompensationAnalysis';
+import RadarAnalytics from 'src/components/features/dashboard/RadarAnalytics';
+import PredictiveCompChart from 'src/components/features/dashboard/PredictiveCompChart';
+import AiCareerInsights from 'src/components/features/dashboard/AiCareerInsights';
+import NextSteps from 'src/components/features/dashboard/NextSteps';
 // Lazy load heavy components
-const CareerDashboard = lazy(() => import('src/components/user-page/CareerDashboard/CareerDashboard'));
+const CareerDashboard = lazy(() => import('src/components/features/career/CareerDashboard'));
 
 // API에서 가져오지 않는 데이터들은 일단 목 데이터로 유지
 const mockMetrics = {
