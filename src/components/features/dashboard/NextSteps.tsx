@@ -1,14 +1,16 @@
 // components/NurseDashboard/NextSteps.tsx
 import React from 'react';
 import { CheckSquare, Star, Loader2, ArrowRight, Target } from 'lucide-react';
-import { useParsedNextSteps } from 'src/api/useNextSteps';
+import { useAllAiInsights } from 'src/api/ai/useAiInsights';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 interface NextStepsProps {
   theme: 'light' | 'dark';
 }
 
 export default function NextSteps({ theme }: NextStepsProps) {
-  const { data, isLoading } = useParsedNextSteps();
+  const { user } = useAuthStore();
+  const { data: insights, isLoading } = useAllAiInsights(user?.id);
 
   // 로딩 상태
   if (isLoading) {
@@ -51,14 +53,66 @@ export default function NextSteps({ theme }: NextStepsProps) {
     );
   }
 
-  // 에러 상태 또는 데이터 없음 - 기본값 표시
-  const steps = data?.steps || [
-    'Review your career progression and identify areas for improvement',
-    'Explore additional certifications relevant to your specialty',
-    'Connect with mentors in your field for career guidance',
-  ];
-  
-  const opportunity = data?.opportunity;
+  // AI API에서 Next Steps 생성
+  const generateNextStepsFromAI = () => {
+    const steps: string[] = [];
+    let opportunity: { title: string; description: string } | null = null;
+
+    // nurse_summary에서 액션 아이템 추출
+    const nurseSummary = insights?.nurseSummary?.content;
+    if (nurseSummary) {
+      if (nurseSummary.includes('career') || nurseSummary.includes('experience')) {
+        steps.push('Continue building expertise in your current specialty area');
+      }
+      if (nurseSummary.includes('leadership') || nurseSummary.includes('team')) {
+        steps.push('Develop leadership and mentoring skills for career advancement');
+      }
+    }
+
+    // skill_transfer에서 기회 추출
+    const skillTransfer = insights?.skillTransfer?.content;
+    if (skillTransfer) {
+      const transferLines = skillTransfer.split('•').map(line => line.trim()).filter(Boolean);
+      
+      if (transferLines.length > 0) {
+        transferLines.slice(0, 2).forEach(line => {
+          if (line.includes('+$') || line.includes('specialty')) {
+            steps.push(`Explore transition to: ${line}`);
+          }
+        });
+        
+        // 첫 번째 전환 기회를 opportunity로 설정
+        if (transferLines[0]) {
+          opportunity = {
+            title: 'Career Transition Opportunity',
+            description: transferLines[0]
+          };
+        }
+      }
+    }
+
+    // culture에서 개선점 추출
+    const culture = insights?.culture?.content;
+    if (culture) {
+      const cultureLines = culture.split('•').map(line => line.trim()).filter(Boolean);
+      if (cultureLines.length > 0) {
+        steps.push('Address work environment factors based on your assessment');
+      }
+    }
+
+    // 기본 단계가 없으면 기본값 사용
+    if (steps.length === 0) {
+      steps.push(
+        'Review your career progression and identify areas for improvement',
+        'Explore additional certifications relevant to your specialty',
+        'Connect with mentors in your field for career guidance'
+      );
+    }
+
+    return { steps: steps.slice(0, 3), opportunity }; // 최대 3개 단계만
+  };
+
+  const { steps, opportunity } = generateNextStepsFromAI();
 
   return (
     <div
@@ -145,6 +199,14 @@ export default function NextSteps({ theme }: NextStepsProps) {
               </p>
             </div>
           </div>
+        </div>
+      )}
+      
+      {insights?.nurseSummary && (
+        <div className={`text-xs mt-4 text-center ${
+          theme === 'light' ? 'text-slate-500' : 'text-slate-400'
+        }`}>
+          ✨ Generated from AI Career Analysis
         </div>
       )}
     </div>

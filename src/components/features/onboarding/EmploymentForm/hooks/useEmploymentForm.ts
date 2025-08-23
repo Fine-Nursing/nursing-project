@@ -46,7 +46,9 @@ export function useEmploymentForm() {
   const validateRoleSection = useCallback(() => {
     return !!(
       formData.employmentType &&
-      formData.specialty
+      formData.specialty &&
+      formData.shiftType &&
+      formData.nurseToPatientRatio
     );
   }, [formData]);
 
@@ -88,14 +90,27 @@ export function useEmploymentForm() {
     }
   }, [completedSections]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleContinue = useCallback(async () => {
     try {
+      // Debug logging
+      console.log('Form Data:', formData);
+      console.log('Workplace valid:', validateWorkplaceSection());
+      console.log('Role valid:', validateRoleSection());
+      console.log('Compensation valid:', validateCompensationSection(formData));
+      
       // Final validation
       if (!validateWorkplaceSection() || !validateRoleSection() || !validateCompensationSection(formData)) {
         toast.error('Please complete all sections before submitting');
         return;
       }
 
+      // Debugging log
+      console.log('Sending to API:', {
+        organizationName: formData.organizationName,
+        organizationCity: formData.organizationCity,
+        organizationState: formData.organizationState,
+      });
+      
       const payload = {
         organizationName: formData.organizationName || '',
         organizationCity: formData.organizationCity || '',
@@ -110,7 +125,13 @@ export function useEmploymentForm() {
         basePay: formData.basePay || 0,
         paymentFrequency: formData.paymentFrequency || 'hourly',
         isUnionized: formData.isUnionized || false,
-        individualDifferentials: formData.individualDifferentials || [],
+        // Include unit and group to match Backend DTO
+        individualDifferentials: formData.individualDifferentials?.map((diff: any) => ({
+          type: diff.type,
+          amount: diff.amount,  // Already converted to hourly rate
+          unit: 'hourly' as const,  // All amounts are converted to hourly rate, so 'hourly'
+          group: diff.group || 'Custom',  // Set to 'Custom' if group is not specified
+        })) || [],
         differentialsFreeText: formData.differentialsFreeText || undefined,
       };
 
@@ -134,8 +155,11 @@ export function useEmploymentForm() {
   return {
     // State
     currentSection,
+    setCurrentSection,
     completedSections,
+    setCompletedSections,
     showSummary,
+    setShowSummary,
     customRatio,
     setCustomRatio,
     showCustomSpecialty,
@@ -151,10 +175,8 @@ export function useEmploymentForm() {
     employmentMutation,
     
     // Handlers
-    handleNextSection,
-    handlePreviousSection,
     handleSectionClick,
-    handleSubmit,
+    handleContinue,
     resetForm,
     
     // Validation

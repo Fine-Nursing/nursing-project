@@ -27,7 +27,7 @@ export function TermsCheckbox({ checked, onChange, error }: TermsCheckboxProps) 
                    ${error ? 'border-red-500' : ''}`}
       />
       <label htmlFor="terms" className="text-sm text-gray-600">
-        I agree to the{' '}
+        We agree to the{' '}
         <button
           type="button"
           onClick={handleTermsClick}

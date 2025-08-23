@@ -65,7 +65,7 @@ export default function QuestionStep({
                 <EnhancedTypingEffect 
                   text={activeQuestion.title} 
                   onComplete={handleTypingComplete}
-                  speed={30}
+                  speed={20}  // 30ms → 20ms (1.5배 빠르게)
                   showCursor
                 />
               </h2>
@@ -85,7 +85,7 @@ export default function QuestionStep({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}  // 0.3 → 0.2 (타이핑 속도에 맞춰 조정)
               >
                 {activeQuestion.options ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -94,7 +94,7 @@ export default function QuestionStep({
                         key={option}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ delay: index * 0.03 }}  // 0.05 → 0.03 (더 빠르게)
                       >
                         <SelectionCard
                           value={option}

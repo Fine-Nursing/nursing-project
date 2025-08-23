@@ -149,36 +149,49 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
           )}
           
           {/* Skill Transfer Opportunities */}
-          {skillTransfer && (
-            <div className={`p-3 sm:p-4 rounded-lg border ${
-              theme === 'light'
-                ? 'bg-purple-50 border-purple-200'
-                : 'bg-purple-900/20 border-purple-700'
-            }`}>
-              <div className="flex items-start gap-3">
-                <Target className={`w-5 h-5 mt-0.5 ${
-                  theme === 'light' ? 'text-purple-600' : 'text-purple-400'
-                }`} />
-                <div>
-                  <h4 className={`font-semibold text-sm sm:text-base mb-1.5 sm:mb-2 ${
-                    theme === 'light' ? 'text-purple-800' : 'text-purple-300'
-                  }`}>
-                    Career Transition Opportunities
-                  </h4>
-                  <div className={`text-sm leading-relaxed ${
-                    theme === 'light' ? 'text-purple-700' : 'text-purple-200'
-                  }`}>
-                    {skillTransfer.content.split('•').map((point: string, idx: number) => point.trim() && (
+          <div className={`p-3 sm:p-4 rounded-lg border ${
+            theme === 'light'
+              ? 'bg-purple-50 border-purple-200'
+              : 'bg-purple-900/20 border-purple-700'
+          }`}>
+            <div className="flex items-start gap-3">
+              <Target className={`w-5 h-5 mt-0.5 ${
+                theme === 'light' ? 'text-purple-600' : 'text-purple-400'
+              }`} />
+              <div>
+                <h4 className={`font-semibold text-sm sm:text-base mb-1.5 sm:mb-2 ${
+                  theme === 'light' ? 'text-purple-800' : 'text-purple-300'
+                }`}>
+                  Career Transition Opportunities
+                </h4>
+                <div className={`text-sm leading-relaxed ${
+                  theme === 'light' ? 'text-purple-700' : 'text-purple-200'
+                }`}>
+                  {skillTransfer && skillTransfer.content ? (
+                    skillTransfer.content.split('•').map((point: string, idx: number) => point.trim() && (
                       <div key={idx} className="flex items-start gap-2 mb-1">
                         <span className="text-purple-500">•</span>
                         <span>{point.trim()}</span>
                       </div>
-                    ))}
-                  </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-2">
+                      <p className={`${
+                        theme === 'light' ? 'text-purple-600' : 'text-purple-300'
+                      }`}>
+                        No transition opportunities were found based on your current experience and expertise.
+                      </p>
+                      <p className={`text-xs mt-1 ${
+                        theme === 'light' ? 'text-purple-500' : 'text-purple-400'
+                      }`}>
+                        We recommend continuing to develop your expertise in your current position.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
+          </div>
           
           {/* No Data State */}
           {!nurseSummary && !culture && !skillTransfer && !isLoading && !isGenerating && (

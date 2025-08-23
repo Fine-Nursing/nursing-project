@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Brain,
+  Activity,
   ChevronRight,
   Sparkles,
   Zap,
@@ -21,6 +21,8 @@ export default function RadarAnalytics({
   theme,
   metricAnalysis,
   userId,
+  // isLoading,
+  // error,
 }: RadarAnalyticsProps) {
   const tc = useTheme(theme);
   const [hoveredMetric, setHoveredMetric] = useState<string | null>(null);
@@ -53,7 +55,7 @@ export default function RadarAnalytics({
               'bg-blue-50',
               'bg-blue-900/30'
             )}`}>
-              <Brain className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <h2 className={`text-lg font-semibold ${tc.text.primary}`}>
@@ -174,52 +176,86 @@ export default function RadarAnalytics({
         )}
       </AnimatePresence>
 
-      {/* AI Insights - Original Design */}
-      <div className={`p-4 sm:p-6 rounded-xl ${
-        theme === 'light'
-          ? 'bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 border border-amber-200'
-          : 'bg-gradient-to-br from-amber-900/20 via-orange-900/20 to-yellow-900/20 border border-amber-800/50'
-      }`}>
-        <div className="flex items-start gap-3 sm:gap-4">
-          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400 mt-1" />
-          <div className="flex-1">
-            <h4 className={`text-base sm:text-lg font-bold mb-2 sm:mb-3 ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
+      {/* AI Performance Insights Section - Improved Layout */}
+      <div className="mt-6">
+        <div className={`p-5 rounded-xl border ${
+          theme === 'light'
+            ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'
+            : 'bg-gradient-to-br from-amber-900/10 to-orange-900/10 border-amber-800/30'
+        }`}>
+          <div className="flex items-start gap-4">
+            <div className={`p-2 rounded-lg ${
+              theme === 'light' ? 'bg-amber-100' : 'bg-amber-900/30'
             }`}>
-              AI Performance Insights
-            </h4>
+              <Sparkles className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </div>
             
-            {isInsightsLoading ? (
-              <p className={`text-sm sm:text-base ${
-                theme === 'light' ? 'text-gray-600' : 'text-gray-300'
+            <div className="flex-1">
+              <h4 className={`text-lg font-semibold mb-3 ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
               }`}>
-                Analyzing your performance metrics...
-              </p>
-            ) : (
-              <div className="space-y-3">
-                <p className={`text-sm sm:text-base leading-relaxed ${
-                  theme === 'light' ? 'text-gray-700' : 'text-gray-300'
-                }`}>
-                  Your performance is <span className="font-semibold text-emerald-600 dark:text-emerald-400">{scoreDiff}%</span> {Number(scoreDiff) > 0 ? 'above' : 'below'} regional average.
-                  {Number(scoreDiff) > 0
-                    ? ' You\'re outperforming most peers in your region!'
-                    : ' Consider focusing on areas marked in red for improvement.'}
-                </p>
-                
-                {allInsights?.skillTransfer && (
-                  <div className={`flex items-start gap-3 pt-2 pl-4 border-l-4 ${
-                    theme === 'light' ? 'border-amber-300' : 'border-amber-600'
+                AI Performance Insights
+              </h4>
+              
+              {isInsightsLoading ? (
+                <div className="animate-pulse">
+                  <div className={`h-4 rounded w-3/4 mb-2 ${
+                    theme === 'light' ? 'bg-gray-200' : 'bg-gray-700'
+                  }`} />
+                  <div className={`h-4 rounded w-1/2 ${
+                    theme === 'light' ? 'bg-gray-200' : 'bg-gray-700'
+                  }`} />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Performance Summary */}
+                  <div className={`p-3 rounded-lg ${
+                    theme === 'light' ? 'bg-white/60' : 'bg-slate-800/30'
                   }`}>
-                    <ChevronRight className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5" />
-                    <span className={`text-sm sm:text-base ${
+                    <p className={`text-sm leading-relaxed ${
                       theme === 'light' ? 'text-gray-700' : 'text-gray-300'
                     }`}>
-                      {allInsights.skillTransfer.content || "Loading insights..."}
-                    </span>
+                      Your performance score is{' '}
+                      <span className={`font-bold text-base ${
+                        Number(scoreDiff) > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'
+                      }`}>
+                        {Math.abs(Number(scoreDiff))}%
+                      </span>{' '}
+                      <span className="font-medium">
+                        {Number(scoreDiff) > 0 ? 'above' : 'below'}
+                      </span>{' '}
+                      the regional average.
+                      {Number(scoreDiff) > 0
+                        ? ' Excellent work! You\'re outperforming most peers in your region.'
+                        : ' There are opportunities for improvement in some areas.'}
+                    </p>
                   </div>
-                )}
-              </div>
-            )}
+                  
+                  {/* AI Recommendations */}
+                  {allInsights?.skillTransfer && allInsights.skillTransfer.content && (
+                    <div className={`p-3 rounded-lg ${
+                      theme === 'light' ? 'bg-amber-50' : 'bg-amber-900/20'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <ChevronRight className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className={`text-xs font-semibold mb-1 uppercase tracking-wide ${
+                            theme === 'light' ? 'text-amber-700' : 'text-amber-400'
+                          }`}>
+                            Recommended Focus Area
+                          </p>
+                          <p className={`text-sm leading-relaxed ${
+                            theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                          }`}>
+                            {allInsights.skillTransfer.content.split('•')[0]?.trim() || allInsights.skillTransfer.content}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

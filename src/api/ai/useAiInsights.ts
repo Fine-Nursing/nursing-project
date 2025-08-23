@@ -90,6 +90,13 @@ export const useAllAiInsights = (userId?: string) => useQuery({
                 console.log(`${type} not found, generating new insight...`);
                 try {
                   const postResponse = await aiApiClient.post(`/generate/${type}?user_id=${userId}`);
+                  
+                  // skill_transfer의 경우 "No skill transfer suggestions found" 응답 처리
+                  if (type === 'skill_transfer' && postResponse.data?.message?.includes('No skill transfer suggestions found')) {
+                    console.log('No skill transfer recommendations available for this user');
+                    return { type, data: null }; // null로 반환하여 "추천 없음" 상태로 처리
+                  }
+                  
                   // POST 성공 후 다시 GET으로 조회
                   const getResponse = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
                   return { type, data: getResponse.data };
@@ -143,6 +150,8 @@ export const useAllAiInsights = (userId?: string) => useQuery({
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
     retry: false, // CORS 에러로 재시도 비활성화
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     select: (data) => ({
       nurseSummary: data?.nurse_summary || null,
       culture: data?.culture || null,

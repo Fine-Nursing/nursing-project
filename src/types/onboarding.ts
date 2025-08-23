@@ -53,12 +53,13 @@ export interface BasicInfoFormData {
   experienceYears: number; // ExperienceGroup 대신 숫자로 변경
 }
 
-// Differential 구조는 API와 동일
+// Differential 구조 - Backend에 맞춤 (unit/group 저장 안 됨)
 export interface DifferentialPay {
   type: string;
   amount: number;
-  unit: 'hourly' | 'annual';
-  group: string; // 'Shift-Based', 'Unit-Based' 등
+  // Frontend 표시용으로만 사용, Backend에는 전송 안 됨
+  unit?: 'hourly' | 'annual';
+  group?: string; // 'Shift-Based', 'Unit-Based' 등
 }
 
 // Alias for compatibility

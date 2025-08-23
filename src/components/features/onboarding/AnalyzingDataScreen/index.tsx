@@ -78,17 +78,17 @@ function AnalyzingDataScreen() {
         const stepProgress = ((currentIndex + 1) / analysisSteps.length) * 100;
         setProgress(stepProgress);
 
-        // AI 인사이트 생성 (3번째 단계에서 실행)
+        // AI 인사이트 생성 (3번째 단계에서 실행) - 백그라운드에서 실행
         if (currentIndex === 2 && !aiGenerationStarted) {
           setAiGenerationStarted(true);
-          console.log('Starting AI insights generation...');
-          try {
-            const result = await generateAll();
-            console.log('AI insights generation result:', result);
-          } catch (error) {
-            console.error('Failed to generate AI insights:', error);
-            // 에러가 발생해도 계속 진행
-          }
+          console.log('Starting AI insights generation in background...');
+          // 백그라운드에서 실행하고 에러가 발생해도 무시
+          generateAll().then((result) => {
+            console.log('AI insights generation completed:', result);
+          }).catch((error) => {
+            console.warn('AI insights generation failed, but continuing:', error);
+            // AI 서버 문제로 실패해도 사용자 경험에는 영향 없음
+          });
         }
 
         // Move to next step

@@ -6,6 +6,8 @@ export interface RadarAnalyticsProps {
   theme: 'light' | 'dark';
   metricAnalysis: Record<string, string>;
   userId?: string;
+  isLoading?: boolean;
+  error?: Error | null;
 }
 
 export interface RadarPoint {
