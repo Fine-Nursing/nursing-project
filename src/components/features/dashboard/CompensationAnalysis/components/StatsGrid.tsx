@@ -75,39 +75,6 @@ export function StatsGrid({
         )}
       </div>
 
-      {/* Annual Salary */}
-      <div className={`p-2 sm:p-4 rounded-lg border ${
-        theme === 'light' 
-          ? 'bg-white border-gray-200' 
-          : 'bg-slate-900/50 border-slate-700'
-      }`}>
-        <div className="flex items-center justify-between mb-2 sm:mb-3">
-          <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-          <span className="text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-medium">
-            Top 25%
-          </span>
-        </div>
-        
-        <p className={`text-[10px] sm:text-xs font-medium mb-1 ${
-          theme === 'light' ? 'text-gray-500' : 'text-gray-400'
-        }`}>
-          Annual Salary
-        </p>
-        
-        <div className="flex flex-col">
-          <span className={`text-base sm:text-2xl font-bold ${
-            theme === 'light' ? 'text-gray-900' : 'text-white'
-          }`}>
-            ${formatNumber(editedProfile.annualSalary)}
-          </span>
-          <span className={`text-[10px] sm:text-sm ${
-            theme === 'light' ? 'text-gray-500' : 'text-gray-400'
-          }`}>
-            /year
-          </span>
-        </div>
-      </div>
-
       {/* Monthly Base */}
       <div className={`p-2 sm:p-4 rounded-lg border ${
         theme === 'light' 
@@ -137,6 +104,39 @@ export function StatsGrid({
             theme === 'light' ? 'text-gray-500' : 'text-gray-400'
           }`}>
             /mo
+          </span>
+        </div>
+      </div>
+
+      {/* Annual Salary */}
+      <div className={`p-2 sm:p-4 rounded-lg border ${
+        theme === 'light' 
+          ? 'bg-white border-gray-200' 
+          : 'bg-slate-900/50 border-slate-700'
+      }`}>
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <Banknote className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+          <span className="text-[10px] sm:text-xs text-green-600 dark:text-green-400 font-medium">
+            Top 25%
+          </span>
+        </div>
+        
+        <p className={`text-[10px] sm:text-xs font-medium mb-1 ${
+          theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+        }`}>
+          Annual Salary
+        </p>
+        
+        <div className="flex flex-col">
+          <span className={`text-base sm:text-2xl font-bold ${
+            theme === 'light' ? 'text-gray-900' : 'text-white'
+          }`}>
+            ${formatNumber(editedProfile.annualSalary)}
+          </span>
+          <span className={`text-[10px] sm:text-sm ${
+            theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+          }`}>
+            /year
           </span>
         </div>
       </div>

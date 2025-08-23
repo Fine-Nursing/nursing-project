@@ -35,7 +35,7 @@ export default function QuestionStep({
   setStep,
 }: QuestionStepProps) {
   return (
-    <div className="max-w-3xl mx-auto px-4">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <AnimatedProgressBar 
           progress={progress} 
@@ -50,7 +50,7 @@ export default function QuestionStep({
         </div>
       </div>
 
-      <div className="relative min-h-[300px] sm:min-h-[400px]">
+      <div className="relative min-h-[450px] sm:min-h-[500px] flex flex-col justify-center">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeQuestion.key}
@@ -58,20 +58,20 @@ export default function QuestionStep({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="space-y-6"
+            className="space-y-8"
           >
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
                 <EnhancedTypingEffect 
                   text={activeQuestion.title} 
                   onComplete={handleTypingComplete}
-                  speed={30}
+                  speed={20}  // 30ms → 20ms (1.5배 빠르게)
                   showCursor
                 />
               </h2>
               {activeQuestion.subtitle && (
                 <motion.p
-                  className="text-gray-500 dark:text-gray-400"
+                  className="text-lg text-gray-500 dark:text-gray-400"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isTypingComplete ? 1 : 0 }}
                   transition={{ duration: 0.3 }}
@@ -85,16 +85,16 @@ export default function QuestionStep({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.2 }}  // 0.3 → 0.2 (타이핑 속도에 맞춰 조정)
               >
                 {activeQuestion.options ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
                     {activeQuestion.options.map((option, index) => (
                       <motion.div
                         key={option}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ delay: index * 0.03 }}  // 0.05 → 0.03 (더 빠르게)
                       >
                         <SelectionCard
                           value={option}

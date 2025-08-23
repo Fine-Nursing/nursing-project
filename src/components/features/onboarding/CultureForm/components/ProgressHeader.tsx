@@ -38,12 +38,12 @@ export default function ProgressHeader({
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-6 sm:mb-12"
+        className="text-center mb-10 sm:mb-14"
       >
-        <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">
           How&apos;s Your Workplace Culture?
         </h2>
-        <p className="text-base sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
+        <p className="text-lg sm:text-xl lg:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto px-4">
           Your honest feedback helps create better work environments for
           healthcare professionals everywhere
         </p>

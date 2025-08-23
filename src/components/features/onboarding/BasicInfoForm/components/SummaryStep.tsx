@@ -31,13 +31,13 @@ export default function SummaryStep({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-3xl mx-auto px-4 py-6 sm:py-12"
+      className="max-w-4xl mx-auto px-4 py-8 sm:py-12"
     >
-      <div className="text-center mb-6 sm:mb-10">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
+      <div className="text-center mb-10 sm:mb-14">
+        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
           Perfect! Let&apos;s Review Your Information
         </h2>
-        <p className="text-gray-500 dark:text-gray-400 text-base sm:text-lg">
+        <p className="text-gray-500 dark:text-gray-400 text-lg sm:text-xl">
           Please review your details and make any changes if needed.
         </p>
       </div>

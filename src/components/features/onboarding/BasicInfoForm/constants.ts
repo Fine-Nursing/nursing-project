@@ -4,14 +4,14 @@ import type { BasicQuestion } from './types';
 export const BASIC_INFO_QUESTIONS: BasicQuestion[] = [
   {
     key: 'name',
-    title: "Hi! Let's begin with your name — what should I call you?",
+    title: "Hi! Let's begin with your name — what should we call you?",
     subtitle: '',
     validation: (value: string) => value.length > 0,
   },
   {
     key: 'education',
     title: "Awesome — what's your highest completed education level?",
-    subtitle: 'This helps me understand your academic background',
+    subtitle: 'This helps us understand your academic background',
     options: [
       'High School Diploma or Equivalent',
       'Vocational/Technical Certificate',
@@ -26,7 +26,7 @@ export const BASIC_INFO_QUESTIONS: BasicQuestion[] = [
   {
     key: 'nursingRole',
     title:
-      'Amazing! Now, could you tell me about your current nursing role?',
+      'Amazing! Now, could you tell us about your current nursing role?',
     subtitle: 'Select the position that best describes your role',
     options: [
       'Certified Nursing Assistant (CNA)',

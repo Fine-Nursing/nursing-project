@@ -3,6 +3,7 @@ import useOnboardingStore from 'src/store/onboardingStores';
 import useEmploymentMutation from 'src/api/onboarding/useEmploymentMutation';
 import toast from 'react-hot-toast';
 import type { SectionInfo } from '../types';
+import type { EmploymentType, ShiftType } from 'src/types/onboarding';
 import { validateCompensationSection } from '../utils/calculations';
 
 export function useEmploymentForm() {
@@ -45,7 +46,9 @@ export function useEmploymentForm() {
   const validateRoleSection = useCallback(() => {
     return !!(
       formData.employmentType &&
-      formData.specialty
+      formData.specialty &&
+      formData.shiftType &&
+      formData.nurseToPatientRatio
     );
   }, [formData]);
 
@@ -87,31 +90,52 @@ export function useEmploymentForm() {
     }
   }, [completedSections]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleContinue = useCallback(async () => {
     try {
+      // Debug logging
+      console.log('Form Data:', formData);
+      console.log('Workplace valid:', validateWorkplaceSection());
+      console.log('Role valid:', validateRoleSection());
+      console.log('Compensation valid:', validateCompensationSection(formData));
+      
       // Final validation
       if (!validateWorkplaceSection() || !validateRoleSection() || !validateCompensationSection(formData)) {
         toast.error('Please complete all sections before submitting');
         return;
       }
 
-      const payload = {
+      // Debugging log
+      console.log('Sending to API:', {
         organizationName: formData.organizationName,
         organizationCity: formData.organizationCity,
         organizationState: formData.organizationState,
-        employmentType: formData.employmentType,
-        specialty: formData.specialty,
-        subSpecialty: formData.subSpecialty,
-        baseSalary: Number((formData as any).baseSalary),
-        salaryUnit: (formData as any).salaryUnit,
-        shiftType: (formData as any).shiftType,
-        nurseName: (formData as any).nurseName,
-        experienceInSpecialty: Number((formData as any).experienceInSpecialty),
-        nurseToPatientRatio: (formData as any).nurseToPatientRatio,
-        differentials: (formData as any).differentials || [],
+      });
+      
+      const payload = {
+        organizationName: formData.organizationName || '',
+        organizationCity: formData.organizationCity || '',
+        organizationState: formData.organizationState || '',
+        specialty: formData.specialty || '',
+        subSpecialty: formData.subSpecialty || undefined,
+        // Calculate start year based on experience years from BasicInfo
+        employmentStartYear: new Date().getFullYear() - (formData.experienceYears || 0),
+        employmentType: formData.employmentType as EmploymentType,
+        shiftType: formData.shiftType as ShiftType,
+        nurseToPatientRatio: formData.nurseToPatientRatio || '',
+        basePay: formData.basePay || 0,
+        paymentFrequency: formData.paymentFrequency || 'hourly',
+        isUnionized: formData.isUnionized || false,
+        // Include unit and group to match Backend DTO
+        individualDifferentials: formData.individualDifferentials?.map((diff: any) => ({
+          type: diff.type,
+          amount: diff.amount,  // Already converted to hourly rate
+          unit: 'hourly' as const,  // All amounts are converted to hourly rate, so 'hourly'
+          group: diff.group || 'Custom',  // Set to 'Custom' if group is not specified
+        })) || [],
+        differentialsFreeText: formData.differentialsFreeText || undefined,
       };
 
-      await employmentMutation.mutateAsync(payload as any);
+      await employmentMutation.mutateAsync(payload);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to save employment information'
@@ -131,8 +155,11 @@ export function useEmploymentForm() {
   return {
     // State
     currentSection,
+    setCurrentSection,
     completedSections,
+    setCompletedSections,
     showSummary,
+    setShowSummary,
     customRatio,
     setCustomRatio,
     showCustomSpecialty,
@@ -148,10 +175,8 @@ export function useEmploymentForm() {
     employmentMutation,
     
     // Handlers
-    handleNextSection,
-    handlePreviousSection,
     handleSectionClick,
-    handleSubmit,
+    handleContinue,
     resetForm,
     
     // Validation

@@ -4,6 +4,7 @@ import { Activity, BarChart3, Binary, CircuitBoard, Cpu, Database, GitBranch, Ne
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { useGenerateAllInsights } from 'src/api/ai/useAiInsights';
+import useOnboardingStore from 'src/store/onboardingStores';
 
 function AnalyzingDataScreen() {
   const router = useRouter();
@@ -12,6 +13,7 @@ function AnalyzingDataScreen() {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { generateAll } = useGenerateAllInsights();
+  const resetForm = useOnboardingStore((state) => state.resetForm);
   
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -76,17 +78,17 @@ function AnalyzingDataScreen() {
         const stepProgress = ((currentIndex + 1) / analysisSteps.length) * 100;
         setProgress(stepProgress);
 
-        // AI 인사이트 생성 (3번째 단계에서 실행)
+        // AI 인사이트 생성 (3번째 단계에서 실행) - 백그라운드에서 실행
         if (currentIndex === 2 && !aiGenerationStarted) {
           setAiGenerationStarted(true);
-          console.log('Starting AI insights generation...');
-          try {
-            const result = await generateAll();
-            console.log('AI insights generation result:', result);
-          } catch (error) {
-            console.error('Failed to generate AI insights:', error);
-            // 에러가 발생해도 계속 진행
-          }
+          console.log('Starting AI insights generation in background...');
+          // 백그라운드에서 실행하고 에러가 발생해도 무시
+          generateAll().then((result) => {
+            console.log('AI insights generation completed:', result);
+          }).catch((error) => {
+            console.warn('AI insights generation failed, but continuing:', error);
+            // AI 서버 문제로 실패해도 사용자 경험에는 영향 없음
+          });
         }
 
         // Move to next step
@@ -113,7 +115,15 @@ function AnalyzingDataScreen() {
       clearTimeout(progressTimer);
       clearTimeout(stepTimer);
     };
-  }, [router]);
+  }, [router, userId, generateAll, aiGenerationStarted]);
+
+  // Reset onboarding form when component unmounts or user navigates away
+  useEffect(() => {
+    return () => {
+      // Clean up onboarding data when leaving the analyzing page
+      resetForm();
+    };
+  }, [resetForm]);
 
   // Counter animation for data points
   useEffect(() => {

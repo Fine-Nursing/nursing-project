@@ -57,11 +57,11 @@ export default function AccountForm() {
   // Sign In Form
   if (isSignIn) {
     return (
-      <div className="max-w-md mx-auto px-4 py-6 sm:py-8">
+      <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+          className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
         >
           <FormHeader isSignIn />
 
@@ -109,12 +109,12 @@ export default function AccountForm() {
           />
 
           <div className="text-center mt-6">
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={toggleMode}
-                className="text-slate-600 hover:text-slate-700 font-medium"
+                className="text-slate-600 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200 font-medium"
               >
                 Sign Up
               </button>
@@ -137,11 +137,11 @@ export default function AccountForm() {
 
   // Sign Up Form
   return (
-    <div className="max-w-md mx-auto py-8">
+    <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+        className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
       >
         <FormHeader isSignIn={false} />
 
@@ -150,7 +150,7 @@ export default function AccountForm() {
             <div className="space-y-2">
               <label
                 htmlFor="firstName"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
               >
                 First Name
               </label>
@@ -162,9 +162,10 @@ export default function AccountForm() {
                 onChange={(e) => updateField('firstName', e.target.value)}
                 className={`w-full px-4 py-3 border-2 rounded-xl
                          focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                          ${errors.firstName 
-                           ? 'border-red-300 focus:border-red-500' 
-                           : 'border-gray-200'}`}
+                           ? 'border-red-300 focus:border-red-500 dark:border-red-400' 
+                           : 'border-gray-200 dark:border-gray-600'}`}
                 placeholder="John"
               />
               {errors.firstName && (
@@ -175,7 +176,7 @@ export default function AccountForm() {
             <div className="space-y-2">
               <label
                 htmlFor="lastName"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
               >
                 Last Name
               </label>
@@ -187,9 +188,10 @@ export default function AccountForm() {
                 onChange={(e) => updateField('lastName', e.target.value)}
                 className={`w-full px-4 py-3 border-2 rounded-xl
                          focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none transition-all
+                         bg-white dark:bg-gray-700 text-gray-900 dark:text-white
                          ${errors.lastName 
-                           ? 'border-red-300 focus:border-red-500' 
-                           : 'border-gray-200'}`}
+                           ? 'border-red-300 focus:border-red-500 dark:border-red-400' 
+                           : 'border-gray-200 dark:border-gray-600'}`}
                 placeholder="Doe"
               />
               {errors.lastName && (
@@ -259,12 +261,12 @@ export default function AccountForm() {
         />
 
         <div className="text-center mt-6">
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Already have an account?{' '}
             <button
               type="button"
               onClick={toggleMode}
-              className="text-slate-600 hover:text-slate-700 font-medium"
+              className="text-slate-600 hover:text-slate-700 dark:text-slate-300 dark:hover:text-slate-200 font-medium"
             >
               Sign In
             </button>

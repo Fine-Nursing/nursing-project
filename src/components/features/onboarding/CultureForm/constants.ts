@@ -1,7 +1,7 @@
 import { Users, DollarSign, TrendingUp, Building2 } from 'lucide-react';
 import type { RatingCategory, RatingOption, Review } from './types';
 
-// 평가 항목 정의
+// Evaluation items definition
 export const RATING_CATEGORIES: RatingCategory[] = [
   {
     key: 'unitCulture',
@@ -29,7 +29,7 @@ export const RATING_CATEGORIES: RatingCategory[] = [
   },
 ];
 
-// 평가 점수 옵션
+// Evaluation score options
 export const RATING_OPTIONS: RatingOption[] = [
   { value: 1, label: 'Poor' },
   { value: 2, label: 'Fair' },
@@ -38,7 +38,7 @@ export const RATING_OPTIONS: RatingOption[] = [
   { value: 5, label: 'Excellent' },
 ];
 
-// 기존 리뷰 데이터
+// Existing review data
 export const EXISTING_REVIEWS: Review[] = [
   {
     id: 1,

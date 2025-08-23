@@ -131,10 +131,6 @@ export default function HomePage() {
       );
 
       router.push('/onboarding');
-      toast.success("Let's get started with your nursing career journey!", {
-        icon: '🚀',
-        duration: 3000,
-      });
     } catch {
       toast.error('Failed to start onboarding. Please try again.');
     }

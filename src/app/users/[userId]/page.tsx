@@ -87,9 +87,7 @@ export default function UserPage() {
   // 사용자 메트릭 데이터 API 호출
   const {
     data: metricsData,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     isLoading: isMetricsLoading,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     error: metricsError,
   } = useUserMetrics();
 
@@ -266,6 +264,8 @@ export default function UserPage() {
             theme={theme}
             metricAnalysis={metricAnalysis}
             userId={userId}
+            isLoading={isMetricsLoading}
+            error={metricsError}
           />
         </div>
 
