@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import React from 'react';
-import { motion, MotionConfig } from 'framer-motion';
+import { m, MotionConfig } from 'framer-motion';
 import { MapPin, DollarSign, Activity, Building, Star } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 import type { CompensationCard } from 'src/types/dashboard';
@@ -122,7 +122,7 @@ const cardAnimation = {
 // A rotating "Available Position" badge in the top-right corner
 function RotatingBadge() {
   return (
-    <motion.svg
+    <m.svg
       initial={{ rotate: 0 }}
       animate={{ rotate: 360 }}
       transition={{
@@ -157,7 +157,7 @@ function RotatingBadge() {
           Available Position • Available Position •
         </textPath>
       </text>
-    </motion.svg>
+    </m.svg>
   );
 }
 
@@ -269,7 +269,7 @@ function NurseCard({ card, className }: NurseCardProps) {
 
   return (
     <MotionConfig transition={{ type: 'spring', bounce: 0.5 }}>
-      <motion.div
+      <m.div
         whileHover="hovered"
         className={twMerge(
           'relative w-full h-full rounded-xl sm:rounded-2xl border border-rose-200 dark:border-zinc-700 shadow-md dark:shadow-xl transition-all',
@@ -278,7 +278,7 @@ function NurseCard({ card, className }: NurseCardProps) {
             cardGradientClasses
         )}
       >
-        <motion.div
+        <m.div
           variants={cardAnimation}
           className={twMerge(
             '-m-0.5 w-full h-full rounded-xl sm:rounded-2xl border border-rose-200 dark:border-zinc-700/50 transition-all',
@@ -287,7 +287,7 @@ function NurseCard({ card, className }: NurseCardProps) {
               cardGradientClasses
           )}
         >
-          <motion.div
+          <m.div
             variants={cardAnimation}
             className={twMerge(
               'relative -m-0.5 flex w-full h-full flex-col overflow-hidden rounded-xl sm:rounded-2xl border border-rose-200 dark:border-zinc-700/30 p-3 sm:p-4 transition-all',
@@ -300,9 +300,9 @@ function NurseCard({ card, className }: NurseCardProps) {
             <CardInfo card={card} />
             <CardFooter card={card} />
             <RotatingBadge />
-          </motion.div>
-        </motion.div>
-      </motion.div>
+          </m.div>
+        </m.div>
+      </m.div>
     </MotionConfig>
   );
 }

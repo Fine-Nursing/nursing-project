@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { m, useInView } from 'framer-motion';
 import type { CircularProgressBarProps } from '../types';
 import { calculatePercentage } from '../utils';
 
@@ -44,7 +44,7 @@ export function CircularProgressBar({
         />
         
         {/* Progress circle */}
-        <motion.circle
+        <m.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -64,14 +64,14 @@ export function CircularProgressBar({
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
           {showPercentage && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.5 }}
               transition={{ duration: 0.5, delay: duration * 0.7 }}
               className="text-2xl font-bold text-gray-900"
             >
               {Math.round(percentage)}%
-            </motion.div>
+            </m.div>
           )}
           {label && (
             <div className="text-sm text-gray-600 mt-1">{label}</div>

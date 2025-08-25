@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, ChevronRight } from 'lucide-react';
 import type { SpecialtyListItemProps } from '../types';
 
@@ -14,7 +14,7 @@ export function SpecialtyListItem({
   const trend = rank <= 3 ? 'up' : rank >= 8 ? 'down' : 'stable';
   
   return (
-    <motion.button
+    <m.button
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
       className={`w-full p-4 bg-white dark:bg-zinc-900 border-b border-gray-100 dark:border-zinc-800 last:border-b-0 transition-colors ${
@@ -66,6 +66,6 @@ export function SpecialtyListItem({
           <ChevronRight size={16} className="text-gray-400" />
         </div>
       </div>
-    </motion.button>
+    </m.button>
   );
 }

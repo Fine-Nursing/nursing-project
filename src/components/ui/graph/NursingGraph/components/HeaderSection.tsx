@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { QuickStatsProps } from '../types';
 
 interface HeaderSectionProps extends QuickStatsProps {
@@ -14,7 +14,7 @@ export function HeaderSection({
 }: HeaderSectionProps) {
   return (
     <div className="mb-6 sm:mb-8">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -49,7 +49,7 @@ export function HeaderSection({
           processedDataLength={processedDataLength}
           selectedLocationsLength={selectedLocationsLength}
         />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

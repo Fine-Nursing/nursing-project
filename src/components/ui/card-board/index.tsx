@@ -1,7 +1,7 @@
 'use client';
 
 import React, { lazy, Suspense } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
 import { Filter } from 'lucide-react';
 import useIsMobile from 'src/hooks/useIsMobile';
 import { useTheme } from 'src/contexts/ThemeContext';
@@ -174,7 +174,7 @@ export default function CardBoard() {
               >
                 <div className="flex gap-4 pb-2">
                   {displayCards.map((card, index) => (
-                    <motion.div
+                    <m.div
                       key={card.id}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -185,7 +185,7 @@ export default function CardBoard() {
                       <div className="h-full">
                         <NurseCard card={card} />
                       </div>
-                    </motion.div>
+                    </m.div>
                   ))}
                 </div>
               </div>
@@ -208,7 +208,7 @@ export default function CardBoard() {
                 )}
 
                 <AnimatePresence mode="wait">
-                  <motion.div
+                  <m.div
                     key={`all-${currentGroupIndex}`}
                     variants={containerVariants}
                     initial="initial"
@@ -217,7 +217,7 @@ export default function CardBoard() {
                     className={`grid grid-cols-1 ${getGridColumns(columns)} gap-4 w-full`}
                   >
                     {currentGroup.map((card, index) => (
-                      <motion.div
+                      <m.div
                         key={`${card.id}-${currentGroupIndex}`}
                         variants={cardVariants}
                         custom={index}
@@ -230,9 +230,9 @@ export default function CardBoard() {
                         >
                           <NurseCard card={card} />
                         </button>
-                      </motion.div>
+                      </m.div>
                     ))}
-                  </motion.div>
+                  </m.div>
                 </AnimatePresence>
               </>
             )}

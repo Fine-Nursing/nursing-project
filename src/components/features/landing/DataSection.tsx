@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, lazy } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 const NursingGraph = lazy(() => import('src/components/ui/graph/NursingGraph'));
 const NursingCompensationTable = lazy(
@@ -50,7 +50,7 @@ export default function DataSection({ nursingData, onPageChange }: DataSectionPr
 
         {/* Table Section */}
         <div className="mt-8 sm:mt-12">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -58,7 +58,7 @@ export default function DataSection({ nursingData, onPageChange }: DataSectionPr
           >
             {/* Header Section */}
             <div className="mb-4 sm:mb-8">
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -100,7 +100,7 @@ export default function DataSection({ nursingData, onPageChange }: DataSectionPr
                     <div className="text-xs text-gray-600 dark:text-zinc-500">Page</div>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
 
             {/* Table Content */}
@@ -119,7 +119,7 @@ export default function DataSection({ nursingData, onPageChange }: DataSectionPr
                 />
               </Suspense>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

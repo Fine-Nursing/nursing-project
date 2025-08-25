@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { m, useInView } from 'framer-motion';
 import {
   HiOutlineTrendingUp,
   HiOutlineUserGroup,
@@ -62,7 +62,7 @@ export function FeatureStats() {
           const Icon = feature.icon;
           
           return (
-            <motion.div
+            <m.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               animate={isStatsInView ? { opacity: 1, y: 0 } : {}}
@@ -74,7 +74,7 @@ export function FeatureStats() {
               </div>
               <div className="text-2xl font-semibold text-gray-900">{feature.value}</div>
               <div className="text-xs text-gray-600 mt-1">{feature.label}</div>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>

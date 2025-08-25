@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { m, useInView } from 'framer-motion';
 import type { AnimatedProgressBarProps } from '../types';
 import { getSizeStyles, getVariantStyles, calculatePercentage } from '../utils';
 
@@ -45,14 +45,14 @@ export function LinearProgressBar({
             {label || 'Progress'}
           </span>
           {showPercentage && (
-            <motion.span 
+            <m.span 
               className="text-sm text-gray-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: duration }}
             >
               {Math.round(animatedProgress)}%
-            </motion.span>
+            </m.span>
           )}
         </div>
       )}
@@ -61,7 +61,7 @@ export function LinearProgressBar({
         className="w-full rounded-full overflow-hidden relative"
         style={{ backgroundColor, ...getSizeStyles(size, height) }}
       >
-        <motion.div
+        <m.div
           className={`h-full rounded-full relative ${getVariantStyles(variant)}`}
           style={{ backgroundColor: color }}
           initial={{ width: 0 }}
@@ -69,7 +69,7 @@ export function LinearProgressBar({
           transition={{ duration, ease: 'easeOut' }}
         >
           {variant === 'striped' && (
-            <motion.div
+            <m.div
               className="absolute inset-0 bg-striped-animation"
               animate={{ x: ['0%', '100%'] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -77,13 +77,13 @@ export function LinearProgressBar({
           )}
           
           {variant === 'glow' && (
-            <motion.div
+            <m.div
               className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
               animate={{ x: ['-100%', '200%'] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             />
           )}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

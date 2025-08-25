@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useEffect, lazy, Suspense } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import {
   useSpecialtyAverageCompensation,
 } from 'src/api/useSpecialties';
@@ -100,7 +100,7 @@ export default function NursingGraph() {
   }
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -155,6 +155,6 @@ export default function NursingGraph() {
         isFetchingCompensations={isFetchingCompensations}
         isPlaceholderData={isPlaceholderData}
       />
-    </motion.div>
+    </m.div>
   );
 }

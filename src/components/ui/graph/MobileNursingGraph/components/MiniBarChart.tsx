@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { MiniBarChartProps } from '../types';
 
 // Minimalist Chart Bar - Inspired by Apple Health/Google Fit
@@ -16,7 +16,7 @@ export function MiniBarChart({
         {label}
       </span>
       <div className="flex-1 h-6 bg-gray-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-        <motion.div
+        <m.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, lazy } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Users } from 'lucide-react';
 
 const CardBoard = lazy(() => import('src/components/ui/card-board'));
@@ -40,10 +40,10 @@ function AnimatedCounter({ baseValue }: { baseValue: number }) {
 export default function CompensationSection() {
   return (
     <section className="relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent via-white/50 to-transparent dark:from-transparent dark:via-zinc-900/50 dark:to-transparent transition-all">
-      {/* Section divider */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-200/50 dark:via-zinc-700 to-transparent" />
+          {/* Section divider */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-emerald-200/50 dark:via-zinc-700 to-transparent" />
 
-      <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto">
         <div className="text-center mb-6 sm:mb-10">
           <div className="inline-flex items-center justify-center px-4 py-1 mb-4 text-xs font-semibold tracking-wide text-emerald-600 dark:text-emerald-400 uppercase bg-emerald-50 dark:bg-emerald-900/20 rounded-full border border-emerald-200 dark:border-emerald-800">
             Career Opportunities
@@ -56,7 +56,7 @@ export default function CompensationSection() {
           </p>
         </div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -92,8 +92,8 @@ export default function CompensationSection() {
               <CardBoard />
             </Suspense>
           </div>
-        </motion.div>
-      </div>
+        </m.div>
+          </div>
     </section>
   );
 }

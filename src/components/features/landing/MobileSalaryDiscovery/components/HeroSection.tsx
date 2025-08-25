@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { m, useInView } from 'framer-motion';
 
 interface HeroSectionProps {
   onOnboardingClick: () => void;
@@ -11,13 +11,13 @@ export function HeroSection({ onOnboardingClick }: HeroSectionProps) {
 
   return (
     <section ref={heroRef} className="pt-20 pb-8 px-6 bg-gradient-to-b from-white via-emerald-50/30 to-white">
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={isHeroInView ? { opacity: 1 } : {}}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className="text-center mb-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -27,20 +27,20 @@ export function HeroSection({ onOnboardingClick }: HeroSectionProps) {
               <br />
               <span className="text-emerald-500">starts here</span>
             </h1>
-          </motion.div>
+          </m.div>
           
-          <motion.p
+          <m.p
             initial={{ opacity: 0 }}
             animate={isHeroInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-[17px] text-gray-600 leading-relaxed max-w-sm mx-auto"
           >
             Data-driven insights from 50,000+ nurses to guide your career decisions
-          </motion.p>
+          </m.p>
         </div>
 
         {/* Stats Cards */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={isHeroInView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.3, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
@@ -60,9 +60,9 @@ export function HeroSection({ onOnboardingClick }: HeroSectionProps) {
               <div className="text-xs text-gray-500 mt-1">Live data</div>
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={isHeroInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.4, duration: 0.8 }}
@@ -79,8 +79,8 @@ export function HeroSection({ onOnboardingClick }: HeroSectionProps) {
           >
             Learn more →
           </button>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </section>
   );
 }
