@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { useTable, useSortBy } from 'react-table';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 import type { NursingPosition } from 'src/types/nursing';
 import type { NursingCompensationTableProps } from './types';
@@ -44,7 +44,7 @@ export default function NursingCompensationTable({
     );
 
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -107,6 +107,6 @@ export default function NursingCompensationTable({
       />
 
       <TablePagination meta={meta} onPageChange={onPageChange} />
-    </motion.div>
+    </m.div>
   );
 }

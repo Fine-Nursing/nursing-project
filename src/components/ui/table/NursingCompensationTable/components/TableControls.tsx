@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Settings2, Layout, List } from 'lucide-react';
 import type { TableControlsProps } from '../types';
 
@@ -9,7 +9,7 @@ export function TableControls({
   onShowCustomizeChange,
 }: TableControlsProps) {
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay: 0.2 }}
@@ -51,6 +51,6 @@ export function TableControls({
           </button>
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

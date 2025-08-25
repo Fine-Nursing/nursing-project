@@ -1,7 +1,7 @@
 'use client';
 
 import React, { memo, Suspense, lazy } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTheme } from 'src/hooks/useTheme';
 import { useTheme as useThemeContext } from 'src/contexts/ThemeContext';
 
@@ -35,38 +35,38 @@ const HeroSection = memo(({
   
   return (
     <section
-      id="hero"
-      className={`relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden transition-colors ${bg.gradient}`}
-    >
-      {/* Background decoration - Simplified for mobile */}
-      <div className={`absolute inset-0 ${bg.decorative}`} />
-    
-    <div className="relative max-w-7xl mx-auto text-center">
-      <motion.div
+        id="hero"
+        className={`relative py-12 sm:py-20 px-4 sm:px-6 lg:px-8 overflow-hidden transition-colors ${bg.gradient}`}
+      >
+        {/* Background decoration - Simplified for mobile */}
+        <div className={`absolute inset-0 ${bg.decorative}`} />
+        
+        <div className="relative max-w-7xl mx-auto text-center">
+          <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="mb-6"
       >
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           className="text-3xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-3"
         >
           {displayedGreeting}
-        </motion.h2>
-        <motion.p
+        </m.h2>
+        <m.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="text-lg sm:text-2xl text-emerald-500 dark:text-emerald-400 font-medium"
         >
           {displayedMessage}
-        </motion.p>
-      </motion.div>
+            </m.p>
+          </m.div>
 
-      <motion.p
+          <m.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
@@ -77,9 +77,9 @@ const HeroSection = memo(({
         ) : (
           <>Join 50,000+ nurses • Real-time data • Career transformation</>
         )}
-      </motion.p>
+          </m.p>
       
-      <div className="flex justify-center">
+          <div className="flex justify-center">
         <Suspense
           fallback={
             <div className="h-12 w-48 bg-emerald-200 rounded-lg animate-pulse" />
@@ -90,9 +90,9 @@ const HeroSection = memo(({
             isCompleted={user?.hasCompletedOnboarding}
           />
         </Suspense>
-      </div>
-    </div>
-  </section>
+          </div>
+        </div>
+    </section>
   );
 });
 

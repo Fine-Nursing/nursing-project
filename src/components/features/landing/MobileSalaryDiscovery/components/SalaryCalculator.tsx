@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { HiOutlineChartBar } from 'react-icons/hi';
 import { SPECIALTIES, LOCATIONS, EXPERIENCE_LEVELS } from '../constants';
 import type { CalculatorResult } from '../types';
@@ -27,7 +27,7 @@ export function SalaryCalculator({
 }: SalaryCalculatorProps) {
   return (
     <section className="px-6 py-10">
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -36,10 +36,10 @@ export function SalaryCalculator({
       >
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">Calculate Your Worth</h2>
         <p className="text-gray-600">Get instant salary estimates based on your profile</p>
-      </motion.div>
+      </m.div>
 
       {/* Specialty */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -64,10 +64,10 @@ export function SalaryCalculator({
             </button>
           ))}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Location */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -92,10 +92,10 @@ export function SalaryCalculator({
             </button>
           ))}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Experience */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -122,12 +122,12 @@ export function SalaryCalculator({
             </button>
           ))}
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Results */}
       <AnimatePresence>
         {calculatorResult && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -173,7 +173,7 @@ export function SalaryCalculator({
             >
               Get Personalized Analysis
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </section>

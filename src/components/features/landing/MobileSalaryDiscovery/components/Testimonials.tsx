@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { HiOutlineSparkles } from 'react-icons/hi';
 import { TESTIMONIALS } from '../constants';
 
@@ -15,7 +15,7 @@ export function Testimonials({ activeTestimonial }: TestimonialsProps) {
       <h2 className="text-xl font-semibold text-gray-900 mb-6">What nurses say</h2>
       
       <AnimatePresence mode="wait">
-        <motion.div
+        <m.div
           key={activeTestimonial}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -46,7 +46,7 @@ export function Testimonials({ activeTestimonial }: TestimonialsProps) {
               ))}
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </AnimatePresence>
     </section>
   );

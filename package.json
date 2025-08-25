@@ -2,6 +2,7 @@
   "name": "nursing-project",
   "version": "0.1.0",
   "private": true,
+  "sideEffects": false,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,8 +12,8 @@
   "dependencies": {
     "@dicebear/collection": "^9.2.3",
     "@dicebear/core": "^9.2.3",
-    "@nivo/bar": "^0.88.0",
-    "@nivo/core": "^0.88.0",
+    "@nivo/bar": "^0.99.0",
+    "@nivo/core": "^0.99.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@react-google-maps/api": "^2.20.6",
     "@supabase/supabase-js": "^2.53.0",
@@ -51,6 +52,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.5.0",
     "@tanstack/react-query-devtools": "^5.80.7",
     "@types/lodash": "^4.17.17",
     "@types/moment": "^2.13.0",

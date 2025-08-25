@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { MapPin } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { StateInfo, RegionStates } from 'src/types/location';
@@ -127,7 +127,7 @@ function LocationSelector({
       {/* Dropdown */}
       <AnimatePresence>
         {showDropdown && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 8 }}
@@ -184,7 +184,7 @@ function LocationSelector({
                 </button>
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

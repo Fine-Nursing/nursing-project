@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useCompensationCards, useCompensationCardsByLevel } from 'src/api/dashboard/useCompensationCards';
 import { MetricCard } from './components/MetricCard';
 import { CompensationCardItem } from './components/CompensationCardItem';
@@ -144,13 +144,13 @@ export default function MobileCardBoard({ filters }: MobileCardBoardProps) {
         
         {/* Load More Button */}
         {levelData && levelData.total > levelData.data.length && !isFetching && (
-          <motion.button
+          <m.button
             whileTap={{ scale: 0.98 }}
             onClick={handleLoadMore}
             className="w-full py-3 bg-white dark:bg-zinc-900 rounded-2xl text-sm font-medium text-blue-600 dark:text-blue-400"
           >
             Load More
-          </motion.button>
+          </m.button>
         )}
         
         {/* Empty State */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { m, useInView } from 'framer-motion';
 import type { ProgressSegment } from '../types';
 import { getSizeStyles, calculatePercentage } from '../utils';
 
@@ -63,7 +63,7 @@ export function SegmentedProgressBar({
             cumulativeValue += segment.value;
             
             return (
-              <motion.div
+              <m.div
                 key={index}
                 className="h-full flex items-center justify-center relative"
                 style={{ 
@@ -84,7 +84,7 @@ export function SegmentedProgressBar({
                     {segment.label}
                   </span>
                 )}
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

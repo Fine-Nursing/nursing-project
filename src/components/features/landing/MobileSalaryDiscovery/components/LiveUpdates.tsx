@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { HiMiniSignal } from 'react-icons/hi2';
 import { RiPulseLine } from 'react-icons/ri';
 
@@ -24,7 +24,7 @@ export function LiveUpdates({ latestSalaries, tickerIndex }: LiveUpdatesProps) {
 
       <AnimatePresence mode="wait">
         {latestSalaries?.data && latestSalaries.data[tickerIndex] && (
-          <motion.div
+          <m.div
             key={tickerIndex}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,7 +53,7 @@ export function LiveUpdates({ latestSalaries, tickerIndex }: LiveUpdatesProps) {
                 ))}
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </section>

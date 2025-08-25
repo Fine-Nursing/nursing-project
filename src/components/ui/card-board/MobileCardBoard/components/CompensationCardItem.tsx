@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Sparkles } from 'lucide-react';
 import type { CompensationCardProps } from '../types';
 
@@ -10,7 +10,7 @@ export function CompensationCardItem({
   onToggle 
 }: CompensationCardProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
@@ -49,19 +49,19 @@ export function CompensationCardItem({
             </div>
           </div>
           
-          <motion.div
+          <m.div
             animate={{ rotate: isExpanded ? 90 : 0 }}
             transition={{ duration: 0.2 }}
             className="ml-2"
           >
             <ChevronRight className="w-5 h-5 text-gray-400" />
-          </motion.div>
+          </m.div>
         </div>
       </button>
       
       <AnimatePresence>
         {isExpanded && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -121,9 +121,9 @@ export function CompensationCardItem({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }

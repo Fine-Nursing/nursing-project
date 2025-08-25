@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { PiMedalBold } from 'react-icons/pi';
 
 interface TopPositionsProps {
@@ -17,7 +17,7 @@ export function TopPositions({ topPositions, onOnboardingClick }: TopPositionsPr
       
       <div className="space-y-3">
         {topPositions?.data?.map((position: any, idx: number) => (
-          <motion.div 
+          <m.div 
             key={position.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -39,7 +39,7 @@ export function TopPositions({ topPositions, onOnboardingClick }: TopPositionsPr
                 <div className="text-xs text-emerald-600">+${position.compensation.totalDifferential}</div>
               )}
             </div>
-          </motion.div>
+          </m.div>
         ))}
       </div>
 

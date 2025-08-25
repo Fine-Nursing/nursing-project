@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import type { SearchSectionProps } from '../types';
 import { highlightMatch } from '../utils';
 
@@ -51,7 +51,7 @@ export function SearchSection({
       {/* Autocomplete Dropdown */}
       <AnimatePresence>
         {showSuggestions && (searchTerm.length >= 1 || !searchTerm) && (
-          <motion.div
+          <m.div
             ref={suggestionsRef}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -68,7 +68,7 @@ export function SearchSection({
               onSelectSuggestion={onSelectSuggestion}
               onSetSelectedSuggestionIndex={onSetSelectedSuggestionIndex}
             />
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

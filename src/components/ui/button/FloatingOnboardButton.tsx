@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { m, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Bot, Sparkles, Star, Zap } from 'lucide-react';
 
 interface FloatingOnboardButtonProps {
@@ -179,7 +179,7 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
 
   return (
     <>
-      <motion.button
+      <m.button
         id="onboarding-button"
         style={{
           width,
@@ -217,7 +217,7 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
         }}
       >
         {/* Original text content */}
-        <motion.div
+        <m.div
           style={{ opacity: textOpacity }}
           className="absolute inset-0 flex items-center justify-center gap-2 whitespace-nowrap px-4"
         >
@@ -225,14 +225,14 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
             {isCompleted ? 'View My Profile' : 'Start Your Journey'}
           </span>
           <ArrowRight className="w-5 h-5" />
-        </motion.div>
+        </m.div>
 
         {/* Chatbot icon when scrolled */}
-        <motion.div
+        <m.div
           style={{ opacity: iconOpacity }}
           className="absolute inset-0 flex items-center justify-center"
         >
-          <motion.div 
+          <m.div 
             className="relative"
             animate={isButtonFloating ? {
               rotate: [0, -5, 5, -5, 0],
@@ -245,12 +245,12 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
             }}
           >
             <Bot className={isMobile ? "w-6 h-6" : "w-8 h-8"} />
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
 
         {/* Sparkle effects when floating */}
         {isButtonFloating && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -258,14 +258,14 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
             className="absolute -top-2 -right-2"
           >
             <Sparkles className="w-4 h-4 text-yellow-300" />
-          </motion.div>
+          </m.div>
         )}
-      </motion.button>
+      </m.button>
 
       {/* Tooltip/Speech bubble - Show on hover or after scroll */}
       <AnimatePresence>
         {((showTooltip || isHovered) && isButtonFloating) && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
@@ -279,7 +279,7 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
             className="pointer-events-none"
           >
             <div className="relative">
-              <motion.div
+              <m.div
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className={`bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg px-4 py-3 border border-emerald-100/50 ${
@@ -303,9 +303,9 @@ function FloatingOnboardButton({ onClick, isCompleted = false }: FloatingOnboard
                     ? '-bottom-2 right-6 border-r border-b' 
                     : '-bottom-2 right-8 border-r border-b'
                 }`} />
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

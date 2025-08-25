@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from 'src/contexts/ThemeContext';
 
@@ -8,7 +8,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <motion.button
+    <m.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={toggleTheme}
@@ -18,7 +18,7 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
           : 'from-yellow-400 to-orange-400'
       } text-white shadow-lg hover:shadow-xl transition-all ${className}`}
     >
-      <motion.div
+      <m.div
         key={theme}
         initial={{ rotate: -180, opacity: 0 }}
         animate={{ rotate: 0, opacity: 1 }}
@@ -26,8 +26,8 @@ export function ThemeToggle({ className = '' }: { className?: string }) {
         transition={{ duration: 0.3 }}
       >
         {theme === 'dark' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-      </motion.div>
-    </motion.button>
+      </m.div>
+    </m.button>
   );
 }
 
@@ -37,13 +37,13 @@ export function ThemeSwitch({ className = '' }: { className?: string }) {
   const isDark = theme === 'dark';
 
   return (
-    <motion.button
+    <m.button
       className={`relative w-16 h-8 bg-gray-200 dark:bg-gray-700 rounded-full p-1 ${className}`}
       onClick={toggleTheme}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >
-      <motion.div
+      <m.div
         className="absolute inset-1"
         animate={{
           background: isDark
@@ -54,13 +54,13 @@ export function ThemeSwitch({ className = '' }: { className?: string }) {
         style={{ borderRadius: '9999px' }}
       />
       
-      <motion.div
+      <m.div
         className="relative w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center"
         animate={{ x: isDark ? 32 : 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={isDark ? 'moon' : 'sun'}
             initial={{ rotate: -180, opacity: 0 }}
             animate={{ rotate: 0, opacity: 1 }}
@@ -72,9 +72,9 @@ export function ThemeSwitch({ className = '' }: { className?: string }) {
             ) : (
               <Sun className="w-3 h-3 text-yellow-600" />
             )}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
-      </motion.div>
-    </motion.button>
+      </m.div>
+    </m.button>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { StepProgressBarProps } from '../types';
 import { getStepSizeStyles } from '../utils';
 
@@ -27,7 +27,7 @@ export function StepProgressBar({
             <div key={index} className="flex items-center flex-1">
               {/* Step indicator */}
               <div className="relative">
-                <motion.div
+                <m.div
                   className={`
                     ${stepSize} rounded-full flex items-center justify-center font-medium
                     ${isCompleted 
@@ -50,7 +50,7 @@ export function StepProgressBar({
                   ) : (
                     stepNumber
                   )}
-                </motion.div>
+                </m.div>
                 
                 {/* Step label */}
                 {step && (
@@ -66,7 +66,7 @@ export function StepProgressBar({
               {/* Connector line */}
               {index < totalSteps - 1 && (
                 <div className="flex-1 h-0.5 mx-2 bg-gray-200 relative overflow-hidden">
-                  <motion.div
+                  <m.div
                     className="absolute inset-y-0 left-0 bg-green-500"
                     initial={{ width: 0 }}
                     animate={{ 
