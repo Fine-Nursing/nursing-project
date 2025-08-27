@@ -1,4 +1,4 @@
-import { TrendingUp, Activity, Award, Target, BarChart3 } from 'lucide-react';
+import { DollarSign, Building, Users, TrendingUp, Gift } from 'lucide-react';
 
 export interface RadarAnalyticsProps {
   userMetrics: Record<string, number>;
@@ -28,18 +28,18 @@ export interface MetricCardProps {
 
 // Simplified metric display names - shortened for card display
 export const metricDisplayNames: Record<string, string> = {
-  'totalCompensation': 'Pay',
-  'workload': 'Load',
-  'experienceLevel': 'Exp.',
-  'careerGrowth': 'Growth',
-  'marketCompetitiveness': 'Market',
+  'pay': 'Pay',
+  'hospitalQuality': 'Quality',
+  'hospitalCulture': 'Culture',
+  'growthOpportunities': 'Growth',
+  'benefits': 'Benefits',
 };
 
 // Metric icons
 export const metricIcons: Record<string, any> = {
-  'totalCompensation': TrendingUp,
-  'workload': Activity,
-  'experienceLevel': Award,
-  'careerGrowth': Target,
-  'marketCompetitiveness': BarChart3,
+  'pay': DollarSign,
+  'hospitalQuality': Building,
+  'hospitalCulture': Users,
+  'growthOpportunities': TrendingUp,
+  'benefits': Gift,
 };

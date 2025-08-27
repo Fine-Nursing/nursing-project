@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 // Internal absolute paths
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 import ActionButton from 'src/components/ui/button/ActionButton';
+import toast from 'react-hot-toast';
 
 interface User {
   id: string;
   email: string;
   firstName?: string;
   lastName?: string;
+  hasCompletedOnboarding?: boolean;
 }
 
 interface HeaderProps {
@@ -28,7 +30,16 @@ export const Header = ({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderPro
 
   const handleProfileClick = useCallback(() => {
     if (user) {
-      router.push(`/users/${user.id}`);
+      // 온보딩 완료 여부 체크
+      if (user.hasCompletedOnboarding) {
+        router.push(`/users/${user.id}`);
+      } else {
+        // 온보딩 미완료시 온보딩 페이지로 이동
+        toast('Please complete your profile setup first', {
+          icon: '📝',
+        });
+        router.push('/onboarding');
+      }
     }
   }, [router, user]);
 

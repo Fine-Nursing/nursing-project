@@ -12,11 +12,11 @@ const apiClient = axios.create({
 });
 
 export interface UserMetrics {
-  totalCompensation: number;
-  workload: number;
-  experienceLevel: number;
-  careerGrowth: number;
-  marketCompetitiveness: number;
+  pay: number;
+  hospitalQuality: number;
+  hospitalCulture: number;
+  growthOpportunities: number;
+  benefits: number;
   [key: string]: number; // 인덱스 시그니처 추가
 }
 

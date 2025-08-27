@@ -5,16 +5,20 @@ import axiosApiClient from 'src/lib/axios';
 import queryKeys from 'src/constants/queryKeys';
 
 // Types
-interface Differentials {
-  night: number;
-  weekend: number;
-  other: number;
+interface DifferentialDetail {
+  type: string;
+  label: string;
+  value: number;
+  estimatedHours: number;
+  description: string;
 }
 
 interface CompensationData {
-  hourlyRate: number;
-  annualSalary: number;
-  differentials: Differentials;
+  hourlyRate: number;  // Total hourly rate including differentials
+  annualSalary: number;  // Total annual salary including differentials
+  differentials: DifferentialDetail[];
+  baseHourlyRate?: number;  // Base hourly rate without differentials
+  totalDifferentialHourly?: number;  // Total differential as hourly rate
 }
 
 interface CompensationResponse {

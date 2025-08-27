@@ -11,16 +11,32 @@ export const formatNumber = (num: number): string => {
   return num.toLocaleString();
 };
 
+import type { DifferentialDetail } from './types';
+
 export const calculateMonthlyCompensation = (
   annualSalary: number,
-  differentials: { night?: number; weekend?: number; other?: number } = {}
+  differentials: DifferentialDetail[] = []
 ) => {
   const monthlyBase = Math.round(annualSalary / 12);
-  const nightDifferential = (differentials?.night || 0) * 60;
-  const weekendDifferential = (differentials?.weekend || 0) * 32;
-  const specialtyDifferential = (differentials?.other || 0) * 20;
-  const totalMonthlyDifferentials = nightDifferential + weekendDifferential + specialtyDifferential;
+  
+  // Calculate each differential's monthly amount
+  const differentialAmounts = differentials.map(diff => ({
+    ...diff,
+    monthlyAmount: diff.value * diff.estimatedHours
+  }));
+
+  const totalMonthlyDifferentials = differentialAmounts.reduce(
+    (sum, diff) => sum + diff.monthlyAmount, 
+    0
+  );
   const totalMonthly = monthlyBase + totalMonthlyDifferentials;
+
+  // Legacy support for old structure
+  const nightDifferential = differentialAmounts.find(d => d.type === 'night')?.monthlyAmount || 0;
+  const weekendDifferential = differentialAmounts.find(d => d.type === 'weekend')?.monthlyAmount || 0;
+  const specialtyDifferential = differentialAmounts
+    .filter(d => d.type !== 'night' && d.type !== 'weekend')
+    .reduce((sum, d) => sum + d.monthlyAmount, 0);
 
   return {
     monthlyBase,
@@ -28,6 +44,7 @@ export const calculateMonthlyCompensation = (
     weekendDifferential,
     specialtyDifferential,
     totalMonthlyDifferentials,
-    totalMonthly
+    totalMonthly,
+    differentialAmounts
   };
 };

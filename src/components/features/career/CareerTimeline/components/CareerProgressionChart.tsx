@@ -1,13 +1,19 @@
 import React from 'react';
-import { 
-  ResponsiveContainer, 
-  LineChart, 
-  CartesianGrid, 
-  XAxis, 
-  YAxis, 
-  Tooltip, 
-  Line 
-} from 'recharts';
+// Optimized imports - tree-shakable for reduced bundle size
+// @ts-ignore
+import { ResponsiveContainer } from 'recharts/es6/component/ResponsiveContainer';
+// @ts-ignore
+import { LineChart } from 'recharts/es6/chart/LineChart';
+// @ts-ignore
+import { CartesianGrid } from 'recharts/es6/cartesian/CartesianGrid';
+// @ts-ignore
+import { XAxis } from 'recharts/es6/cartesian/XAxis';
+// @ts-ignore
+import { YAxis } from 'recharts/es6/cartesian/YAxis';
+// @ts-ignore
+import { Tooltip } from 'recharts/es6/component/Tooltip';
+// @ts-ignore
+import { Line } from 'recharts/es6/cartesian/Line';
 import type { CareerProgressionChartProps } from '../types';
 import { prepareChartData } from '../utils';
 import { CustomLineTooltip } from './CustomLineTooltip';

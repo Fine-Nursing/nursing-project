@@ -114,7 +114,19 @@ export function RadarChart({
         style={{ transformOrigin: '175px 175px' }}
       />
 
-      {/* Data points */}
+      {/* Average data points (작은 회색 점) */}
+      {avgPoints.map((pt, i) => (
+        <circle
+          key={`avg-${pt.label}`}
+          cx={pt.x}
+          cy={pt.y}
+          r="3"
+          fill={theme === 'light' ? '#9ca3af' : '#6b7280'}
+          opacity="0.7"
+        />
+      ))}
+
+      {/* User data points */}
       {userPoints.map((pt, i) => (
         <g key={pt.label}>
           <m.circle
@@ -141,14 +153,14 @@ export function RadarChart({
             onMouseLeave={() => setHoveredMetric(null)}
           />
           
-          {/* Hover tooltip */}
+          {/* Hover tooltip - 사용자 값과 평균값 모두 표시 */}
           {hoveredMetric === pt.label && (
             <g>
               <rect
-                x={pt.x - 20}
-                y={pt.y - 30}
-                width="40"
-                height="20"
+                x={pt.x - 35}
+                y={pt.y - 40}
+                width="70"
+                height="35"
                 rx="3"
                 fill={theme === 'light' ? 'white' : '#1e293b'}
                 stroke="#3b82f6"
@@ -156,13 +168,22 @@ export function RadarChart({
               />
               <text
                 x={pt.x}
-                y={pt.y - 15}
+                y={pt.y - 25}
                 textAnchor="middle"
-                fontSize="12"
+                fontSize="11"
                 fontWeight="bold"
                 fill="#3b82f6"
               >
-                {pt.value?.toFixed(1)}
+                You: {pt.value?.toFixed(1)}
+              </text>
+              <text
+                x={pt.x}
+                y={pt.y - 12}
+                textAnchor="middle"
+                fontSize="11"
+                fill={theme === 'light' ? '#6b7280' : '#9ca3af'}
+              >
+                Avg: {avgPoints[i]?.value?.toFixed(1)}
               </text>
             </g>
           )}

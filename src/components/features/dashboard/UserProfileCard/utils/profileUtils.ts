@@ -11,11 +11,11 @@ export function getProfileInfoItems(userProfile: UserProfile): ProfileInfoItem[]
 }
 
 export function getCareerInsightContent(careerInsight: any, isLoading: boolean): string {
-  if (isLoading) {
-    return "Analyzing your career trajectory...";
-  }
+  // 기본값을 먼저 표시하고, AI 응답이 오면 업데이트
+  const defaultInsight = "You're on track for a 3-5% salary increase. Consider trauma specialization for additional 8-12% market value.";
+  
   if (careerInsight?.content) {
     return careerInsight.content;
   }
-  return "You're on track for a 3-5% salary increase. Consider trauma specialization for additional 8-12% market value.";
+  return defaultInsight;
 }

@@ -35,10 +35,11 @@ function CompensationAnalysis({
     weekendDifferential,
     specialtyDifferential,
     totalMonthlyDifferentials,
-    totalMonthly
+    totalMonthly,
+    differentialAmounts
   } = calculateMonthlyCompensation(
     editedProfile?.annualSalary || 0, 
-    editedProfile?.differentials || {}
+    editedProfile?.differentials || []
   );
 
   const potentialDifferentials = calculatePotentialDifferentials();
@@ -81,9 +82,7 @@ function CompensationAnalysis({
           isEditing={isEditing}
           editedProfile={editedProfile}
           setEditedProfile={setEditedProfile}
-          nightDifferential={nightDifferential}
-          weekendDifferential={weekendDifferential}
-          specialtyDifferential={specialtyDifferential}
+          differentialAmounts={differentialAmounts}
         />
 
         <AIInsights
