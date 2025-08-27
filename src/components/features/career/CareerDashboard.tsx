@@ -48,22 +48,21 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   const { data: careerHistoryData, isLoading: isCareerLoading } = useCareerHistory();
   const { data: compensationData, isLoading: isCompensationLoading } = useMyCompensation();
 
-  // Transform API data and remove duplicates
+  // Transform API data and remove duplicates - Optimized O(n) complexity
   useEffect(() => {
     if (careerHistoryData) {
-      // Remove duplicates based on all fields except id
-      const uniqueData = careerHistoryData.filter((item, index, self) => 
-        index === self.findIndex((t) => (
-          t.facility === item.facility &&
-          t.role === item.role &&
-          t.specialty === item.specialty &&
-          t.startDate === item.startDate &&
-          t.endDate === item.endDate &&
-          t.hourlyRate === item.hourlyRate
-        ))
-      );
+      // Use Map for O(n) duplicate removal instead of O(n²) findIndex
+      const uniqueMap = new Map<string, typeof careerHistoryData[0]>();
       
-      const transformedData = uniqueData.map((item, index) => ({
+      careerHistoryData.forEach(item => {
+        // Create unique key from all relevant fields
+        const key = `${item.facility}-${item.role}-${item.specialty}-${item.startDate}-${item.endDate}-${item.hourlyRate}`;
+        if (!uniqueMap.has(key)) {
+          uniqueMap.set(key, item);
+        }
+      });
+      
+      const transformedData = Array.from(uniqueMap.values()).map((item, index) => ({
         id: index + 1,
         facility: item.facility,
         role: item.role,
@@ -94,21 +93,21 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       toast.error('Facility & Role are required!');
       return;
     }
-    const nextId = careerData.length
-      ? Math.max(...careerData.map((d) => d.id)) + 1
-      : 1;
-    setCareerData((prev) => [
-      ...prev,
-      {
-        id: nextId,
-        facility: newItem.facility,
-        role: newItem.role,
-        specialty: newItem.specialty,
-        startDate: newItem.startDate || new Date(),
-        endDate: newItem.endDate || null,
-        hourlyRate: parseFloat(newItem.hourlyRate || '0'),
-      },
-    ]);
+    setCareerData((prev) => {
+      const nextId = prev.length ? Math.max(...prev.map((d) => d.id)) + 1 : 1;
+      return [
+        ...prev,
+        {
+          id: nextId,
+          facility: newItem.facility,
+          role: newItem.role,
+          specialty: newItem.specialty,
+          startDate: newItem.startDate || new Date(),
+          endDate: newItem.endDate || null,
+          hourlyRate: parseFloat(newItem.hourlyRate || '0'),
+        },
+      ];
+    });
     // reset
     setNewItem({
       facility: '',
@@ -119,9 +118,9 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       hourlyRate: '',
     });
     setFormVisible(false);
-  }, [careerData, newItem]);
+  }, [newItem]); // Removed careerData dependency - not needed with functional update
 
-  const handleEdit = (id: number) => {
+  const handleEdit = useCallback((id: number) => {
     const itemToEdit = careerData.find((item) => item.id === id);
     if (itemToEdit) {
       setNewItem({
@@ -135,9 +134,9 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       setEditingItemId(id);
       setFormVisible(true);
     }
-  };
+  }, [careerData]);
 
-  const handleUpdate = () => {
+  const handleUpdate = useCallback(() => {
     if (editingItemId === null) return;
 
     setCareerData((prev) =>
@@ -167,9 +166,9 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
     });
     setEditingItemId(null);
     setFormVisible(false);
-  };
+  }, [editingItemId, newItem]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     setNewItem({
       facility: '',
       role: '',
@@ -180,16 +179,16 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
     });
     setEditingItemId(null);
     setFormVisible(false);
-  };
+  }, []);
 
-  const handleDelete = (id: number) => {
+  const handleDelete = useCallback((id: number) => {
     // TODO: Replace with a proper confirmation modal
     // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete this career entry?')) {
       setCareerData((prev) => prev.filter((item) => item.id !== id));
       toast.success('Career entry deleted successfully');
     }
-  };
+  }, []);
 
   // AI helpers
   const getAiRoleRecommendation = () => {
@@ -220,19 +219,19 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
     return data;
   };
 
-  const handleAiSuggest = () => {
+  const handleAiSuggest = useCallback(() => {
     const { role, specialty, reason } = getAiRoleRecommendation();
     setNewItem((prev) => ({ ...prev, role, specialty }));
     setAiReason(reason);
-  };
+  }, []);
 
-  const handleSalaryTrend = () => {
+  const handleSalaryTrend = useCallback(() => {
     setTrendData(getAiSalaryTrend());
     setShowTrend(true);
-  };
+  }, []);
 
-  const handleCloseAiModal = () => setAiReason(null);
-  const handleCloseTrend = () => setShowTrend(false);
+  const handleCloseAiModal = useCallback(() => setAiReason(null), []);
+  const handleCloseTrend = useCallback(() => setShowTrend(false), []);
 
   // Computed values
   const { sortedCareerData, totalYears, remainingMonths, highestHourlyRate, totalPositions, currentRole } = useMemo(() => {
@@ -344,19 +343,12 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
           />
         </Suspense>
 
-        {/* Control Panel */}
-        <Suspense fallback={
-          <div className="flex justify-between items-center animate-pulse">
-            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
-            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
-          </div>
-        }>
-          <CareerControlPanel
-            theme={theme}
-            formVisible={formVisible}
-            setFormVisible={setFormVisible}
-          />
-        </Suspense>
+        {/* Control Panel - No Suspense needed for static import */}
+        <CareerControlPanel
+          theme={theme}
+          formVisible={formVisible}
+          setFormVisible={setFormVisible}
+        />
         
         {/* Career Form */}
         <AnimatePresence>

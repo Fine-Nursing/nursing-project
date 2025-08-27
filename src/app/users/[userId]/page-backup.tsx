@@ -89,11 +89,14 @@ export default function UserPage() {
 
   const calculatePotentialDifferentials = () => {
     const opportunities = [];
-    if (compensationData) {
-      if (!compensationData.differentials?.night || compensationData.differentials.night < 3) {
+    if (compensationData?.differentials) {
+      const nightDiff = compensationData.differentials.find(d => d.type === 'night');
+      const weekendDiff = compensationData.differentials.find(d => d.type === 'weekend');
+      
+      if (!nightDiff || nightDiff.value < 3) {
         opportunities.push('Night shift differential: +$3-5/hr potential');
       }
-      if (!compensationData.differentials?.weekend || compensationData.differentials.weekend < 2) {
+      if (!weekendDiff || weekendDiff.value < 2) {
         opportunities.push('Weekend differential: +$2-4/hr potential');
       }
       if (profileData?.specialty === 'ICU' || profileData?.specialty === 'ER') {
@@ -182,7 +185,7 @@ export default function UserPage() {
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} min-h-[384px] animate-pulse`} />
             }>
               <CompensationAnalysis
-                userProfile={compensationData || { hourlyRate: 0, annualSalary: 0, differentials: { night: 0, weekend: 0, other: 0 } }}
+                userProfile={compensationData || { hourlyRate: 0, annualSalary: 0, differentials: [] }}
                 theme={theme}
                 getCompensationInsight={getCompensationInsight}
                 calculatePotentialDifferentials={calculatePotentialDifferentials}

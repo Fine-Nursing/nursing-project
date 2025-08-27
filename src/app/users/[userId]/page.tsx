@@ -23,33 +23,21 @@ const PredictiveCompChart = lazy(() => import('src/components/features/dashboard
 const AiCareerInsights = lazy(() => import('src/components/features/dashboard/AiCareerInsights'));
 const NextSteps = lazy(() => import('src/components/features/dashboard/NextSteps'));
 
-// 목 데이터
-const mockMetrics = {
-  totalCompensation: 8.5,
-  workload: 7.2,
-  experienceLevel: 8.0,
-  careerGrowth: 7.5,
-  marketCompetitiveness: 8.8,
-};
-
-const regionalAverages = {
-  hourlyRate: 33.2,
-  annualSalary: 69056,
-  metrics: {
-    totalCompensation: 6.5,
-    workload: 6.0,
-    experienceLevel: 6.5,
-    careerGrowth: 6.2,
-    marketCompetitiveness: 6.8,
-  },
+// 기본값 - 실제 데이터가 없을 때만 사용
+const defaultMetrics = {
+  pay: 6.5,
+  hospitalQuality: 7.0,
+  hospitalCulture: 6.8,
+  growthOpportunities: 6.5,
+  benefits: 7.2,
 };
 
 const metricAnalysis: Record<string, string> = {
-  totalCompensation: 'Your total compensation including differentials is above regional average.',
-  workload: 'Your nurse-to-patient ratio indicates a manageable workload.',
-  experienceLevel: 'Your experience level is well-matched with regional standards.',
-  careerGrowth: 'Your salary progression aligns well with your years of experience.',
-  marketCompetitiveness: 'Your compensation is competitive within your specialty and region.',
+  pay: 'Your total compensation including differentials compared to regional average.',
+  hospitalQuality: 'Hospital quality rating based on your evaluation of care standards and facilities.',
+  hospitalCulture: 'Work environment and team dynamics including shift flexibility.',
+  growthOpportunities: 'Career advancement and professional development opportunities.',
+  benefits: 'Healthcare, retirement, and other benefits package quality.',
 };
 
 export default function UserPage() {
@@ -63,20 +51,54 @@ export default function UserPage() {
   // API 호출
   const { data: profileData, error: profileError, refetch: refetchProfile } = useMyProfile();
   const { data: compensationData, error: compensationError, refetch: refetchCompensation } = useMyCompensation();
-  const { data: wageDistributionData, error: wageDistributionError } = useWageDistribution();
+  
+  // 사용자 정보 기반으로 wage distribution 호출
+  const userSpecialty = profileData?.specialty || '';
+  const userState = profileData?.location?.split(',')[1]?.trim() || ''; // "City, State" 형식에서 State 추출
+  
+  const { data: wageDistributionData, error: wageDistributionError, isLoading: isWageDistributionLoading } = useWageDistribution({
+    specialty: userSpecialty,
+    state: userState,
+  });
+  
   const { data: metricsData, isLoading: isMetricsLoading, error: metricsError } = useUserMetrics();
   useDifferentialsSummary();
+  
+  // 디버깅용 로깅
+  React.useEffect(() => {
+    if (metricsData) {
+      console.log('📊 Metrics Data:', {
+        userMetrics: metricsData.userMetrics,
+        regionalAverageMetrics: metricsData.regionalAverageMetrics
+      });
+    }
+  }, [metricsData]);
 
   // 데이터 처리
   const enhancedPayData = React.useMemo(() => {
     if (!wageDistributionData?.payDistributionData) return [];
-    return wageDistributionData.payDistributionData.map((item) => ({
-      ...item,
-      isUser: compensationData && Math.round(compensationData.hourlyRate) === item.wageValue,
-    }));
+    
+    // 사용자의 임금 범위 찾기 (예: $37 -> $35-40 범위)
+    const userRate = compensationData?.hourlyRate;
+    
+    return wageDistributionData.payDistributionData.map((item) => {
+      // wageValue는 범위의 중간값 (예: 37.5는 $35-40 범위)
+      // label이 "$35-40" 형태일 때, 사용자가 이 범위에 속하는지 확인
+      if (userRate && item.label) {
+        const match = item.label.match(/\$(\d+)-(\d+)/);
+        if (match) {
+          const min = parseInt(match[1]);
+          const max = parseInt(match[2]);
+          if (userRate >= min && userRate < max) {
+            return { ...item, isUser: true };
+          }
+        }
+      }
+      return { ...item, isUser: false };
+    });
   }, [wageDistributionData, compensationData]);
 
-  const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || regionalAverages.hourlyRate;
+  const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || 35;
   const actualRegionalAvgAnnualSalary = actualRegionalAvgHourlyRate * 2080;
 
   const calculateDifference = (user: number, avg: number) => Math.round(((user - avg) / avg) * 100);
@@ -91,11 +113,14 @@ export default function UserPage() {
 
   const calculatePotentialDifferentials = () => {
     const opportunities = [];
-    if (compensationData) {
-      if (!compensationData.differentials?.night || compensationData.differentials.night < 3) {
+    if (compensationData?.differentials) {
+      const nightDiff = compensationData.differentials.find(d => d.type === 'night');
+      const weekendDiff = compensationData.differentials.find(d => d.type === 'weekend');
+      
+      if (!nightDiff || nightDiff.value < 3) {
         opportunities.push('Night shift differential: +$3-5/hr potential');
       }
-      if (!compensationData.differentials?.weekend || compensationData.differentials.weekend < 2) {
+      if (!weekendDiff || weekendDiff.value < 2) {
         opportunities.push('Weekend differential: +$2-4/hr potential');
       }
       if (profileData?.specialty === 'ICU' || profileData?.specialty === 'ER') {
@@ -223,14 +248,44 @@ export default function UserPage() {
               </div>
             }>
               <CompensationAnalysis
-                userProfile={compensationData || { hourlyRate: 0, annualSalary: 0, differentials: { night: 0, weekend: 0, other: 0 } }}
+                userProfile={compensationData || { hourlyRate: 0, annualSalary: 0, differentials: [] }}
                 theme={theme}
                 getCompensationInsight={getCompensationInsight}
                 calculatePotentialDifferentials={calculatePotentialDifferentials}
               />
             </Suspense>
             
-            <Suspense fallback={
+            {/* Radar Analytics - 데이터 로딩 완료 후에만 렌더링 */}
+            {!isMetricsLoading && metricsData ? (
+              <Suspense fallback={
+                <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
+                  <div className="p-4 sm:p-6 space-y-6">
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
+                    <div className="flex justify-center items-center h-64">
+                      <div className="w-48 h-48 bg-gray-200 dark:bg-slate-700 rounded-full relative">
+                        <div className="absolute inset-8 bg-gray-300 dark:bg-slate-600 rounded-full"></div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {[1,2,3,4].map(i => (
+                        <div key={i} className="h-4 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              }>
+                <RadarAnalytics
+                  userMetrics={metricsData.userMetrics || defaultMetrics}
+                  avgMetrics={metricsData.regionalAverageMetrics || defaultMetrics}
+                  theme={theme}
+                  metricAnalysis={metricAnalysis}
+                  userId={userId}
+                  isLoading={false}
+                  error={metricsError}
+                />
+              </Suspense>
+            ) : (
+              // 로딩 중일 때 Skeleton 표시
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                 <div className="p-4 sm:p-6 space-y-6">
                   <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
@@ -246,17 +301,7 @@ export default function UserPage() {
                   </div>
                 </div>
               </div>
-            }>
-              <RadarAnalytics
-                userMetrics={metricsData?.userMetrics || mockMetrics}
-                avgMetrics={metricsData?.regionalAverageMetrics || regionalAverages.metrics}
-                theme={theme}
-                metricAnalysis={metricAnalysis}
-                userId={userId}
-                isLoading={isMetricsLoading}
-                error={metricsError}
-              />
-            </Suspense>
+            )}
           </div>
 
           {/* Predictive Compensation Chart */}
@@ -279,12 +324,32 @@ export default function UserPage() {
                 </div>
               </div>
             }>
-              <PredictiveCompChart
-                payDistributionData={enhancedPayData}
-                userHourlyRate={compensationData?.hourlyRate || 0}
-                regionalAvgWage={actualRegionalAvgHourlyRate}
-                theme={theme}
-              />
+              {!isWageDistributionLoading && wageDistributionData && profileData ? (
+                <PredictiveCompChart
+                  payDistributionData={enhancedPayData}
+                  userHourlyRate={compensationData?.hourlyRate || 0}
+                  regionalAvgWage={actualRegionalAvgHourlyRate}
+                  theme={theme}
+                  userSpecialty={userSpecialty}
+                  userState={userState}
+                />
+              ) : (
+                <div className={`${
+                  theme === 'light' ? 'bg-white' : 'bg-slate-800'
+                } rounded-xl shadow-lg border ${
+                  theme === 'light' ? 'border-gray-200' : 'border-slate-700'
+                } p-8`}>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
+                    <div className="h-64 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Suspense>
           </div>
 

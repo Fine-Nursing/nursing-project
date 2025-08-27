@@ -6,7 +6,7 @@ export function useCompensationState(initialProfile: UserProfile | null | undefi
   const [editedProfile, setEditedProfile] = useState(initialProfile || {
     annualSalary: 0,
     hourlyRate: 0,
-    differentials: { night: 0, weekend: 0, other: 0 }
+    differentials: []
   });
 
   // initialProfile이 변경되면 editedProfile도 업데이트
@@ -24,7 +24,7 @@ export function useCompensationState(initialProfile: UserProfile | null | undefi
     setEditedProfile(initialProfile || {
       annualSalary: 0,
       hourlyRate: 0,
-      differentials: { night: 0, weekend: 0, other: 0 }
+      differentials: []
     });
     setIsEditing(false);
   };

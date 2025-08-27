@@ -2,16 +2,22 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
 import { LoadingState } from 'src/components/ui/feedback';
-import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  type TooltipProps,
-} from 'recharts';
+import type { TooltipProps } from 'recharts';
+// Optimized imports - tree-shakable for reduced bundle size
+// @ts-ignore
+import { ResponsiveContainer } from 'recharts/es6/component/ResponsiveContainer';
+// @ts-ignore
+import { BarChart } from 'recharts/es6/chart/BarChart';
+// @ts-ignore
+import { Bar } from 'recharts/es6/cartesian/Bar';
+// @ts-ignore
+import { XAxis } from 'recharts/es6/cartesian/XAxis';
+// @ts-ignore
+import { YAxis } from 'recharts/es6/cartesian/YAxis';
+// @ts-ignore
+import { CartesianGrid } from 'recharts/es6/cartesian/CartesianGrid';
+// @ts-ignore
+import { Tooltip } from 'recharts/es6/component/Tooltip';
 import useCareerProgression from 'src/api/useCareerProgression';
 
 import type { CareerItem } from './types';
@@ -202,7 +208,7 @@ export default function ProgressionBarChart({
                 fill: chartTextColor,
               }}
               tick={{ fill: chartTextColor, fontSize: 11 }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value: number) => `$${(value / 1000).toFixed(0)}k`}
               interval={0}
               domain={[0, (dataMax: number) => Math.ceil((dataMax * 1.4) / 10000) * 10000]}
             />

@@ -1,15 +1,13 @@
 import React from 'react';
-import { Moon, Calendar, Activity, Plus } from 'lucide-react';
-import type { UserProfile } from '../types';
+import { Moon, Calendar, Activity, Heart, Shield, Brain, Baby, AlertTriangle, Plus } from 'lucide-react';
+import type { UserProfile, DifferentialDetail } from '../types';
 
 interface DifferentialBreakdownProps {
   theme: 'light' | 'dark';
   isEditing: boolean;
   editedProfile: UserProfile;
   setEditedProfile: (profile: UserProfile) => void;
-  nightDifferential: number;
-  weekendDifferential: number;
-  specialtyDifferential: number;
+  differentialAmounts?: Array<DifferentialDetail & { monthlyAmount: number }>;
 }
 
 export function DifferentialBreakdown({
@@ -17,10 +15,40 @@ export function DifferentialBreakdown({
   isEditing,
   editedProfile,
   setEditedProfile,
-  nightDifferential,
-  weekendDifferential,
-  specialtyDifferential
+  differentialAmounts = []
 }: DifferentialBreakdownProps) {
+  const getIcon = (type: string) => {
+    const iconMap: Record<string, React.ElementType> = {
+      'night': Moon,
+      'weekend': Calendar,
+      'critical_care': Activity,
+      'trauma': AlertTriangle,
+      'pediatric': Baby,
+      'cardiac': Heart,
+      'emergency': Shield,
+      'neuro': Brain,
+      'oncology': Shield,
+      'other': Activity
+    };
+    return iconMap[type] || Activity;
+  };
+
+  const getIconColor = (type: string) => {
+    const colorMap: Record<string, string> = {
+      'night': 'emerald',
+      'weekend': 'emerald',
+      'critical_care': 'orange',
+      'trauma': 'red',
+      'pediatric': 'purple',
+      'cardiac': 'red',
+      'emergency': 'orange',
+      'neuro': 'indigo',
+      'oncology': 'pink',
+      'other': 'blue'
+    };
+    return colorMap[type] || 'gray';
+  };
+
   return (
     <div>
       <h3 className={`text-sm font-semibold mb-3 ${
@@ -34,62 +62,37 @@ export function DifferentialBreakdown({
           ? 'bg-gray-50 border-gray-200 divide-gray-200' 
           : 'bg-slate-900/30 border-slate-700 divide-slate-700'
       }`}>
-        {/* Night Shift */}
-        <DifferentialItem
-          theme={theme}
-          isEditing={isEditing}
-          icon={Moon}
-          iconColor="emerald"
-          title="Night Shift"
-          description="11 PM - 7 AM • ~60 hrs/month"
-          value={editedProfile?.differentials?.night || 0}
-          monthlyAmount={nightDifferential}
-          onChange={(value) => setEditedProfile({
-            ...editedProfile,
-            differentials: {
-              ...editedProfile?.differentials,
-              night: value
-            }
-          })}
-        />
-
-        {/* Weekend */}
-        <DifferentialItem
-          theme={theme}
-          isEditing={isEditing}
-          icon={Calendar}
-          iconColor="emerald"
-          title="Weekend"
-          description="Sat & Sun • ~32 hrs/month"
-          value={editedProfile?.differentials?.weekend || 0}
-          monthlyAmount={weekendDifferential}
-          onChange={(value) => setEditedProfile({
-            ...editedProfile,
-            differentials: {
-              ...editedProfile?.differentials,
-              weekend: value
-            }
-          })}
-        />
-
-        {/* Critical Care */}
-        <DifferentialItem
-          theme={theme}
-          isEditing={isEditing}
-          icon={Activity}
-          iconColor="orange"
-          title="Critical Care"
-          description="ICU/ER/OR • ~20 hrs/month"
-          value={editedProfile?.differentials?.other || 0}
-          monthlyAmount={specialtyDifferential}
-          onChange={(value) => setEditedProfile({
-            ...editedProfile,
-            differentials: {
-              ...editedProfile?.differentials,
-              other: value
-            }
-          })}
-        />
+        {differentialAmounts.length > 0 ? (
+          differentialAmounts.map((differential, index) => (
+            <DifferentialItem
+              key={differential.type}
+              theme={theme}
+              isEditing={isEditing}
+              icon={getIcon(differential.type)}
+              iconColor={getIconColor(differential.type)}
+              title={differential.label}
+              description={differential.description}
+              value={differential.value}
+              monthlyAmount={differential.monthlyAmount}
+              onChange={(value) => {
+                const newDifferentials = [...editedProfile.differentials];
+                newDifferentials[index] = { ...newDifferentials[index], value };
+                setEditedProfile({
+                  ...editedProfile,
+                  differentials: newDifferentials
+                });
+              }}
+            />
+          ))
+        ) : (
+          <div className="p-4 text-center">
+            <p className={`text-sm ${
+              theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+            }`}>
+              No active differentials
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

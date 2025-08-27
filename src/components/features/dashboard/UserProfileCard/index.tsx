@@ -16,7 +16,10 @@ function UserProfileCard({
   userProfile,
   theme,
 }: UserProfileCardProps) {
-  const { data: careerInsight, isLoading } = useAiInsight('nurse_summary', userProfile?.id);
+  // AI API 호출 제거 - 정적 텍스트 사용으로 성능 개선
+  // const { data: careerInsight, isLoading } = useAiInsight('nurse_summary', userProfile?.id);
+  const careerInsight = null;
+  const isLoading = false;
   
   const {
     showAvatarPicker,

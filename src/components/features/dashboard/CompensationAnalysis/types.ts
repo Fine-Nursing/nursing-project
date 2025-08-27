@@ -1,11 +1,15 @@
+export interface DifferentialDetail {
+  type: string;
+  label: string;
+  value: number;
+  estimatedHours: number;
+  description: string;
+}
+
 export interface UserProfile {
   hourlyRate: number;
   annualSalary: number;
-  differentials: {
-    night: number;
-    weekend: number;
-    other: number;
-  };
+  differentials: DifferentialDetail[];
 }
 
 export interface CompensationAnalysisProps {
