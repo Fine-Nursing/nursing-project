@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { metricDisplayNames, metricIcons } from '../types';
 import type { MetricCardProps } from '../types';
 
@@ -17,7 +17,7 @@ export function MetricCard({
   const isPositive = Number(diff) > 0;
 
   return (
-    <motion.div
+    <m.div
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className={`p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all min-h-[100px] sm:min-h-[120px] flex flex-col justify-between ${
@@ -53,6 +53,6 @@ export function MetricCard({
           {userValue.toFixed(1)}
         </p>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

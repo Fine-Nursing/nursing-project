@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTheme } from 'src/hooks/useTheme';
 import { calculateRadarPoints, createPolygonPoints } from '../utils';
 import { metricDisplayNames } from '../types';
@@ -86,7 +86,7 @@ export function RadarChart({
       })}
 
       {/* Average polygon */}
-      <motion.polygon
+      <m.polygon
         points={createPolygonPoints(avgPoints)}
         fill="none"
         stroke={theme === 'light' ? '#9ca3af' : '#6b7280'}
@@ -98,7 +98,7 @@ export function RadarChart({
       />
 
       {/* User polygon */}
-      <motion.polygon
+      <m.polygon
         points={createPolygonPoints(userPoints)}
         fill="url(#userGradient)"
         stroke="#3b82f6"
@@ -117,7 +117,7 @@ export function RadarChart({
       {/* Data points */}
       {userPoints.map((pt, i) => (
         <g key={pt.label}>
-          <motion.circle
+          <m.circle
             cx={pt.x}
             cy={pt.y}
             r="5"

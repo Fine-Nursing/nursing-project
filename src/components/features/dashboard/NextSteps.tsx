@@ -70,12 +70,12 @@ export default function NextSteps({ theme }: NextStepsProps) {
     }
 
     // skill_transfer에서 기회 추출
-    const skillTransfer = insights?.skillTransfer?.content;
+    const skillTransfer = (insights?.skillTransfer as any)?.content;
     if (skillTransfer) {
-      const transferLines = skillTransfer.split('•').map(line => line.trim()).filter(Boolean);
+      const transferLines = skillTransfer.split('•').map((line: string) => line.trim()).filter(Boolean);
       
       if (transferLines.length > 0) {
-        transferLines.slice(0, 2).forEach(line => {
+        transferLines.slice(0, 2).forEach((line: string) => {
           if (line.includes('+$') || line.includes('specialty')) {
             steps.push(`Explore transition to: ${line}`);
           }
@@ -92,9 +92,9 @@ export default function NextSteps({ theme }: NextStepsProps) {
     }
 
     // culture에서 개선점 추출
-    const culture = insights?.culture?.content;
+    const culture = (insights?.culture as any)?.content;
     if (culture) {
-      const cultureLines = culture.split('•').map(line => line.trim()).filter(Boolean);
+      const cultureLines = culture.split('•').map((line: string) => line.trim()).filter(Boolean);
       if (cultureLines.length > 0) {
         steps.push('Address work environment factors based on your assessment');
       }

@@ -35,7 +35,7 @@ function LoginForm({ onSuccess, onSubmit, isLoading: externalLoading }: LoginFor
       try {
         await onSubmit({ email: formData.email, password: formData.password });
         onSuccess?.();
-      } catch (err: any) {
+      } catch {
         // Error handling is done by parent component
       }
     } else {

@@ -45,7 +45,7 @@ export function StatsGrid({
             <input
               type="number"
               step="0.01"
-              value={editedProfile.hourlyRate}
+              value={editedProfile?.hourlyRate || 0}
               onChange={(e) => setEditedProfile({
                 ...editedProfile,
                 hourlyRate: parseFloat(e.target.value) || 0,
@@ -64,7 +64,7 @@ export function StatsGrid({
             <span className={`text-base sm:text-2xl font-bold ${
               theme === 'light' ? 'text-gray-900' : 'text-white'
             }`}>
-              ${editedProfile.hourlyRate.toFixed(2)}
+              ${(editedProfile?.hourlyRate || 0).toFixed(2)}
             </span>
             <span className={`text-[10px] sm:text-sm ${
               theme === 'light' ? 'text-gray-500' : 'text-gray-400'
@@ -131,7 +131,7 @@ export function StatsGrid({
           <span className={`text-base sm:text-2xl font-bold ${
             theme === 'light' ? 'text-gray-900' : 'text-white'
           }`}>
-            ${formatNumber(editedProfile.annualSalary)}
+            ${formatNumber(editedProfile?.annualSalary || 0)}
           </span>
           <span className={`text-[10px] sm:text-sm ${
             theme === 'light' ? 'text-gray-500' : 'text-gray-400'

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { CircleDollarSign, TrendingUp } from 'lucide-react';
 import { formatNumber } from '../utils';
 
@@ -74,7 +74,7 @@ export function PrimaryCompensationDisplay({
           </span>
         </div>
         <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-          <motion.div 
+          <m.div 
             className="h-full bg-gradient-to-r from-blue-500 to-indigo-500"
             initial={{ width: 0 }}
             animate={{ width: `${(monthlyBase / totalMonthly) * 100}%` }}

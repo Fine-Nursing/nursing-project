@@ -13,12 +13,12 @@ export const formatNumber = (num: number): string => {
 
 export const calculateMonthlyCompensation = (
   annualSalary: number,
-  differentials: { night: number; weekend: number; other: number }
+  differentials: { night?: number; weekend?: number; other?: number } = {}
 ) => {
   const monthlyBase = Math.round(annualSalary / 12);
-  const nightDifferential = differentials.night * 60;
-  const weekendDifferential = differentials.weekend * 32;
-  const specialtyDifferential = differentials.other * 20;
+  const nightDifferential = (differentials?.night || 0) * 60;
+  const weekendDifferential = (differentials?.weekend || 0) * 32;
+  const specialtyDifferential = (differentials?.other || 0) * 20;
   const totalMonthlyDifferentials = nightDifferential + weekendDifferential + specialtyDifferential;
   const totalMonthly = monthlyBase + totalMonthlyDifferentials;
 

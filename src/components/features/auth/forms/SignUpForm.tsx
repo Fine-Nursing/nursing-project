@@ -56,16 +56,17 @@ function SignUpForm({ onSuccess, onSubmit, isLoading: externalLoading }: SignUpF
       return;
     }
 
-    console.log('SignUpForm handleSubmit called, onSubmit:', onSubmit);
+    // SignUpForm handleSubmit called
     
     if (onSubmit) {
       // Use external submit handler (기존 로직)
       try {
-        console.log('Calling onSubmit with data:', {
+        // Calling onSubmit with data
+        /* {
           email: formData.email,
           firstName: formData.firstName,
           lastName: formData.lastName
-        });
+        } */
         await onSubmit({
           email: formData.email,
           password: formData.password,
@@ -73,13 +74,13 @@ function SignUpForm({ onSuccess, onSubmit, isLoading: externalLoading }: SignUpF
           lastName: formData.lastName,
         });
         onSuccess?.();
-      } catch (err: any) {
-        console.error('SignUp error:', err);
+      } catch {
+        // SignUp error
         // Error handling is done by parent component
       }
     } else {
       // Fallback to internal logic (if needed)
-      console.error('No onSubmit handler provided!');
+      // No onSubmit handler provided!
       setInternalLoading(true);
       try {
         toast.error('No authentication handler provided');
@@ -223,7 +224,7 @@ function SignUpForm({ onSuccess, onSubmit, isLoading: externalLoading }: SignUpF
             type={showConfirmPassword ? 'text' : 'password'}
             value={formData.confirmPassword}
             onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-            className={`w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors border-gray-300`}
+            className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors border-gray-300"
             placeholder="Re-enter your password"
             disabled={isLoading}
             required

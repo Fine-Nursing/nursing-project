@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { memo } from 'react';
+import { m } from 'framer-motion';
 import type { CompensationAnalysisProps } from './types';
 import { calculateMonthlyCompensation } from './utils';
 import { useCompensationState } from './hooks';
@@ -14,7 +14,7 @@ import {
   ActionButtons
 } from './components';
 
-export default function CompensationAnalysis({
+function CompensationAnalysis({
   userProfile,
   theme,
   getCompensationInsight,
@@ -36,12 +36,15 @@ export default function CompensationAnalysis({
     specialtyDifferential,
     totalMonthlyDifferentials,
     totalMonthly
-  } = calculateMonthlyCompensation(editedProfile.annualSalary, editedProfile.differentials);
+  } = calculateMonthlyCompensation(
+    editedProfile?.annualSalary || 0, 
+    editedProfile?.differentials || {}
+  );
 
   const potentialDifferentials = calculatePotentialDifferentials();
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -96,6 +99,8 @@ export default function CompensationAnalysis({
           onCancel={handleCancel}
         />
       </div>
-    </motion.div>
+    </m.div>
   );
 }
+
+export default memo(CompensationAnalysis);

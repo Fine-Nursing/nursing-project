@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Star, TrendingUp } from 'lucide-react';
 
 interface CareerHeaderProps {

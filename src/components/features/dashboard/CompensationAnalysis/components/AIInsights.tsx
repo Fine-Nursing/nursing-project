@@ -18,8 +18,8 @@ export function AIInsights({
   const { data: insights, isLoading } = useAllAiInsights(user?.id);
   
   // AI API에서 가져온 데이터가 있으면 사용, 없으면 기존 로직 사용
-  const nurseSummary = insights?.nurseSummary?.content;
-  const skillTransfer = insights?.skillTransfer?.content;
+  const nurseSummary = (insights?.nurseSummary as any)?.content;
+  const skillTransfer = (insights?.skillTransfer as any)?.content;
   
   const displayInsight = nurseSummary || getCompensationInsight();
   

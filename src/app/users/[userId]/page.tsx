@@ -2,14 +2,14 @@
 
 import React, { useState, lazy, Suspense } from 'react';
 import { LazyMotion } from 'framer-motion';
-import motionFeatures from 'src/lib/framer-motion-features';
+import motionFeatures from '../../../lib/framer-motion-features';
 import { useRouter, useParams } from 'next/navigation';
 import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 
 import { useMyProfile } from 'src/api/useProfileData';
-import UserProfileCardSkeleton from 'src/components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
+import UserProfileCardSkeleton from '../../../components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
 import { useMyCompensation } from 'src/api/useCompensation';
 import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';

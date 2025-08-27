@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Edit2 } from 'lucide-react';
 
 interface ProfileHeaderProps {
@@ -11,7 +11,7 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ name, role, theme }: ProfileHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 text-center sm:text-left">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
@@ -22,8 +22,8 @@ export function ProfileHeader({ name, role, theme }: ProfileHeaderProps) {
         <p className={`text-base ${theme === 'light' ? 'text-gray-500' : 'text-gray-400'} mt-1`}>
           {role}
         </p>
-      </motion.div>
-      <motion.button 
+      </m.div>
+      <m.button 
         className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all mx-auto sm:mx-0 mt-2 sm:mt-0 ${
           theme === 'light' 
             ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' 
@@ -37,7 +37,7 @@ export function ProfileHeader({ name, role, theme }: ProfileHeaderProps) {
       >
         <Edit2 className="w-4 h-4" />
         Edit Profile
-      </motion.button>
+      </m.button>
     </div>
   );
 }

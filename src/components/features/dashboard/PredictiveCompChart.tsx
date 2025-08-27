@@ -75,6 +75,18 @@ export default function PredictiveCompChart({
   regionalAvgWage,
   theme,
 }: PredictiveCompChartProps) {
+  // 디버깅용 로그
+  if (!payDistributionData || payDistributionData.length === 0) {
+    return (
+      <div className={`${
+        theme === 'light' ? 'bg-white' : 'bg-slate-800'
+      } rounded-xl shadow-lg border ${
+        theme === 'light' ? 'border-gray-200' : 'border-slate-700'
+      } p-6`}>
+        <p className="text-center text-gray-500">No wage distribution data available</p>
+      </div>
+    );
+  }
   // theme에 따라 적절한 렌더러 함수 선택
   const tooltipRenderer = React.useMemo(
     () => createTooltipRenderer(theme),
@@ -169,9 +181,7 @@ export default function PredictiveCompChart({
                 stroke={theme === 'light' ? '#f3f4f6' : '#374151'}
               />
               <XAxis
-                type="number"
-                dataKey="wageValue"
-                domain={xDomain}
+                dataKey="label"
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
                   fontSize: 9,
@@ -188,7 +198,6 @@ export default function PredictiveCompChart({
                 }}
               />
               <YAxis
-                dataKey="count"
                 domain={yDomain}
                 tick={{
                   fill: theme === 'light' ? '#6b7280' : '#e5e7eb',
