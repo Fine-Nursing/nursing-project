@@ -1,18 +1,21 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
+import { lazy, Suspense } from 'react';
 import useInitializeOnboarding from 'src/api/onboarding/useInitializeOnboarding';
-import AccountForm from 'src/components/features/onboarding/AccountForm';
-import BasicInfoForm from 'src/components/features/onboarding/BasicInfoForm';
-import CultureForm from 'src/components/features/onboarding/CultureForm';
-import EmploymentForm from 'src/components/features/onboarding/EmploymentForm';
-import WelcomePage from 'src/components/features/onboarding/WelcomePage';
-import StepTransition from 'src/components/features/onboarding/components/StepTransition';
 import { LoadingState } from 'src/components/ui/feedback';
 import { ONBOARDING_STEPS } from 'src/constants/onboarding';
 import useOnboardingStore from 'src/store/onboardingStores';
 import type { OnboardingStep } from 'src/types/onboarding';
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
+
+// Dynamic imports - 각 Form은 필요할 때만 로드
+const WelcomePage = lazy(() => import('src/components/features/onboarding/WelcomePage'));
+const BasicInfoForm = lazy(() => import('src/components/features/onboarding/BasicInfoForm'));
+const EmploymentForm = lazy(() => import('src/components/features/onboarding/EmploymentForm'));
+const CultureForm = lazy(() => import('src/components/features/onboarding/CultureForm'));
+const AccountForm = lazy(() => import('src/components/features/onboarding/AccountForm'));
+const StepTransition = lazy(() => import('src/components/features/onboarding/components/StepTransition'));
 
 const pageVariants = {
   initial: { opacity: 0, x: 20 },
@@ -20,25 +23,42 @@ const pageVariants = {
   exit: { opacity: 0, x: -20 },
 };
 
-export default function OnboardingFlow() {
+// Form 로딩 컴포넌트
+const FormLoader = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <LoadingState size="md" color="slate" text="Loading..." />
+  </div>
+);
+
+function OnboardingFlow() {
   const { currentStep } = useOnboardingStore();
   const { isLoading, error } = useInitializeOnboarding();
 
   const renderStep = (step: OnboardingStep) => {
-    switch (step) {
-      case 'welcome':
-        return <WelcomePage />;
-      case 'basicInfo':
-        return <BasicInfoForm />;
-      case 'employment':
-        return <EmploymentForm />;
-      case 'culture':
-        return <CultureForm />;
-      case 'account':
-        return <AccountForm />;
-      default:
-        return null;
-    }
+    const Component = (() => {
+      switch (step) {
+        case 'welcome':
+          return WelcomePage;
+        case 'basicInfo':
+          return BasicInfoForm;
+        case 'employment':
+          return EmploymentForm;
+        case 'culture':
+          return CultureForm;
+        case 'account':
+          return AccountForm;
+        default:
+          return null;
+      }
+    })();
+
+    if (!Component) return null;
+
+    return (
+      <Suspense fallback={<FormLoader />}>
+        <Component />
+      </Suspense>
+    );
   };
 
   const currentStepIndex = ONBOARDING_STEPS.findIndex(
@@ -72,47 +92,52 @@ export default function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      {/* Theme Toggle Button - Fixed position */}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeSwitch />
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Progress Steps - Welcome 단계일 때는 숨김 */}
-        {currentStep !== 'welcome' && (
-          <div className="py-4 sm:py-8 px-4 sm:px-0">
-            <StepTransition
-              steps={ONBOARDING_STEPS.filter((step) => step.id !== 'welcome').map((step) => {
-                const actualIndex = ONBOARDING_STEPS.findIndex((s) => s.id === step.id);
-                return {
-                  id: step.id,
-                  title: step.title,
-                  description: step.description,
-                  isCompleted: actualIndex < currentStepIndex,
-                  isActive: actualIndex === currentStepIndex,
-                };
-              })}
-              currentStep={currentStepIndex - 1}
-            />
-          </div>
-        )}
+    <LazyMotion features={domAnimation} strict>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        {/* Theme Toggle Button - Fixed position */}
+        <div className="fixed top-4 right-4 z-50">
+          <ThemeSwitch />
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Progress Steps - Welcome 단계일 때는 숨김 */}
+          {currentStep !== 'welcome' && (
+            <div className="py-4 sm:py-8 px-4 sm:px-0">
+              <Suspense fallback={<FormLoader />}>
+                <StepTransition
+                  steps={ONBOARDING_STEPS.filter((step) => step.id !== 'welcome').map((step) => {
+                    const actualIndex = ONBOARDING_STEPS.findIndex((s) => s.id === step.id);
+                    return {
+                      id: step.id,
+                      title: step.title,
+                      description: step.description,
+                      isCompleted: actualIndex < currentStepIndex,
+                      isActive: actualIndex === currentStepIndex,
+                    };
+                  })}
+                  currentStep={currentStepIndex - 1}
+                />
+              </Suspense>
+            </div>
+          )}
 
-        {/* Form Content */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentStep}
-            variants={pageVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            transition={{ type: 'tween', duration: 0.3 }}
-            className="py-4 sm:py-8"
-          >
-            {renderStep(currentStep)}
-          </motion.div>
-        </AnimatePresence>
+          {/* Form Content */}
+          <AnimatePresence mode="wait">
+            <m.div
+              key={currentStep}
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ type: 'tween', duration: 0.3 }}
+              className="py-4 sm:py-8"
+            >
+              {renderStep(currentStep)}
+            </m.div>
+          </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </LazyMotion>
   );
 }
+export default OnboardingFlow;

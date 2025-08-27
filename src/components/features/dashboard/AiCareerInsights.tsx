@@ -1,7 +1,7 @@
 // components/NurseDashboard/AiCareerInsights.tsx
 import React, { useEffect } from 'react';
 import { Brain, TrendingUp, Loader2, RefreshCw, Sparkles, Target } from 'lucide-react';
-import { useAllAiInsights, useGenerateAllInsights } from 'src/api/ai/useAiInsights';
+import { useAllAiInsights, useGenerateAllInsights, type AiInsight } from 'src/api/ai/useAiInsights';
 import useAuthStore from 'src/hooks/useAuthStore';
 
 interface AiCareerInsightsProps {
@@ -15,9 +15,9 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
   const { data: insights, isLoading } = useAllAiInsights(userId);
   const { generateAll, isLoading: isGenerating } = useGenerateAllInsights();
   
-  const nurseSummary = insights?.nurseSummary;
-  const culture = insights?.culture;
-  const skillTransfer = insights?.skillTransfer;
+  const nurseSummary = insights?.nurseSummary as AiInsight | null | undefined;
+  const culture = insights?.culture as AiInsight | null | undefined;
+  const skillTransfer = insights?.skillTransfer as AiInsight | null | undefined;
   
   // 데이터가 없을 때 자동으로 생성 시도 (한 번만)
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
           </div>
 
           {/* Culture Insights */}
-          {culture && (
+          {culture && culture.content && (
             <div className={`p-3 sm:p-4 rounded-lg border ${
               theme === 'light'
                 ? 'bg-blue-50 border-blue-200'

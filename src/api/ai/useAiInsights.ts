@@ -35,7 +35,8 @@ const aiApiClient = axios.create({
   headers: {
     'X-API-Key': AI_API_KEY,
     'Content-Type': 'application/json'
-  }
+  },
+  timeout: 5000 // 5초 타임아웃 설정 (기본 30초에서 단축)
 });
 
 // AI Insight 조회 (GET)
@@ -73,6 +74,24 @@ export const useAllAiInsights = (userId?: string) => useQuery({
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
       
+      // TEMPORARY: AI API 서버가 다운되어 있으므로 즉시 mock 데이터 반환 (timeout 제거)
+      // console.log('AI API temporarily disabled - returning mock data');
+      return Promise.resolve({
+        nurseSummary: {
+          id: 'mock-1',
+          user_id: userId,
+          summary_type: 'nurse_summary' as SummaryType,
+          content: 'Your nursing career shows strong progression with competitive compensation.',
+          input_hash: 'mock',
+          prompt_template_id: 'mock',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        culture: null,
+        skillTransfer: null
+      });
+      
+      /* ORIGINAL CODE - TEMPORARILY DISABLED
       try {
         console.log('Calling AI API with userId:', userId);
         // 각 summary type을 개별적으로 호출
@@ -146,6 +165,7 @@ export const useAllAiInsights = (userId?: string) => useQuery({
           skill_transfer: null
         };
       }
+      */
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
@@ -153,9 +173,9 @@ export const useAllAiInsights = (userId?: string) => useQuery({
     refetchOnMount: false,
     refetchOnWindowFocus: false,
     select: (data) => ({
-      nurseSummary: data?.nurse_summary || null,
+      nurseSummary: data?.nurseSummary || null,
       culture: data?.culture || null,
-      skillTransfer: data?.skill_transfer || null,
+      skillTransfer: data?.skillTransfer || null,
       isLoading: false,
       errors: {}
     })

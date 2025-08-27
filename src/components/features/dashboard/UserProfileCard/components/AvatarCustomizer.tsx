@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import SimpleBeanHead, { PRESET_STYLES } from '../../SimpleBeanHead';
 import CustomizeSectionUpdated from '../../CustomizeSectionUpdated';
@@ -32,7 +32,7 @@ export function AvatarCustomizer({
       {showAvatarPicker && (
         <>
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 bg-black/50 z-40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -41,7 +41,7 @@ export function AvatarCustomizer({
           />
           
           {/* Modal */}
-          <motion.div 
+          <m.div 
             className={`fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-6 rounded-2xl shadow-2xl ${
               theme === 'light' ? 'bg-white' : 'bg-slate-800'
             } max-w-md w-full mx-4`}
@@ -99,7 +99,7 @@ export function AvatarCustomizer({
                 </p>
                 <div className="grid grid-cols-2 gap-3">
                   {PRESET_STYLES.map((preset) => (
-                    <motion.button
+                    <m.button
                       key={preset.name}
                       onClick={() => setAvatarConfig(preset.config)}
                       className={`p-3 rounded-lg border-2 transition-all ${
@@ -115,7 +115,7 @@ export function AvatarCustomizer({
                         />
                       </div>
                       <p className="text-xs font-medium text-center">{preset.name}</p>
-                    </motion.button>
+                    </m.button>
                   ))}
                 </div>
               </div>
@@ -155,7 +155,7 @@ export function AvatarCustomizer({
                 Apply
               </button>
             </div>
-          </motion.div>
+          </m.div>
         </>
       )}
     </AnimatePresence>

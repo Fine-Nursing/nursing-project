@@ -42,12 +42,12 @@ export function DifferentialBreakdown({
           iconColor="emerald"
           title="Night Shift"
           description="11 PM - 7 AM • ~60 hrs/month"
-          value={editedProfile.differentials.night}
+          value={editedProfile?.differentials?.night || 0}
           monthlyAmount={nightDifferential}
           onChange={(value) => setEditedProfile({
             ...editedProfile,
             differentials: {
-              ...editedProfile.differentials,
+              ...editedProfile?.differentials,
               night: value
             }
           })}
@@ -61,12 +61,12 @@ export function DifferentialBreakdown({
           iconColor="emerald"
           title="Weekend"
           description="Sat & Sun • ~32 hrs/month"
-          value={editedProfile.differentials.weekend}
+          value={editedProfile?.differentials?.weekend || 0}
           monthlyAmount={weekendDifferential}
           onChange={(value) => setEditedProfile({
             ...editedProfile,
             differentials: {
-              ...editedProfile.differentials,
+              ...editedProfile?.differentials,
               weekend: value
             }
           })}
@@ -80,12 +80,12 @@ export function DifferentialBreakdown({
           iconColor="orange"
           title="Critical Care"
           description="ICU/ER/OR • ~20 hrs/month"
-          value={editedProfile.differentials.other}
+          value={editedProfile?.differentials?.other || 0}
           monthlyAmount={specialtyDifferential}
           onChange={(value) => setEditedProfile({
             ...editedProfile,
             differentials: {
-              ...editedProfile.differentials,
+              ...editedProfile?.differentials,
               other: value
             }
           })}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Save } from 'lucide-react';
 
 interface ActionButtonsProps {
@@ -18,7 +18,7 @@ export function ActionButtons({
   return (
     <AnimatePresence>
       {isEditing && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
@@ -42,7 +42,7 @@ export function ActionButtons({
           >
             Cancel
           </button>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

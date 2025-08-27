@@ -1,16 +1,16 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { MapPin, Plus } from 'lucide-react';
 import type { EmptyStateProps } from '../types';
 
 export function EmptyState({ theme, careerData, filterRole, setFormVisible }: EmptyStateProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className="p-16 text-center"
     >
-      <motion.div 
+      <m.div 
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
@@ -23,7 +23,7 @@ export function EmptyState({ theme, careerData, filterRole, setFormVisible }: Em
         <MapPin className={`w-12 h-12 ${
           theme === 'light' ? 'text-blue-500' : 'text-blue-400'
         }`} />
-      </motion.div>
+      </m.div>
       
       <h3 className={`text-lg sm:text-xl font-bold mb-2 ${
         theme === 'light' ? 'text-gray-800' : 'text-gray-200'
@@ -40,7 +40,7 @@ export function EmptyState({ theme, careerData, filterRole, setFormVisible }: Em
       </p>
       
       {careerData.length === 0 && (
-        <motion.button
+        <m.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           type="button"
@@ -49,8 +49,8 @@ export function EmptyState({ theme, careerData, filterRole, setFormVisible }: Em
         >
           <Plus className="w-5 h-5 inline mr-2" />
           Add Your First Job
-        </motion.button>
+        </m.button>
       )}
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { memo } from 'react';
+import { m } from 'framer-motion';
 import { useAiInsight } from 'src/api/ai/useAiInsights';
 import { AvatarSection } from './components/AvatarSection';
 import { ProfileHeader } from './components/ProfileHeader';
@@ -12,7 +12,7 @@ import { useAvatarManagement } from './hooks/useAvatarManagement';
 import { getProfileInfoItems, getCareerInsightContent } from './utils/profileUtils';
 import type { UserProfileCardProps } from './types';
 
-export default function UserProfileCard({
+function UserProfileCard({
   userProfile,
   theme,
 }: UserProfileCardProps) {
@@ -33,13 +33,13 @@ export default function UserProfileCard({
   const careerInsightContent = getCareerInsightContent(careerInsight, isLoading);
 
   return (
-    <motion.div 
+    <m.div 
       className="mb-4 sm:mb-6"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <motion.div
+      <m.div
         className={`${
           theme === 'light' ? 'bg-white' : 'bg-slate-800'
         } rounded-xl shadow-lg border ${
@@ -81,7 +81,7 @@ export default function UserProfileCard({
             </div>
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Avatar Customization Modal */}
       <AvatarCustomizer
@@ -94,6 +94,8 @@ export default function UserProfileCard({
         onClose={closeAvatarPicker}
         onApply={applyAvatar}
       />
-    </motion.div>
+    </m.div>
   );
 }
+
+export default memo(UserProfileCard);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { ProfileInfoItem } from '../types';
 
 interface ProfileInfoGridProps {
@@ -11,7 +11,7 @@ export function ProfileInfoGrid({ items, theme }: ProfileInfoGridProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
       {items.map((item, index) => (
-        <motion.div
+        <m.div
           key={item.label}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -28,7 +28,7 @@ export function ProfileInfoGrid({ items, theme }: ProfileInfoGridProps) {
           <p className={`text-base font-medium ${theme === 'light' ? 'text-gray-900' : 'text-gray-100'}`}>
             {item.value}
           </p>
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );

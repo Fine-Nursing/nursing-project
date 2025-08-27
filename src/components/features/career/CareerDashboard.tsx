@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import toast from 'react-hot-toast';
@@ -10,14 +10,17 @@ import { useMyCompensation } from 'src/api/useCompensation';
 import { LoadingState } from 'src/components/ui/feedback';
 
 import type { CareerItem, NewItemInput } from './types';
-import CareerHeader from './CareerHeader';
-import CareerStatsGrid from './CareerStatsGrid';
-import CareerControlPanel from './CareerControlPanel';
-import CareerForm from './CareerForm';
-import CareerTimeline from './CareerTimeline';
-import AiRoleModal from './AiRoleModal';
-import SalaryTrendModal from './SalaryTrendModal';
-import ProgressionBarChart from './ProgressionBarChart';
+// 하위 컴포넌트들을 lazy loading으로 변경
+import { lazy, Suspense } from 'react';
+
+const CareerHeader = lazy(() => import('./CareerHeader'));
+const CareerStatsGrid = lazy(() => import('./CareerStatsGrid'));
+const CareerControlPanel = lazy(() => import('./CareerControlPanel'));
+const CareerForm = lazy(() => import('./CareerForm'));
+const CareerTimeline = lazy(() => import('./CareerTimeline'));
+const AiRoleModal = lazy(() => import('./AiRoleModal'));
+const SalaryTrendModal = lazy(() => import('./SalaryTrendModal'));
+const ProgressionBarChart = lazy(() => import('./ProgressionBarChart'));
 
 interface CareerDashboardProps {
   theme?: 'light' | 'dark';
@@ -282,63 +285,113 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       ? 'bg-white rounded-xl shadow-lg border border-gray-200' 
       : 'bg-slate-800 rounded-xl shadow-lg border border-slate-700'}>
       {/* Modals */}
-      <AiRoleModal
-        reason={aiReason}
-        onClose={handleCloseAiModal}
-        theme={theme}
-      />
-      <SalaryTrendModal
-        visible={showTrend}
-        data={trendData}
-        onClose={handleCloseTrend}
-        theme={theme}
-      />
+      <Suspense fallback={null}>
+        <AiRoleModal
+          reason={aiReason}
+          onClose={handleCloseAiModal}
+          theme={theme}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <SalaryTrendModal
+          visible={showTrend}
+          data={trendData}
+          onClose={handleCloseTrend}
+          theme={theme}
+        />
+      </Suspense>
 
       {/* Header */}
-      <CareerHeader
-        theme={theme}
-        totalPositions={totalPositions}
-        totalYears={totalYears}
-        highestHourlyRate={highestHourlyRate}
-      />
+      <Suspense fallback={
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-700 animate-pulse">
+          <div className="flex items-center justify-between">
+            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48"></div>
+            <div className="flex gap-4">
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-16"></div>
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-20"></div>
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
+            </div>
+          </div>
+        </div>
+      }>
+        <CareerHeader
+          theme={theme}
+          totalPositions={totalPositions}
+          totalYears={totalYears}
+          highestHourlyRate={highestHourlyRate}
+        />
+      </Suspense>
 
       <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Stats Grid */}
-        <CareerStatsGrid
-          theme={theme}
-          totalYears={totalYears}
-          remainingMonths={remainingMonths}
-          currentRole={currentRole}
-          highestHourlyRate={highestHourlyRate}
-          annualSalary={annualSalary}
-        />
+        <Suspense fallback={
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
+            {[1,2,3,4].map((i) => (
+              <div key={i} className="p-4 bg-gray-100 dark:bg-slate-700 rounded-lg">
+                <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-16 mb-2"></div>
+                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-20"></div>
+              </div>
+            ))}
+          </div>
+        }>
+          <CareerStatsGrid
+            theme={theme}
+            totalYears={totalYears}
+            remainingMonths={remainingMonths}
+            currentRole={currentRole}
+            highestHourlyRate={highestHourlyRate}
+            annualSalary={annualSalary}
+          />
+        </Suspense>
 
         {/* Control Panel */}
-        <CareerControlPanel
-          theme={theme}
-          formVisible={formVisible}
-          setFormVisible={setFormVisible}
-        />
+        <Suspense fallback={
+          <div className="flex justify-between items-center animate-pulse">
+            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
+            <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
+          </div>
+        }>
+          <CareerControlPanel
+            theme={theme}
+            formVisible={formVisible}
+            setFormVisible={setFormVisible}
+          />
+        </Suspense>
         
         {/* Career Form */}
         <AnimatePresence>
           {formVisible && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <CareerForm
-                newItem={newItem}
-                onChangeText={handleChangeText}
-                onChangeStartDate={handleChangeStartDate}
-                onChangeEndDate={handleChangeEndDate}
-                onAdd={editingItemId ? handleUpdate : handleAdd}
-                onAiSuggest={handleAiSuggest}
-                onSalaryTrend={handleSalaryTrend}
-                editingItemId={editingItemId}
-              />
+              <Suspense fallback={
+                <div className="space-y-4 animate-pulse">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
+                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-28"></div>
+                  </div>
+                </div>
+              }>
+                <CareerForm
+                  newItem={newItem}
+                  onChangeText={handleChangeText}
+                  onChangeStartDate={handleChangeStartDate}
+                  onChangeEndDate={handleChangeEndDate}
+                  onAdd={editingItemId ? handleUpdate : handleAdd}
+                  onAiSuggest={handleAiSuggest}
+                  onSalaryTrend={handleSalaryTrend}
+                  editingItemId={editingItemId}
+                />
+              </Suspense>
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
@@ -348,24 +401,51 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
                   Cancel
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* Career Timeline */}
-        <CareerTimeline
-          theme={theme}
-          careerData={careerData}
-          filteredAndSortedCareerData={sortedCareerData}
-          highestHourlyRate={highestHourlyRate}
-          setFormVisible={setFormVisible}
-          filterRole=""
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <Suspense fallback={
+          <div className="space-y-4 animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-32 mb-4"></div>
+            {[1,2,3].map((i) => (
+              <div key={i} className="flex items-center space-x-4 p-4 bg-gray-100 dark:bg-slate-700 rounded-lg">
+                <div className="w-3 h-3 bg-gray-200 dark:bg-slate-600 rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-5 bg-gray-200 dark:bg-slate-600 rounded w-48"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-64"></div>
+                </div>
+                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-16"></div>
+              </div>
+            ))}
+          </div>
+        }>
+          <CareerTimeline
+            theme={theme}
+            careerData={careerData}
+            filteredAndSortedCareerData={sortedCareerData}
+            highestHourlyRate={highestHourlyRate}
+            setFormVisible={setFormVisible}
+            filterRole=""
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </Suspense>
 
         {/* Progression Bar Chart */}
-        <ProgressionBarChart careerData={careerData} theme={theme} />
+        <Suspense fallback={
+          <div className="animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-40 mb-4"></div>
+            <div className="h-64 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-end justify-between p-4">
+              {[1,2,3,4,5,6].map((i) => (
+                <div key={i} className={`bg-gray-200 dark:bg-slate-600 rounded-t w-8`} style={{height: `${20 + i * 15}%`}}></div>
+              ))}
+            </div>
+          </div>
+        }>
+          <ProgressionBarChart careerData={careerData} theme={theme} />
+        </Suspense>
       </div>
     </div>
   );

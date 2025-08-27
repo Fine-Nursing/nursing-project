@@ -21,7 +21,7 @@ function SocialAuthButtons({ onSuccess }: SocialAuthButtonsProps) {
         toast.success('Successfully signed in with Google!');
         onSuccess?.();
       }
-    } catch (err) {
+    } catch {
       toast.error('An unexpected error occurred');
       // Error already handled with toast
     } finally {

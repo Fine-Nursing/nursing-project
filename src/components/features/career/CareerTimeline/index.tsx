@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { CareerTimelineProps } from './types';
 import {
   EmptyState,
@@ -22,7 +22,7 @@ export default function CareerTimeline({
   const borderClass = theme === 'light' ? 'border-slate-200' : 'border-slate-600';
 
   return (
-    <motion.div 
+    <m.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
@@ -74,6 +74,6 @@ export default function CareerTimeline({
           />
         </div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

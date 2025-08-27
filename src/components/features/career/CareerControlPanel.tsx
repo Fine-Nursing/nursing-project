@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Plus, Filter, SortDesc } from 'lucide-react';
 
 interface CareerControlPanelProps {
@@ -20,7 +20,7 @@ export default function CareerControlPanel({
   return (
     <div className="mb-4">
       {!formVisible && (
-        <motion.button
+        <m.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           type="button"
@@ -29,7 +29,7 @@ export default function CareerControlPanel({
         >
           <Plus className="w-5 h-5" />
           Add Work Experience
-        </motion.button>
+        </m.button>
       )}
     </div>
   );

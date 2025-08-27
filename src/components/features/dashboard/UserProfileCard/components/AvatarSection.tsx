@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { UserCircle } from 'lucide-react';
 import SimpleBeanHead from '../../SimpleBeanHead';
 import type { AvatarConfig } from '../types';
@@ -13,7 +13,7 @@ interface AvatarSectionProps {
 export function AvatarSection({ avatarConfig, onEditClick, theme }: AvatarSectionProps) {
   return (
     <div className="flex-shrink-0 relative mx-auto sm:mx-0">
-      <motion.div 
+      <m.div 
         className="relative"
         whileHover={{ scale: 1.05 }}
         transition={{ type: "spring", stiffness: 400 }}
@@ -26,21 +26,21 @@ export function AvatarSection({ avatarConfig, onEditClick, theme }: AvatarSectio
         </div>
 
         {/* Edit Overlay */}
-        <motion.button
+        <m.button
           onClick={onEditClick}
           className={`absolute inset-0 rounded-xl flex items-center justify-center ${
             theme === 'light' ? 'bg-black/0 hover:bg-black/10' : 'bg-white/0 hover:bg-white/10'
           } transition-colors cursor-pointer`}
           whileHover={{ backgroundColor: theme === 'light' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)' }}
         >
-          <motion.div 
+          <m.div 
             className="opacity-0 hover:opacity-100 transition-opacity"
             whileHover={{ opacity: 1 }}
           >
             <UserCircle className="w-6 h-6 text-white drop-shadow-lg" />
-          </motion.div>
-        </motion.button>
-      </motion.div>
+          </m.div>
+        </m.button>
+      </m.div>
     </div>
   );
 }

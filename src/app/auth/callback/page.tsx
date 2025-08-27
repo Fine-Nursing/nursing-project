@@ -70,7 +70,7 @@ export default function AuthCallback() {
           throw new Error('No session found');
         }
         */
-      } catch (error) {
+      } catch {
         // Auth callback error
         toast.error('Authentication failed. Please try again.');
         router.push('/');

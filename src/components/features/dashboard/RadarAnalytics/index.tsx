@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo, memo } from 'react';
+import { m, AnimatePresence } from 'framer-motion';
 import { 
   Activity,
   ChevronRight,
@@ -15,7 +15,7 @@ import { MetricCard } from './components/MetricCard';
 import { getScoreColor } from './utils';
 import type { RadarAnalyticsProps } from './types';
 
-export default function RadarAnalytics({
+function RadarAnalytics({
   userMetrics,
   avgMetrics,
   theme,
@@ -141,7 +141,7 @@ export default function RadarAnalytics({
       {/* Selected Metric Analysis */}
       <AnimatePresence>
         {selectedMetric && metricAnalysis[selectedMetric] && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -172,7 +172,7 @@ export default function RadarAnalytics({
                 </div>
               </div>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
 
@@ -232,7 +232,7 @@ export default function RadarAnalytics({
                   </div>
                   
                   {/* AI Recommendations */}
-                  {allInsights?.skillTransfer && allInsights.skillTransfer.content && (
+                  {allInsights?.skillTransfer && (allInsights.skillTransfer as any)?.content && (
                     <div className={`p-3 rounded-lg ${
                       theme === 'light' ? 'bg-amber-50' : 'bg-amber-900/20'
                     }`}>
@@ -247,7 +247,7 @@ export default function RadarAnalytics({
                           <p className={`text-sm leading-relaxed ${
                             theme === 'light' ? 'text-gray-700' : 'text-gray-300'
                           }`}>
-                            {allInsights.skillTransfer.content.split('•')[0]?.trim() || allInsights.skillTransfer.content}
+                            {(allInsights.skillTransfer as any).content.split('•')[0]?.trim() || (allInsights.skillTransfer as any).content}
                           </p>
                         </div>
                       </div>
@@ -262,3 +262,5 @@ export default function RadarAnalytics({
     </div>
   );
 }
+
+export default memo(RadarAnalytics);

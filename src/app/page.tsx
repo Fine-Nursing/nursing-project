@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useCallback, lazy, Suspense } from 'react';
 import toast from 'react-hot-toast';
 import type { NursingTableParams } from 'src/api/useNursingTable';
 import { useNursingTable } from 'src/api/useNursingTable';
@@ -9,10 +9,10 @@ import useAuthStore from 'src/hooks/useAuthStore';
 import useAuth from 'src/api/Auth/useAuth';
 import useIsMobile from 'src/hooks/useIsMobile';
 import { LazyMotion, domAnimation, m } from 'framer-motion';
-import { AuthModal, useAuth as useAuthModal } from 'src/components/features/auth';
+import { AuthModal } from 'src/components/features/auth';
 
 // Import separated components - Above-the-fold
-import Header from 'src/components/features/landing/Header';
+import DefaultHeader from 'src/components/features/landing/Header';
 import HeroSection from 'src/components/features/landing/HeroSection';
 import MobileSalaryDiscovery from 'src/components/features/landing/MobileSalaryDiscovery';
 
@@ -230,7 +230,6 @@ export default function HomePage() {
         />
 
         {/* Auth Modal */}
-        {console.log('page.tsx rendering AuthModal, handleSignUp:', handleSignUp, 'authMode:', authMode)}
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -267,7 +266,6 @@ export default function HomePage() {
         </div>
 
         {/* Auth Modal */}
-        {console.log('page.tsx rendering AuthModal, handleSignUp:', handleSignUp, 'authMode:', authMode)}
         <AuthModal
           isOpen={showAuthModal}
           onClose={() => setShowAuthModal(false)}
@@ -289,7 +287,7 @@ export default function HomePage() {
   return (
     <LazyMotion features={domAnimation} strict>
       <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-950 dark:via-zinc-900 dark:to-black transition-colors">
-      <Header
+      <DefaultHeader
         user={user}
         onSignOut={handleSignOut}
         onShowLogin={() => {

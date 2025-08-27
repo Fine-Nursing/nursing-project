@@ -1,7 +1,7 @@
 'use client';
 
 // Main Auth Modal component
-export { AuthModal, default as AuthModalDefault } from './AuthModal';
+export { default as AuthModal } from './AuthModal';
 export type { AuthMode } from './AuthModal';
 
 // Form components

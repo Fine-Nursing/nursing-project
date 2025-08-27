@@ -32,7 +32,7 @@ interface AuthModalProps {
 }
 
 // memo 제거 - 모달은 자주 리렌더링되지 않음
-export const AuthModal = ({
+const AuthModal = ({
   isOpen,
   onClose,
   mode = 'login',
@@ -42,7 +42,7 @@ export const AuthModal = ({
   onSignUp,
   isLoading = false,
 }: AuthModalProps) => {
-  console.log('AuthModal received props:', { onLogin, onSignUp, mode, isOpen });
+  // AuthModal received props
   const [currentMode, setCurrentMode] = useState<AuthMode>(mode);
   
   // Sync internal state with external mode prop
@@ -116,7 +116,7 @@ export const AuthModal = ({
             <SignUpForm 
               onSuccess={handleSuccess} 
               onSubmit={onSignUp || (async () => {
-                console.error('No onSignUp handler provided to AuthModal!');
+                // No onSignUp handler provided to AuthModal!
                 toast.error('Authentication setup error');
               })}
               isLoading={isLoading}
