@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import AnimatedProgressBar from '../../components/AnimatedProgressBar';
 
 interface ProgressHeaderProps {
@@ -22,7 +22,7 @@ export default function ProgressHeader({
           height="h-1"
           className="max-w-2xl mx-auto"
         />
-        <motion.div 
+        <m.div 
           className="text-center mt-2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -31,11 +31,11 @@ export default function ProgressHeader({
           <p className="text-sm text-gray-500">
             {completedCategories} of {totalCategories} categories rated
           </p>
-        </motion.div>
+        </m.div>
       </div>
 
       {/* Header - Full Width */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-10 sm:mb-14"
@@ -47,7 +47,7 @@ export default function ProgressHeader({
           Your honest feedback helps create better work environments for
           healthcare professionals everywhere
         </p>
-      </motion.div>
+      </m.div>
     </>
   );
 }

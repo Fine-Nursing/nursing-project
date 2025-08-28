@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { MapPin, Building2, Building } from 'lucide-react';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
@@ -129,7 +129,7 @@ export default function WorkplaceSection({
   }, [updateFormData]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -186,13 +186,13 @@ export default function WorkplaceSection({
           />
         </div>
         {formData.organizationCity && formData.organizationState && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-emerald-600 mt-1"
           >
             ✓ Location: {formData.organizationCity}, {formData.organizationState}
-          </motion.p>
+          </m.p>
         )}
       </div>
 
@@ -215,6 +215,6 @@ export default function WorkplaceSection({
           Next: Your Role →
         </ActionButton>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

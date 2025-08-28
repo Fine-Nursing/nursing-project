@@ -14,6 +14,8 @@ import { useMyCompensation } from 'src/api/useCompensation';
 import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
+import { useAllAiInsights } from 'src/api/ai/useAiInsights';
+import useAuthStore from 'src/hooks/useAuthStore';
 
 const UserProfileCard = lazy(() => import('src/components/features/dashboard/UserProfileCard'));
 const CareerDashboard = lazy(() => import('src/components/features/career/CareerDashboard'));
@@ -46,11 +48,22 @@ export default function UserPage() {
   const userId = params?.userId as string;
   const [dataRefreshDate] = useState(new Date().toLocaleDateString());
   const { theme } = useTheme();
+  const { user } = useAuthStore();
   
 
   // API 호출
   const { data: profileData, error: profileError, refetch: refetchProfile } = useMyProfile();
   const { data: compensationData, error: compensationError, refetch: refetchCompensation } = useMyCompensation();
+  
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔍 Compensation Data Debug:', {
+      compensationData,
+      compensationError,
+      hourlyRate: compensationData?.hourlyRate,
+      hasData: !!compensationData,
+    });
+  }, [compensationData, compensationError]);
   
   // 사용자 정보 기반으로 wage distribution 호출
   const userSpecialty = profileData?.specialty || '';
@@ -62,6 +75,7 @@ export default function UserPage() {
   });
   
   const { data: metricsData, isLoading: isMetricsLoading, error: metricsError } = useUserMetrics();
+  const { data: aiInsights } = useAllAiInsights(user?.id);
   useDifferentialsSummary();
   
   // 디버깅용 로깅
@@ -111,16 +125,61 @@ export default function UserPage() {
       : `You're about ${Math.abs(diff)}% below average comp. Room to negotiate?`;
   };
 
+  // 각 differential 타입별 예상 근무시간 계산
+  const getEstimatedHours = (type: string) => {
+    const lowerType = type.toLowerCase();
+    switch (lowerType) {
+      case 'night':
+      case 'night_shift':
+        return 80; // 주 5일 * 4주 * 4시간
+      case 'weekend':
+      case 'weekend_shift':
+        return 32; // 주말 2일 * 4주 * 4시간
+      case 'charge':
+      case 'charge_nurse':
+        return 160; // 전체 근무시간
+      case 'on_call':
+      case 'oncall':
+        return 40; // 월 평균 40시간
+      case 'certification':
+      case 'cert':
+      case 'experience':
+      case 'exp':
+        return 160; // 월급 고정 수당은 전체 시간으로 계산
+      default:
+        return 20; // 기타 수당
+    }
+  };
+
   const calculatePotentialDifferentials = () => {
+    // AI API에서 skill_transfer 데이터를 우선 사용
+    const skillTransferContent = (aiInsights?.skillTransfer as any)?.content;
+    if (skillTransferContent) {
+      const opportunities: string[] = [];
+      
+      // AI 데이터에서 급여 관련 기회 추출
+      const lines = skillTransferContent.split('•').map((line: string) => line.trim()).filter(Boolean);
+      lines.forEach((line: string) => {
+        if (line.includes('+$') || line.includes('salary') || line.includes('pay') || line.includes('/hr') || line.includes('differential')) {
+          opportunities.push(line);
+        }
+      });
+      
+      if (opportunities.length > 0) {
+        return opportunities.slice(0, 4); // 최대 4개만 표시
+      }
+    }
+
+    // AI 데이터가 없는 경우 기본 분석 로직 (개선된 버전)
     const opportunities = [];
     if (compensationData?.differentials) {
-      const nightDiff = compensationData.differentials.find(d => d.type === 'night');
-      const weekendDiff = compensationData.differentials.find(d => d.type === 'weekend');
+      const nightDiff = compensationData.differentials.night;
+      const weekendDiff = compensationData.differentials.weekend;
       
-      if (!nightDiff || nightDiff.value < 3) {
+      if (!nightDiff || nightDiff < 3) {
         opportunities.push('Night shift differential: +$3-5/hr potential');
       }
-      if (!weekendDiff || weekendDiff.value < 2) {
+      if (!weekendDiff || weekendDiff < 2) {
         opportunities.push('Weekend differential: +$2-4/hr potential');
       }
       if (profileData?.specialty === 'ICU' || profileData?.specialty === 'ER') {
@@ -130,8 +189,9 @@ export default function UserPage() {
         opportunities.push('Senior nurse differential: +$2-3/hr potential');
       }
     }
+    
     if (opportunities.length === 0) {
-      opportunities.push('You are maximizing your differential opportunities!');
+      return ['Complete your profile for AI-powered compensation analysis'];
     }
     return opportunities;
   };
@@ -248,7 +308,45 @@ export default function UserPage() {
               </div>
             }>
               <CompensationAnalysis
-                userProfile={compensationData || { hourlyRate: 0, annualSalary: 0, differentials: [] }}
+                userProfile={compensationData ? {
+                  hourlyRate: compensationData.hourlyRate, // 총 보상 시급 (맨 위 Total에 사용)
+                  annualSalary: compensationData.annualSalary, // 총 보상 연봉 (맨 위 Total에 사용)
+                  baseHourlyRate: compensationData.baseHourlyRate, // Base pay 시급 (Base Pay Section에 사용)
+                  baseAnnualSalary: (compensationData.baseHourlyRate || compensationData.hourlyRate) * 2080, // Base pay 연봉
+                  differentials: compensationData.differentials.details && compensationData.differentials.details.length > 0 ? 
+                    compensationData.differentials.details
+                      .filter(detail => detail.value > 0)
+                      .map(detail => ({
+                        type: detail.type,
+                        label: detail.label,
+                        value: detail.value,
+                        estimatedHours: getEstimatedHours(detail.type), 
+                        description: `${detail.label} differential pay`
+                      })) : [
+                    // Fallback to old structure if details not available
+                    compensationData.differentials.night > 0 ? {
+                      type: 'night',
+                      label: 'Night Shift',
+                      value: compensationData.differentials.night,
+                      estimatedHours: 40,
+                      description: 'Night shift differential pay'
+                    } : null,
+                    compensationData.differentials.weekend > 0 ? {
+                      type: 'weekend',
+                      label: 'Weekend',
+                      value: compensationData.differentials.weekend,
+                      estimatedHours: 32,
+                      description: 'Weekend differential pay'
+                    } : null,
+                    compensationData.differentials.other > 0 ? {
+                      type: 'other',
+                      label: 'Other',
+                      value: compensationData.differentials.other,
+                      estimatedHours: 20,
+                      description: 'Other differential pay'
+                    } : null
+                  ].filter(Boolean) as any[]
+                } : { hourlyRate: 0, annualSalary: 0, differentials: [] }}
                 theme={theme}
                 getCompensationInsight={getCompensationInsight}
                 calculatePotentialDifferentials={calculatePotentialDifferentials}
@@ -327,7 +425,7 @@ export default function UserPage() {
               {!isWageDistributionLoading && wageDistributionData && profileData ? (
                 <PredictiveCompChart
                   payDistributionData={enhancedPayData}
-                  userHourlyRate={compensationData?.hourlyRate || 0}
+                  userHourlyRate={compensationData?.hourlyRate || actualRegionalAvgHourlyRate} // Use regional average as fallback
                   regionalAvgWage={actualRegionalAvgHourlyRate}
                   theme={theme}
                   userSpecialty={userSpecialty}

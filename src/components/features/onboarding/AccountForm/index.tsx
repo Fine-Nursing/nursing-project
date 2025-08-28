@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
@@ -58,7 +58,7 @@ export default function AccountForm() {
   if (isSignIn) {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
@@ -120,7 +120,7 @@ export default function AccountForm() {
               </button>
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         <div className="flex justify-center mt-6">
           <ActionButton
@@ -138,7 +138,7 @@ export default function AccountForm() {
   // Sign Up Form
   return (
     <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-gray-800 p-10 rounded-2xl shadow-xl"
@@ -272,7 +272,7 @@ export default function AccountForm() {
             </button>
           </p>
         </div>
-      </motion.div>
+      </m.div>
 
       <div className="flex justify-center mt-6">
         <ActionButton

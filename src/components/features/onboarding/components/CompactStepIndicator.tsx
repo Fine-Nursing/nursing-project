@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface StepItem {
   label: string;
@@ -25,7 +25,7 @@ export default function CompactStepIndicator({
         {steps.map((step, index) => (
           <div key={index} className="flex items-start flex-shrink-0">
             <div className="flex flex-col items-center">
-              <motion.div
+              <m.div
                 className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
                   step.isCompleted
                     ? 'bg-emerald-500 shadow-lg shadow-emerald-200'
@@ -39,7 +39,7 @@ export default function CompactStepIndicator({
                 style={{ cursor: onStepClick ? 'pointer' : 'default' }}
               >
                 {step.isCompleted ? (
-                  <motion.svg
+                  <m.svg
                     className="w-5 h-5 text-white"
                     fill="currentColor"
                     viewBox="0 0 20 20"
@@ -52,7 +52,7 @@ export default function CompactStepIndicator({
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                       clipRule="evenodd"
                     />
-                  </motion.svg>
+                  </m.svg>
                 ) : (
                   <span className={`text-sm font-bold ${
                     step.isActive ? 'text-emerald-600' : 'text-gray-500'
@@ -60,7 +60,7 @@ export default function CompactStepIndicator({
                     {index + 1}
                   </span>
                 )}
-              </motion.div>
+              </m.div>
               
               <div className="mt-2 hidden sm:block">
                 <div className={`text-xs font-medium text-center ${
@@ -72,7 +72,7 @@ export default function CompactStepIndicator({
             </div>
             
             {index < steps.length - 1 && (
-              <motion.div
+              <m.div
                 className={`mt-5 mx-4 sm:mx-6 h-0.5 w-12 sm:w-16 rounded-full transition-all duration-300 ${
                   step.isCompleted ? 'bg-emerald-400' : 'bg-gray-200'
                 }`}

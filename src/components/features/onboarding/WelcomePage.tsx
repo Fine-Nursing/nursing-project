@@ -69,8 +69,8 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-start pt-16 sm:pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {/* Existing Session Alert */}
         {hasExistingSession && existingProgress && (
           <div className="mb-12 max-w-2xl mx-auto">
@@ -107,7 +107,7 @@ export default function WelcomePage() {
         )}
 
         {/* Header Section */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6">
             Welcome to <span className="text-emerald-600 dark:text-emerald-400">Nurse Journey</span>
           </h1>
@@ -117,7 +117,7 @@ export default function WelcomePage() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
           {/* Know Your Worth Card */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group min-h-[320px] flex flex-col">
             <div className="p-8 lg:p-10 flex-1 flex flex-col">

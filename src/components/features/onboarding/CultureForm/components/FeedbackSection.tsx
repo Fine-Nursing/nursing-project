@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { CultureFormData } from '../types';
 
 interface FeedbackSectionProps {
@@ -11,7 +11,7 @@ export default function FeedbackSection({
   onFeedbackChange,
 }: FeedbackSectionProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -36,6 +36,6 @@ export default function FeedbackSection({
                  focus:border-emerald-400 focus:bg-white focus:ring-2 focus:ring-emerald-100 
                  outline-none transition-all resize-none"
       />
-    </motion.div>
+    </m.div>
   );
 }

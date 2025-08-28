@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check, Search } from 'lucide-react';
 
 interface CustomDropdownProps {
@@ -99,19 +99,19 @@ export default function CustomDropdown({
             {value || placeholder}
           </span>
         </div>
-        <motion.div
+        <m.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           className="flex-shrink-0"
         >
           <ChevronDown className="w-5 h-5 text-gray-400" />
-        </motion.div>
+        </m.div>
       </button>
 
       {/* Dropdown Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -140,7 +140,7 @@ export default function CustomDropdown({
             <div className={`overflow-y-auto ${maxHeight}`}>
               {filteredOptions.length > 0 ? (
                 filteredOptions.map((option, index) => (
-                  <motion.button
+                  <m.button
                     key={option}
                     type="button"
                     onClick={() => handleSelect(option)}
@@ -158,15 +158,15 @@ export default function CustomDropdown({
                   >
                     <span className="truncate pr-2">{option}</span>
                     {value === option && (
-                      <motion.div
+                      <m.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                       >
                         <Check className="w-4 h-4 text-slate-600 flex-shrink-0" />
-                      </motion.div>
+                      </m.div>
                     )}
-                  </motion.button>
+                  </m.button>
                 ))
               ) : (
                 <div className="px-4 py-8 text-center text-gray-500">
@@ -181,7 +181,7 @@ export default function CustomDropdown({
                 {filteredOptions.length} options available
               </div>
             )}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

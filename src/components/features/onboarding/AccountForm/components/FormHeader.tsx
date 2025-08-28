@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { User, Check } from 'lucide-react';
 import AnimatedProgressBar from 'src/components/features/onboarding/components/AnimatedProgressBar';
 
@@ -11,14 +11,14 @@ export function FormHeader({ isSignIn }: FormHeaderProps) {
   if (isSignIn) {
     return (
       <div className="text-center mb-8">
-        <motion.div
+        <m.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 200 }}
           className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4"
         >
           <User className="w-8 h-8 text-slate-600" />
-        </motion.div>
+        </m.div>
         <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
           Welcome back!
         </h2>
@@ -31,14 +31,14 @@ export function FormHeader({ isSignIn }: FormHeaderProps) {
 
   return (
     <div className="text-center mb-8">
-      <motion.div
+      <m.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 200 }}
         className="w-16 h-16 bg-gradient-to-br from-slate-500 to-slate-700 rounded-full flex items-center justify-center mx-auto mb-4"
       >
         <Check className="w-8 h-8 text-white" />
-      </motion.div>
+      </m.div>
       <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
         Final Step!
       </h2>

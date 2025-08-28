@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Activity, BarChart3, Binary, CircuitBoard, Server } from 'lucide-react';
 import type { FloatingParticlesProps } from '../types';
 
@@ -21,7 +21,7 @@ export function FloatingParticles({ count = 20, isDark }: FloatingParticlesProps
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {particles.map((particle) => (
-        <motion.div
+        <m.div
           key={particle.id}
           className={`absolute ${
             isDark 
@@ -46,7 +46,7 @@ export function FloatingParticles({ count = 20, isDark }: FloatingParticlesProps
           }}
         >
           <particle.icon className="w-4 h-4" />
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );

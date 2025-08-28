@@ -18,15 +18,19 @@ const AccountForm = lazy(() => import('src/components/features/onboarding/Accoun
 const StepTransition = lazy(() => import('src/components/features/onboarding/components/StepTransition'));
 
 const pageVariants = {
-  initial: { opacity: 0, x: 20 },
-  animate: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
 };
 
-// Form 로딩 컴포넌트
+// Form 로딩 컴포넌트 - WelcomePage와 동일한 레이아웃 유지
 const FormLoader = () => (
-  <div className="flex items-center justify-center min-h-[400px]">
-    <LoadingState size="md" color="slate" text="Loading..." />
+  <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-start pt-16 sm:pt-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <div className="flex items-center justify-center min-h-[600px]">
+        <LoadingState size="md" color="slate" text="Loading..." />
+      </div>
+    </div>
   </div>
 );
 
@@ -67,8 +71,12 @@ function OnboardingFlow() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors">
-        <LoadingState size="lg" color="slate" text="Preparing your onboarding..." fullHeight />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-start pt-16 sm:pt-20 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+          <div className="flex items-center justify-center min-h-[600px]">
+            <LoadingState size="lg" color="slate" text="Preparing your onboarding..." />
+          </div>
+        </div>
       </div>
     );
   }
@@ -129,7 +137,7 @@ function OnboardingFlow() {
               initial="initial"
               animate="animate"
               exit="exit"
-              transition={{ type: 'tween', duration: 0.3 }}
+              transition={{ type: 'tween', duration: 0.15 }}
               className="py-4 sm:py-8"
             >
               {renderStep(currentStep)}

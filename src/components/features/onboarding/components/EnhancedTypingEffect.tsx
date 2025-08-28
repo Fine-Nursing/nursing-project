@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface EnhancedTypingEffectProps {
   text: string;
@@ -55,13 +55,13 @@ export default function EnhancedTypingEffect({
     <span className={className}>
       {displayText}
       {showCursor && (
-        <motion.span
+        <m.span
           animate={{ opacity: showBlink ? 1 : 0 }}
           transition={{ duration: 0.1 }}
           className="text-slate-600 ml-0.5"
         >
           {cursorChar}
-        </motion.span>
+        </m.span>
       )}
     </span>
   );

@@ -7,16 +7,21 @@ import queryKeys from 'src/constants/queryKeys';
 // Types
 interface DifferentialDetail {
   type: string;
-  label: string;
   value: number;
-  estimatedHours: number;
-  description: string;
+  label: string;
+}
+
+interface Differentials {
+  night: number;
+  weekend: number;
+  other: number;
+  details: DifferentialDetail[];
 }
 
 interface CompensationData {
   hourlyRate: number;  // Total hourly rate including differentials
   annualSalary: number;  // Total annual salary including differentials
-  differentials: DifferentialDetail[];
+  differentials: Differentials;
   baseHourlyRate?: number;  // Base hourly rate without differentials
   totalDifferentialHourly?: number;  // Total differential as hourly rate
 }

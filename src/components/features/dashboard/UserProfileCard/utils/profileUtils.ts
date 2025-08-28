@@ -11,11 +11,15 @@ export function getProfileInfoItems(userProfile: UserProfile): ProfileInfoItem[]
 }
 
 export function getCareerInsightContent(careerInsight: any, isLoading: boolean): string {
-  // 기본값을 먼저 표시하고, AI 응답이 오면 업데이트
-  const defaultInsight = "You're on track for a 3-5% salary increase. Consider trauma specialization for additional 8-12% market value.";
+  if (isLoading) {
+    return "Analyzing your career progression and generating personalized insights...";
+  }
   
+  // AI 데이터가 있는 경우 직접 사용
   if (careerInsight?.content) {
     return careerInsight.content;
   }
-  return defaultInsight;
+  
+  // AI 데이터가 없는 경우 더 일반적인 메시지
+  return "Complete your profile to receive AI-powered career insights and personalized recommendations.";
 }

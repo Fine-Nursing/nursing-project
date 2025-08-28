@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { Activity, BarChart3, Binary, CircuitBoard, Cpu, Database, GitBranch, Network, Server, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'src/contexts/ThemeContext';
@@ -155,7 +155,7 @@ function AnalyzingDataScreen() {
       {/* Animated Circuit Lines */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(3)].map((_, i) => (
-          <motion.div
+          <m.div
             key={i}
             className={`absolute h-px bg-gradient-to-r from-transparent ${
               isDark ? 'via-emerald-500' : 'via-emerald-200'
@@ -179,7 +179,7 @@ function AnalyzingDataScreen() {
 
       <div className="max-w-4xl w-full relative z-10">
         {/* Main Card */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className={`${
@@ -191,7 +191,7 @@ function AnalyzingDataScreen() {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex justify-center items-center gap-3 mb-6">
-              <motion.div
+              <m.div
                 animate={{
                   opacity: [0.5, 1, 0.5],
                 }}
@@ -201,13 +201,13 @@ function AnalyzingDataScreen() {
                 }}
               >
                 <CircuitBoard className={`w-12 h-12 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-              </motion.div>
+              </m.div>
               
               <h1 className={`text-4xl font-bold bg-gradient-to-r ${isDark ? 'from-emerald-400 to-cyan-400' : 'from-emerald-600 to-teal-600'} bg-clip-text text-transparent`}>
                 AI Analysis Engine
               </h1>
               
-              <motion.div
+              <m.div
                 animate={{
                   rotate: [0, 360],
                 }}
@@ -218,7 +218,7 @@ function AnalyzingDataScreen() {
                 }}
               >
                 <Cpu className={`w-12 h-12 ${isDark ? 'text-cyan-400' : 'text-teal-600'}`} />
-              </motion.div>
+              </m.div>
             </div>
             
             <div className="flex justify-center items-center gap-6 text-sm">
@@ -235,14 +235,14 @@ function AnalyzingDataScreen() {
           <div className="mb-8">
             <div className="relative">
               <div className={`${isDark ? 'bg-gray-800' : 'bg-gray-200'} rounded-sm h-2 overflow-hidden`}>
-                <motion.div
+                <m.div
                   className={`h-full bg-gradient-to-r ${isDark ? 'from-emerald-400 via-cyan-400 to-emerald-400' : 'from-emerald-500 via-teal-500 to-emerald-500'} relative`}
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.5, ease: "easeOut" }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20 animate-pulse" />
-                </motion.div>
+                </m.div>
               </div>
               {/* Progress Markers */}
               <div className="absolute -top-1 left-0 right-0 flex justify-between">
@@ -270,7 +270,7 @@ function AnalyzingDataScreen() {
 
           {/* Current Step Display - Terminal Style */}
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={currentStep}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -283,7 +283,7 @@ function AnalyzingDataScreen() {
                   <div className={`${isDark ? 'bg-gray-900 text-emerald-400 border-emerald-500/20' : 'bg-white text-emerald-600 border-emerald-200'} rounded-lg p-3 border`}>
                     {analysisSteps[currentStep]?.icon}
                   </div>
-                  <motion.div
+                  <m.div
                     className={`absolute -top-1 -right-1 w-3 h-3 ${isDark ? 'bg-emerald-400' : 'bg-emerald-500'} rounded-full`}
                     animate={{
                       scale: [1, 1.5, 1],
@@ -300,13 +300,13 @@ function AnalyzingDataScreen() {
                     <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-mono`}>
                       {analysisSteps[currentStep]?.title}
                     </h3>
-                    <motion.div
+                    <m.div
                       animate={{ opacity: [0, 1, 0] }}
                       transition={{ duration: 1, repeat: Infinity }}
                       className={`${isDark ? 'text-emerald-400' : 'text-emerald-600'} text-xs font-mono`}
                     >
                       ▮
-                    </motion.div>
+                    </m.div>
                   </div>
                   <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} font-mono`}>
                     {'>'} {analysisSteps[currentStep]?.subtitle}
@@ -319,7 +319,7 @@ function AnalyzingDataScreen() {
                   <Activity className={`w-8 h-8 ${isDark ? 'text-emerald-400' : 'text-emerald-600'} mb-1`} />
                   <div className="flex gap-1">
                     {[...Array(3)].map((_, i) => (
-                      <motion.div
+                      <m.div
                         key={i}
                         className={`w-1 h-3 ${isDark ? 'bg-emerald-400' : 'bg-emerald-500'}`}
                         animate={{
@@ -335,13 +335,13 @@ function AnalyzingDataScreen() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           </AnimatePresence>
 
           {/* Steps Grid - Matrix Style */}
           <div className="grid grid-cols-2 gap-3 mb-8">
             {analysisSteps.map((step, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -367,15 +367,15 @@ function AnalyzingDataScreen() {
                       : isDark ? 'bg-gray-900' : 'bg-gray-200'
                   }`}>
                     {index < currentStep ? (
-                      <motion.div
+                      <m.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         className={`${isDark ? 'text-emerald-400' : 'text-emerald-600'} text-xs font-mono`}
                       >
                         ✓
-                      </motion.div>
+                      </m.div>
                     ) : index === currentStep ? (
-                      <motion.div
+                      <m.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                         className={`w-4 h-4 border-2 ${isDark ? 'border-emerald-400' : 'border-emerald-500'} border-t-transparent rounded-full`}
@@ -393,7 +393,7 @@ function AnalyzingDataScreen() {
                   </span>
                 </div>
                 {index === currentStep && (
-                  <motion.div
+                  <m.div
                     className={`absolute top-0 right-0 w-2 h-2 ${isDark ? 'bg-emerald-400' : 'bg-emerald-500'} rounded-full`}
                     animate={{
                       opacity: [0, 1, 0],
@@ -404,12 +404,12 @@ function AnalyzingDataScreen() {
                     }}
                   />
                 )}
-              </motion.div>
+              </m.div>
             ))}
           </div>
 
           {/* System Status - Terminal Output */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -436,15 +436,15 @@ function AnalyzingDataScreen() {
               )}
             </div>
             <div className={`mt-3 ${isDark ? 'text-gray-600' : 'text-gray-400'}`}>
-              <motion.span
+              <m.span
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
               >
                 █
-              </motion.span>
+              </m.span>
             </div>
-          </motion.div>
-        </motion.div>
+          </m.div>
+        </m.div>
       </div>
     </div>
   );

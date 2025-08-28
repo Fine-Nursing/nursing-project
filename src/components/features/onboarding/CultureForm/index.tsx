@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import { useCultureForm } from './hooks/useCultureForm';
 import { RATING_CATEGORIES } from './constants';
@@ -44,7 +44,7 @@ export default function CultureForm(): JSX.Element {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-8">
         {/* Left Column - Form (3/5 width) */}
         <div className="lg:col-span-3">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
@@ -95,7 +95,7 @@ export default function CultureForm(): JSX.Element {
                 </div>
               </div>
             </form>
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Right Column - Reviews (2/5 width) */}

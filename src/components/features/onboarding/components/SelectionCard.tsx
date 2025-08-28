@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 interface SelectionCardProps {
@@ -23,7 +23,7 @@ export default function SelectionCard({
   className = ''
 }: SelectionCardProps) {
   return (
-    <motion.button
+    <m.button
       type="button"
       onClick={onClick}
       disabled={disabled}
@@ -43,14 +43,14 @@ export default function SelectionCard({
         <div className="flex-1">
           <div className="flex items-center gap-3">
             {icon && (
-              <motion.div
+              <m.div
                 initial={{ rotate: 0 }}
                 animate={{ rotate: isSelected ? 360 : 0 }}
                 transition={{ duration: 0.3 }}
                 className="flex-shrink-0"
               >
                 {icon}
-              </motion.div>
+              </m.div>
             )}
             <h3 className={`text-sm font-medium ${isSelected ? 'text-emerald-900 dark:text-emerald-100' : 'text-gray-900 dark:text-gray-100'}`}>
               {label}
@@ -64,7 +64,7 @@ export default function SelectionCard({
         </div>
         
         {/* Checkmark animation */}
-        <motion.div
+        <m.div
           initial={false}
           animate={{ 
             scale: isSelected ? 1 : 0,
@@ -80,9 +80,9 @@ export default function SelectionCard({
           <div className="w-6 h-6 bg-emerald-600 dark:bg-emerald-500 rounded-full flex items-center justify-center">
             <Check className="w-4 h-4 text-white" />
           </div>
-        </motion.div>
+        </m.div>
       </div>
 
-    </motion.button>
+    </m.button>
   );
 }

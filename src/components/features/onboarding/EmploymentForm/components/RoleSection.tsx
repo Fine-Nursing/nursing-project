@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { 
   Briefcase, Heart, Award, Check, Clock, Calendar, 
   Activity, MapPin, Users, Sun, Moon, Sunrise 
@@ -86,7 +86,7 @@ export default function RoleSection({
     }
   };
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
@@ -199,14 +199,14 @@ export default function RoleSection({
           </>
         )}
         {formData.specialty && !showCustomSpecialty && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-2 text-sm text-emerald-600"
           >
             <Check className="w-4 h-4" />
             <span>Selected: {formData.specialty}</span>
-          </motion.div>
+          </m.div>
         )}
       </div>
 
@@ -228,7 +228,7 @@ export default function RoleSection({
               <p className="text-xs text-gray-500">Suggestions based on {formData.specialty}:</p>
               <div className="flex flex-wrap gap-1">
                 {subSpecialtiesData.subSpecialties.slice(0, 5).map((subSpec) => (
-                  <motion.button
+                  <m.button
                     key={subSpec.name}
                     type="button"
                     onClick={() => updateFormData({ subSpecialty: subSpec.name })}
@@ -237,7 +237,7 @@ export default function RoleSection({
                     className="px-2 py-1 text-xs bg-gray-100 hover:bg-emerald-100 text-gray-600 hover:text-emerald-700 rounded-md transition-colors"
                   >
                     {subSpec.name}
-                  </motion.button>
+                  </m.button>
                 ))}
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function RoleSection({
         ) : (
           <div className="flex flex-wrap gap-2">
             {nurseRatioOptions.map((ratio) => (
-              <motion.button
+              <m.button
                 key={ratio}
                 type="button"
                 onClick={() => updateFormData({ nurseToPatientRatio: ratio })}
@@ -301,23 +301,23 @@ export default function RoleSection({
                 }`}
               >
                 {ratio === 'Custom' ? 'Other' : ratio}
-              </motion.button>
+              </m.button>
             ))}
           </div>
         )}
         {formData.nurseToPatientRatio && formData.nurseToPatientRatio !== 'Custom' && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-green-600 mt-2"
           >
             ✓ Selected: {formData.nurseToPatientRatio}
-          </motion.p>
+          </m.p>
         )}
       </div>
 
       {/* Union Membership */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
@@ -325,13 +325,13 @@ export default function RoleSection({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <motion.div
+            <m.div
               animate={{ scale: formData.isUnionized ? [1, 1.2, 1] : 1 }}
               transition={{ duration: 0.3 }}
               className="text-2xl"
             >
               {formData.isUnionized ? '🤝' : '🏢'}
-            </motion.div>
+            </m.div>
             <div>
               <label htmlFor="isUnionized" className="text-lg font-medium text-gray-900 cursor-pointer">
                 Are you in a union?
@@ -352,7 +352,7 @@ export default function RoleSection({
             <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600" />
           </label>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Navigation for Section 2 */}
       <div className="flex justify-between mt-6">
@@ -381,6 +381,6 @@ export default function RoleSection({
           Next: Compensation →
         </ActionButton>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
