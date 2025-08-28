@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 import { useJsApiLoader, type Libraries } from '@react-google-maps/api';
 import toast from 'react-hot-toast';
@@ -258,7 +258,7 @@ export default function EmploymentForm() {
         />
       </div>
 
-      <motion.div
+      <m.div
         key={currentSection}
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -319,7 +319,7 @@ export default function EmploymentForm() {
             )}
           </AnimatePresence>
         </form>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

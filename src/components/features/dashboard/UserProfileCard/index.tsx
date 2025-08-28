@@ -2,7 +2,8 @@
 
 import React, { memo } from 'react';
 import { m } from 'framer-motion';
-import { useAiInsight } from 'src/api/ai/useAiInsights';
+import { useAllAiInsights } from 'src/api/ai/useAiInsights';
+import useAuthStore from 'src/hooks/useAuthStore';
 import { AvatarSection } from './components/AvatarSection';
 import { ProfileHeader } from './components/ProfileHeader';
 import { ProfileInfoGrid } from './components/ProfileInfoGrid';
@@ -16,10 +17,12 @@ function UserProfileCard({
   userProfile,
   theme,
 }: UserProfileCardProps) {
-  // AI API 호출 제거 - 정적 텍스트 사용으로 성능 개선
-  // const { data: careerInsight, isLoading } = useAiInsight('nurse_summary', userProfile?.id);
-  const careerInsight = null;
-  const isLoading = false;
+  const { user } = useAuthStore();
+  // AiCareerInsights와 동일한 방식으로 AI 데이터 가져오기
+  const { data: aiInsights, isLoading } = useAllAiInsights(user?.id);
+  
+  // nurse_summary 데이터 추출
+  const careerInsight = aiInsights?.nurseSummary;
   
   const {
     showAvatarPicker,

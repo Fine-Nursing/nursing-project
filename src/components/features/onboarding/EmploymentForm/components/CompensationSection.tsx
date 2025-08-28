@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { DollarSign, X, Check, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
@@ -118,20 +118,20 @@ export default function CompensationSection({
     }
   };
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
       className="bg-white rounded-xl shadow-sm p-6 space-y-6"
     >
       <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-        <motion.span
+        <m.span
           animate={{ rotate: [0, 360] }}
           transition={{ duration: 3, repeat: Infinity, repeatDelay: 5 }}
           className="text-2xl"
         >
           💵
-        </motion.span>
+        </m.span>
         Let's talk money & benefits
       </h3>
 
@@ -166,7 +166,7 @@ export default function CompensationSection({
       </div>
 
       {/* Differential Pay Section - From Extras */}
-      <motion.div 
+      <m.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -174,13 +174,13 @@ export default function CompensationSection({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <motion.div
+            <m.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               className="text-3xl"
             >
               💰
-            </motion.div>
+            </m.div>
             <div>
               <h4 className="text-lg font-semibold text-gray-900">
                 Boost Your Total Compensation
@@ -258,14 +258,14 @@ export default function CompensationSection({
               </>
             )}
             {customDiff.type && !showCustomDifferential && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-2 text-sm text-emerald-600"
               >
                 <Check className="w-4 h-4" />
                 <span>Selected: {customDiff.type}</span>
-              </motion.div>
+              </m.div>
             )}
           </div>
 
@@ -274,7 +274,7 @@ export default function CompensationSection({
             <p className="text-xs text-gray-500">Popular differentials:</p>
             <div className="flex flex-wrap gap-1">
               {POPULAR_DIFFERENTIALS.slice(0, 8).map((diffType) => (
-                <motion.button
+                <m.button
                   key={diffType}
                   type="button"
                   onClick={() => handleDifferentialChange(diffType)}
@@ -283,14 +283,14 @@ export default function CompensationSection({
                   className="px-2 py-1 text-xs bg-gray-100 hover:bg-emerald-100 text-gray-600 hover:text-emerald-700 rounded-md transition-colors"
                 >
                   {diffType}
-                </motion.button>
+                </m.button>
               ))}
             </div>
           </div>
 
           {/* Amount and Unit - only show when type is selected */}
           {customDiff.type && (
-            <motion.div 
+            <m.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="p-4 bg-emerald-50 rounded-xl border-2 border-emerald-200"
@@ -355,7 +355,7 @@ export default function CompensationSection({
                   Add
                 </ActionButton>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </div>
 
@@ -448,7 +448,7 @@ export default function CompensationSection({
             rows={2}
           />
         </div>
-      </motion.div>
+      </m.div>
 
 
       {/* Navigation for Section 3 */}
@@ -469,6 +469,6 @@ export default function CompensationSection({
           Review Everything →
         </ActionButton>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

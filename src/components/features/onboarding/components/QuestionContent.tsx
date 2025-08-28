@@ -1,5 +1,5 @@
 // components/QuestionContent.tsx
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { memo } from 'react';
 import TypingEffect from './TypingEffect';
 
@@ -21,14 +21,14 @@ const QuestionContent = memo(
         <TypingEffect text={title} onComplete={onTypingComplete} />
       </h2>
       {subtitle && (
-        <motion.p
+        <m.p
           className="text-gray-500"
           initial={{ opacity: 0 }}
           animate={{ opacity: isTypingComplete ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
           {subtitle}
-        </motion.p>
+        </m.p>
       )}
     </div>
   )

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { ProgressRingProps } from '../types';
 
 export function ProgressRing({ 
@@ -31,7 +31,7 @@ export function ProgressRing({
         />
         
         {/* Progress circle */}
-        <motion.circle
+        <m.circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
@@ -50,14 +50,14 @@ export function ProgressRing({
       
       {/* Progress text */}
       <div className="absolute inset-0 flex items-center justify-center">
-        <motion.span
+        <m.span
           className="text-3xl font-bold text-gray-900 dark:text-white"
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           key={Math.round(progress)}
         >
           {Math.round(progress)}%
-        </motion.span>
+        </m.span>
       </div>
     </div>
   );

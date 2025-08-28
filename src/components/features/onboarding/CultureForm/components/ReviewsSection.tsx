@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Users, DollarSign, TrendingUp, Building2 } from 'lucide-react';
 import { EXISTING_REVIEWS } from '../constants';
 
@@ -8,7 +8,7 @@ export default function ReviewsSection() {
 
   return (
     <div className="lg:col-span-2 hidden lg:block">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.2 }}
@@ -23,7 +23,7 @@ export default function ReviewsSection() {
           </p>
           <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
             {EXISTING_REVIEWS.map((review, index) => (
-              <motion.div
+              <m.div
                 key={review.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ export default function ReviewsSection() {
                 {/* Feedback Text */}
                 <AnimatePresence>
                   {expandedReview === review.id && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
@@ -116,18 +116,18 @@ export default function ReviewsSection() {
                       <p className="text-sm text-gray-600 italic pt-3 border-t border-gray-100">
                         "{review.feedback}"
                       </p>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
 
                 {/* Expand/Collapse indicator */}
-                <motion.div 
+                <m.div 
                   className="flex items-center justify-center mt-2"
                   animate={{ rotate: expandedReview === review.id ? 180 : 0 }}
                 >
                   <ChevronDown className="w-4 h-4 text-emerald-400" />
-                </motion.div>
-              </motion.div>
+                </m.div>
+              </m.div>
             ))}
           </div>
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
@@ -137,7 +137,7 @@ export default function ReviewsSection() {
             </p>
           </div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

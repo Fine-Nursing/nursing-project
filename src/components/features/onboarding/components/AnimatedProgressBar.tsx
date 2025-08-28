@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 interface AnimatedProgressBarProps {
   progress: number;
@@ -18,7 +18,7 @@ export default function AnimatedProgressBar({
       {showPercentage && (
         <div className="flex justify-between mb-2">
           <span className="text-sm text-gray-600">Progress</span>
-          <motion.span 
+          <m.span 
             className="text-sm font-semibold text-slate-600"
             key={progress}
             initial={{ scale: 1.2, opacity: 0 }}
@@ -26,18 +26,18 @@ export default function AnimatedProgressBar({
             transition={{ duration: 0.3 }}
           >
             {Math.round(progress)}%
-          </motion.span>
+          </m.span>
         </div>
       )}
       <div className={`w-full bg-gray-200 rounded-full overflow-hidden ${height}`}>
-        <motion.div
+        <m.div
           className="h-full bg-gradient-to-r from-slate-500 to-slate-600 rounded-full relative overflow-hidden"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.5, ease: "easeOut" }}
         >
           {/* Shimmer effect */}
-          <motion.div
+          <m.div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
             animate={{ x: [-200, 200] }}
             transition={{ 
@@ -47,7 +47,7 @@ export default function AnimatedProgressBar({
               ease: "linear"
             }}
           />
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

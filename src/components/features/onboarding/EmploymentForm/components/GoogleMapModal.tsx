@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { X, MapPin, Check } from 'lucide-react';
 import { GoogleMap, StandaloneSearchBox } from '@react-google-maps/api';
 import ActionButton from 'src/components/ui/button/ActionButton';
@@ -41,13 +41,13 @@ export default function GoogleMapModal({
 
   return (
     <AnimatePresence>
-      <motion.div
+      <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
       >
-        <motion.div
+        <m.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
@@ -122,7 +122,7 @@ export default function GoogleMapModal({
               )}
 
               {googleMapsState.selectedIndex !== null && (
-                <motion.div
+                <m.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="p-4 bg-emerald-50 rounded-lg border border-emerald-200"
@@ -137,7 +137,7 @@ export default function GoogleMapModal({
                       {googleMapsState.tempCity}, {googleMapsState.tempState}
                     </div>
                   </div>
-                </motion.div>
+                </m.div>
               )}
             </div>
 
@@ -158,8 +158,8 @@ export default function GoogleMapModal({
               </ActionButton>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </AnimatePresence>
   );
 }

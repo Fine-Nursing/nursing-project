@@ -1,11 +1,11 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { CheckCircle, Loader } from 'lucide-react';
 import type { AnalysisStepProps } from '../types';
 
 export function AnalysisStep({ step, isActive, isCompleted, index }: AnalysisStepProps) {
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ 
         opacity: isActive || isCompleted ? 1 : 0.5,
@@ -30,12 +30,12 @@ export function AnalysisStep({ step, isActive, isCompleted, index }: AnalysisSte
         {isCompleted ? (
           <CheckCircle className="w-6 h-6" />
         ) : isActive ? (
-          <motion.div
+          <m.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           >
             <Loader className="w-6 h-6" />
-          </motion.div>
+          </m.div>
         ) : (
           step.icon
         )}
@@ -60,7 +60,7 @@ export function AnalysisStep({ step, isActive, isCompleted, index }: AnalysisSte
         
         {/* Metrics */}
         {isActive && (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mt-2"
@@ -68,14 +68,14 @@ export function AnalysisStep({ step, isActive, isCompleted, index }: AnalysisSte
             <span className="inline-block px-2 py-1 text-xs font-medium bg-emerald-100 dark:bg-emerald-800/50 text-emerald-700 dark:text-emerald-300 rounded-full">
               {step.metrics}
             </span>
-          </motion.div>
+          </m.div>
         )}
       </div>
 
       {/* Status Indicator */}
       <div className="flex-shrink-0">
         {isActive && (
-          <motion.div
+          <m.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
             className="w-3 h-3 bg-emerald-500 rounded-full"
@@ -85,6 +85,6 @@ export function AnalysisStep({ step, isActive, isCompleted, index }: AnalysisSte
           <div className="w-3 h-3 bg-green-500 rounded-full" />
         )}
       </div>
-    </motion.div>
+    </m.div>
   );
 }

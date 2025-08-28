@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Circle, ArrowRight } from 'lucide-react';
 
 interface Step {
@@ -29,7 +29,7 @@ export default function StepTransition({
           {steps.map((step, index) => (
             <React.Fragment key={step.id}>
               <div className="flex flex-col items-center">
-                <motion.div
+                <m.div
                   animate={{ 
                     scale: step.isActive ? 1.1 : 1
                   }}
@@ -49,7 +49,7 @@ export default function StepTransition({
                   ) : (
                     <span className="text-sm font-semibold">{index + 1}</span>
                   )}
-                </motion.div>
+                </m.div>
                 <p className={`
                   mt-1 text-[10px] font-medium text-center max-w-[60px]
                   ${step.isActive 
@@ -64,7 +64,7 @@ export default function StepTransition({
               </div>
               {index < steps.length - 1 && (
                 <div className="flex-1 h-0.5 bg-gray-200 mx-1">
-                  <motion.div
+                  <m.div
                     className="h-full bg-emerald-500"
                     initial={{ width: 0 }}
                     animate={{ 
@@ -85,7 +85,7 @@ export default function StepTransition({
         {steps.map((step, index) => (
           <React.Fragment key={step.id}>
           <div className="flex items-center">
-            <motion.button
+            <m.button
               type="button"
               onClick={() => onStepClick?.(index)}
               disabled={!step.isCompleted && !step.isActive}
@@ -97,7 +97,7 @@ export default function StepTransition({
               whileTap={(step.isCompleted || step.isActive) ? { scale: 0.95 } : {}}
             >
               {/* Step circle */}
-              <motion.div
+              <m.div
                 className={`
                   w-12 h-12 rounded-full flex items-center justify-center
                   ${step.isCompleted 
@@ -121,10 +121,10 @@ export default function StepTransition({
                 ) : (
                   <span className="text-lg font-semibold">{index + 1}</span>
                 )}
-              </motion.div>
+              </m.div>
 
               {/* Step title */}
-              <motion.p
+              <m.p
                 className={`
                   mt-2 text-sm font-medium
                   ${step.isActive 
@@ -139,27 +139,27 @@ export default function StepTransition({
                 transition={{ delay: 0.2 }}
               >
                 {step.title}
-              </motion.p>
+              </m.p>
 
               {/* Description */}
               {step.description && step.isActive && (
-                <motion.p
+                <m.p
                   className="mt-1 text-xs text-gray-500 max-w-[120px]"
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
                 >
                   {step.description}
-                </motion.p>
+                </m.p>
               )}
-            </motion.button>
+            </m.button>
 
           </div>
             {/* Connector line */}
             {index < steps.length - 1 && (
               <div className="flex-1 mx-4">
                 <div className="relative h-0.5 bg-gray-200">
-                  <motion.div
+                  <m.div
                     className="absolute top-0 left-0 h-full bg-slate-600"
                     initial={{ width: 0 }}
                     animate={{ 
@@ -168,14 +168,14 @@ export default function StepTransition({
                     transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                   {step.isCompleted && (
-                    <motion.div
+                    <m.div
                       className="absolute top-1/2 -translate-y-1/2 right-0"
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.5 }}
                     >
                       <ArrowRight className="w-4 h-4 text-slate-600" />
-                    </motion.div>
+                    </m.div>
                   )}
                 </div>
               </div>

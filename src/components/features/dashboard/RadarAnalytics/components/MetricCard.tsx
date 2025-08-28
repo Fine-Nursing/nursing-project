@@ -1,5 +1,6 @@
 import React from 'react';
 import { m } from 'framer-motion';
+import { Activity } from 'lucide-react';
 import { metricDisplayNames, metricIcons } from '../types';
 import type { MetricCardProps } from '../types';
 
@@ -11,7 +12,7 @@ export function MetricCard({
   isSelected,
   onSelect,
 }: MetricCardProps) {
-  const Icon = metricIcons[category];
+  const Icon = metricIcons[category] || Activity; // 기본 아이콘 제공
   const displayName = metricDisplayNames[category] || category;
   const diff = ((userValue - avgValue) / avgValue * 100).toFixed(0);
   const isPositive = Number(diff) > 0;

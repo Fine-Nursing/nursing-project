@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Building, MapPinned, Heart, Award, Briefcase, Clock, Users, DollarSign } from 'lucide-react';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import SummaryCard from '../../components/SummaryCard';
@@ -44,7 +44,7 @@ export default function SummaryView({
   }
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="max-w-4xl mx-auto px-4 py-8"
@@ -111,6 +111,6 @@ export default function SummaryView({
           )}
         </ActionButton>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

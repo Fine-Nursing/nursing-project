@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { RATING_CATEGORIES, RATING_OPTIONS } from '../constants';
 import { useRatingLogic } from '../hooks/useRatingLogic';
 import type { CultureFormData } from '../types';
@@ -25,7 +25,7 @@ export default function RatingSection({
           const isRated = !!formData[category.key];
           
           return (
-            <motion.div
+            <m.div
               key={category.key}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ export default function RatingSection({
                   );
                 })}
               </div>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>

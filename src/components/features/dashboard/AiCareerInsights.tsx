@@ -179,12 +179,25 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
                       <p className={`${
                         theme === 'light' ? 'text-purple-600' : 'text-purple-300'
                       }`}>
-                        No transition opportunities were found based on your current experience and expertise.
+                        Career transition analysis requires complete profile data.
                       </p>
-                      <p className={`text-xs mt-1 ${
+                      <p className={`text-xs mt-2 ${
                         theme === 'light' ? 'text-purple-500' : 'text-purple-400'
                       }`}>
-                        We recommend continuing to develop your expertise in your current position.
+                        To generate personalized recommendations, please ensure your profile includes:
+                      </p>
+                      <ul className={`text-xs mt-2 text-left inline-block ${
+                        theme === 'light' ? 'text-purple-500' : 'text-purple-400'
+                      }`}>
+                        <li>• Nursing specialty</li>
+                        <li>• Base hourly pay rate</li>
+                        <li>• Years of experience range</li>
+                        <li>• Work location (state/province)</li>
+                      </ul>
+                      <p className={`text-xs mt-2 italic ${
+                        theme === 'light' ? 'text-purple-400' : 'text-purple-500'
+                      }`}>
+                        Update your profile to see career transition opportunities.
                       </p>
                     </div>
                   )}

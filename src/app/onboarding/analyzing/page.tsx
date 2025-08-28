@@ -1,11 +1,6 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-const AnalyzingDataScreen = dynamic(
-  () => import('src/components/features/onboarding/AnalyzingDataScreen'),
-  { ssr: false }
-);
+import AnalyzingDataScreen from 'src/components/features/onboarding/AnalyzingDataScreen';
 
 export default function AnalyzingPage() {
   return <AnalyzingDataScreen />;

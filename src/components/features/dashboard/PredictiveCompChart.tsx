@@ -116,6 +116,15 @@ export default function PredictiveCompChart({
   userState = '',
 }: PredictiveCompChartProps) {
   // 디버깅용 로그
+  React.useEffect(() => {
+    console.log('📊 PredictiveCompChart Debug:', {
+      userHourlyRate,
+      regionalAvgWage,
+      payDistributionDataLength: payDistributionData?.length,
+      firstDistItem: payDistributionData?.[0],
+    });
+  }, [userHourlyRate, regionalAvgWage, payDistributionData]);
+
   if (!payDistributionData || payDistributionData.length === 0) {
     return (
       <div className={`${
@@ -137,12 +146,15 @@ export default function PredictiveCompChart({
         if (match) {
           const min = parseInt(match[1]);
           const max = parseInt(match[2]);
-          if (userHourlyRate >= min && userHourlyRate < max) {
+          // Use <= for the upper bound to include exact matches at the boundary
+          if (userHourlyRate >= min && userHourlyRate <= max) {
+            console.log('🎯 Found user bar:', item.label, 'for rate:', userHourlyRate);
             return item.label;
           }
         }
       }
     }
+    console.log('❌ User bar not found for rate:', userHourlyRate);
     return null;
   }, [payDistributionData, userHourlyRate]);
 
@@ -155,7 +167,8 @@ export default function PredictiveCompChart({
         if (match) {
           const min = parseInt(match[1]);
           const max = parseInt(match[2]);
-          if (regionalAvgWage >= min && regionalAvgWage < max) {
+          // Use <= for the upper bound to include exact matches at the boundary
+          if (regionalAvgWage >= min && regionalAvgWage <= max) {
             return item.label;
           }
         }

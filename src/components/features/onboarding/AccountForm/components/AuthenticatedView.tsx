@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import useOnboardingStore from 'src/store/onboardingStores';
 
@@ -13,7 +13,7 @@ export function AuthenticatedView({ user, isLoading }: AuthenticatedViewProps) {
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 sm:py-8">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
@@ -50,7 +50,7 @@ export function AuthenticatedView({ user, isLoading }: AuthenticatedViewProps) {
             </div>
           )}
         </div>
-      </motion.div>
+      </m.div>
 
       <div className="flex justify-center mt-6">
         <ActionButton

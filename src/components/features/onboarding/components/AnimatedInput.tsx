@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
 
@@ -40,7 +40,7 @@ export default function AnimatedInput({
   return (
     <div className={`w-full ${className}`}>
       {label && (
-        <motion.label
+        <m.label
           className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -48,7 +48,7 @@ export default function AnimatedInput({
         >
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
-        </motion.label>
+        </m.label>
       )}
 
       <div className="relative">
@@ -58,7 +58,7 @@ export default function AnimatedInput({
           </div>
         )}
 
-        <motion.input
+        <m.input
           type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -96,7 +96,7 @@ export default function AnimatedInput({
         {/* Status icon */}
         <AnimatePresence>
           {(error || success) && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0 }}
@@ -107,7 +107,7 @@ export default function AnimatedInput({
               ) : (
                 <Check className="w-5 h-5 text-green-500" />
               )}
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
@@ -122,14 +122,14 @@ export default function AnimatedInput({
       {/* Error/Success message */}
       <AnimatePresence>
         {error && (
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             className="mt-2 text-sm text-red-500"
           >
             {error}
-          </motion.p>
+          </m.p>
         )}
       </AnimatePresence>
 

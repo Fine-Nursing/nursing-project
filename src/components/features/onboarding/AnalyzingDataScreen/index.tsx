@@ -1,69 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, BarChart3, Binary, CircuitBoard, Cpu, Database, GitBranch, Network, Server, Zap } from 'lucide-react';
+import { Activity, BarChart3, CircuitBoard, Cpu, Database, GitBranch, Network, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { useGenerateAllInsights } from 'src/api/ai/useAiInsights';
 import useOnboardingStore from 'src/store/onboardingStores';
+import useAuthStore from 'src/hooks/useAuthStore';
 
-function AnalyzingDataScreen() {
+// analysisSteps를 컴포넌트 밖으로 이동하여 안정화
+const analysisSteps = [
+  {
+    icon: <Database className="w-6 h-6" />,
+    title: "Initializing Data Pipeline",
+    subtitle: "Establishing secure connection to career database",
+    metrics: "50K+ data points",
+    duration: 2000
+  },
+  {
+    icon: <Network className="w-6 h-6" />,
+    title: "Neural Network Processing",
+    subtitle: "Analyzing patterns across 10,000+ nursing profiles",
+    metrics: "98.5% accuracy",
+    duration: 2500
+  },
+  {
+    icon: <Cpu className="w-6 h-6" />,
+    title: "AI Model Computation",
+    subtitle: "Running predictive algorithms on compensation data",
+    metrics: "ML confidence: 94%",
+    duration: 2000
+  },
+  {
+    icon: <GitBranch className="w-6 h-6" />,
+    title: "Career Path Optimization",
+    subtitle: "Mapping optimal progression trajectories",
+    metrics: "15 pathways identified",
+    duration: 2500
+  },
+  {
+    icon: <BarChart3 className="w-6 h-6" />,
+    title: "Generating Insights",
+    subtitle: "Synthesizing personalized recommendations",
+    metrics: "Processing complete",
+    duration: 2000
+  },
+  {
+    icon: <Zap className="w-6 h-6" />,
+    title: "Deploying Dashboard",
+    subtitle: "Initializing your personalized interface",
+    metrics: "Ready to launch",
+    duration: 1500
+  }
+];
+
+function AnalyzingDataScreenContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const userId = searchParams.get('userId');
+  const userId = searchParams ? searchParams.get('userId') : null;
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const { generateAll } = useGenerateAllInsights();
   const resetForm = useOnboardingStore((state) => state.resetForm);
+  const { user } = useAuthStore();
   
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [dataPoints, setDataPoints] = useState(0);
   const [aiGenerationStarted, setAiGenerationStarted] = useState(false);
-
-  const analysisSteps = [
-    {
-      icon: <Database className="w-6 h-6" />,
-      title: "Initializing Data Pipeline",
-      subtitle: "Establishing secure connection to career database",
-      metrics: "50K+ data points",
-      duration: 2000
-    },
-    {
-      icon: <Network className="w-6 h-6" />,
-      title: "Neural Network Processing",
-      subtitle: "Analyzing patterns across 10,000+ nursing profiles",
-      metrics: "98.5% accuracy",
-      duration: 2500
-    },
-    {
-      icon: <Cpu className="w-6 h-6" />,
-      title: "AI Model Computation",
-      subtitle: "Running predictive algorithms on compensation data",
-      metrics: "ML confidence: 94%",
-      duration: 2000
-    },
-    {
-      icon: <GitBranch className="w-6 h-6" />,
-      title: "Career Path Optimization",
-      subtitle: "Mapping optimal progression trajectories",
-      metrics: "15 pathways identified",
-      duration: 2500
-    },
-    {
-      icon: <BarChart3 className="w-6 h-6" />,
-      title: "Generating Insights",
-      subtitle: "Synthesizing personalized recommendations",
-      metrics: "Processing complete",
-      duration: 2000
-    },
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Deploying Dashboard",
-      subtitle: "Initializing your personalized interface",
-      metrics: "Ready to launch",
-      duration: 1500
-    }
-  ];
 
   useEffect(() => {
     let currentIndex = 0;
@@ -81,12 +84,8 @@ function AnalyzingDataScreen() {
         // AI 인사이트 생성 (3번째 단계에서 실행) - 백그라운드에서 실행
         if (currentIndex === 2 && !aiGenerationStarted) {
           setAiGenerationStarted(true);
-          console.log('Starting AI insights generation in background...');
           // 백그라운드에서 실행하고 에러가 발생해도 무시
-          generateAll().then((result) => {
-            console.log('AI insights generation completed:', result);
-          }).catch((error) => {
-            console.warn('AI insights generation failed, but continuing:', error);
+          generateAll().catch(() => {
             // AI 서버 문제로 실패해도 사용자 경험에는 영향 없음
           });
         }
@@ -99,9 +98,13 @@ function AnalyzingDataScreen() {
       } else {
         // Analysis complete - redirect to user page or user profile
         setTimeout(() => {
-          if (userId) {
-            router.push(`/users/${userId}`);
+          // userId가 있으면 해당 사용자 프로필로, 없으면 현재 로그인한 사용자 페이지로
+          const targetUserId = userId || user?.id;
+          
+          if (targetUserId) {
+            router.push(`/users/${targetUserId}`);
           } else {
+            // userId도 없고 로그인도 안되어있으면 user-page로
             router.push('/user-page');
           }
         }, 500);
@@ -115,7 +118,7 @@ function AnalyzingDataScreen() {
       clearTimeout(progressTimer);
       clearTimeout(stepTimer);
     };
-  }, [router, userId, generateAll, aiGenerationStarted]);
+  }, [router, userId, user?.id, generateAll, aiGenerationStarted]);
 
   // Reset onboarding form when component unmounts or user navigates away
   useEffect(() => {
@@ -270,19 +273,20 @@ function AnalyzingDataScreen() {
 
           {/* Current Step Display - Terminal Style */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className={`${isDark ? 'bg-gray-800/50 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-6 mb-8`}
-            >
-              <div className="flex items-start gap-4">
-                <div className="relative">
-                  <div className={`${isDark ? 'bg-gray-900 text-emerald-400 border-emerald-500/20' : 'bg-white text-emerald-600 border-emerald-200'} rounded-lg p-3 border`}>
-                    {analysisSteps[currentStep]?.icon}
-                  </div>
+            {analysisSteps[currentStep] && (
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className={`${isDark ? 'bg-gray-800/50 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'} border rounded-lg p-6 mb-8`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="relative">
+                    <div className={`${isDark ? 'bg-gray-900 text-emerald-400 border-emerald-500/20' : 'bg-white text-emerald-600 border-emerald-200'} rounded-lg p-3 border`}>
+                      {analysisSteps[currentStep].icon}
+                    </div>
                   <motion.div
                     className={`absolute -top-1 -right-1 w-3 h-3 ${isDark ? 'bg-emerald-400' : 'bg-emerald-500'} rounded-full`}
                     animate={{
@@ -298,7 +302,7 @@ function AnalyzingDataScreen() {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-600'} font-mono`}>
-                      {analysisSteps[currentStep]?.title}
+                      {analysisSteps[currentStep].title}
                     </h3>
                     <motion.div
                       animate={{ opacity: [0, 1, 0] }}
@@ -309,10 +313,10 @@ function AnalyzingDataScreen() {
                     </motion.div>
                   </div>
                   <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} font-mono`}>
-                    {'>'} {analysisSteps[currentStep]?.subtitle}
+                    {'>'} {analysisSteps[currentStep].subtitle}
                   </p>
                   <div className={`mt-2 text-xs ${isDark ? 'text-cyan-400' : 'text-teal-600'} font-mono`}>
-                    [{analysisSteps[currentStep]?.metrics}]
+                    [{analysisSteps[currentStep].metrics}]
                   </div>
                 </div>
                 <div className="flex flex-col items-end">
@@ -336,6 +340,7 @@ function AnalyzingDataScreen() {
                 </div>
               </div>
             </motion.div>
+            )}
           </AnimatePresence>
 
           {/* Steps Grid - Matrix Style */}
@@ -450,4 +455,8 @@ function AnalyzingDataScreen() {
   );
 }
 
-export default AnalyzingDataScreen;
+// Suspense 제거하고 직접 렌더링
+export default function AnalyzingDataScreen() {
+  // 원래 컴포넌트 사용 (motion 컴포넌트로 수정됨)
+  return <AnalyzingDataScreenContent />;
+}

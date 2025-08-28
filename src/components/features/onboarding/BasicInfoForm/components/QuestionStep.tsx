@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { User, GraduationCap, Briefcase, Clock } from 'lucide-react';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import EnhancedTypingEffect from '../../components/EnhancedTypingEffect';
@@ -52,7 +52,7 @@ export default function QuestionStep({
 
       <div className="relative min-h-[450px] sm:min-h-[500px] flex flex-col justify-center">
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={activeQuestion.key}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -70,19 +70,19 @@ export default function QuestionStep({
                 />
               </h2>
               {activeQuestion.subtitle && (
-                <motion.p
+                <m.p
                   className="text-lg text-gray-500 dark:text-gray-400"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isTypingComplete ? 1 : 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   {activeQuestion.subtitle}
-                </motion.p>
+                </m.p>
               )}
             </div>
 
             {isTypingComplete && (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}  // 0.3 → 0.2 (타이핑 속도에 맞춰 조정)
@@ -90,7 +90,7 @@ export default function QuestionStep({
                 {activeQuestion.options ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
                     {activeQuestion.options.map((option, index) => (
-                      <motion.div
+                      <m.div
                         key={option}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -107,7 +107,7 @@ export default function QuestionStep({
                             null
                           }
                         />
-                      </motion.div>
+                      </m.div>
                     ))}
                   </div>
                 ) : (
@@ -153,9 +153,9 @@ export default function QuestionStep({
                     </div>
                   </div>
                 )}
-              </motion.div>
+              </m.div>
             )}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
 

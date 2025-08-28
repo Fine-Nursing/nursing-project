@@ -18,6 +18,11 @@ export function StatsGrid({
   setEditedProfile,
   monthlyBase
 }: StatsGridProps) {
+  // Base pay만의 월급 계산 (base hourly rate * 160시간 기준)
+  const actualMonthlyBase = editedProfile?.baseAnnualSalary 
+    ? Math.round(editedProfile.baseAnnualSalary / 12)
+    : Math.round((editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0) * 160);
+    
   return (
     <div className="grid grid-cols-3 gap-2 sm:gap-4">
       {/* Hourly Rate */}
@@ -45,11 +50,11 @@ export function StatsGrid({
             <input
               type="number"
               step="0.01"
-              value={editedProfile?.hourlyRate || 0}
+              value={editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0}
               onChange={(e) => setEditedProfile({
                 ...editedProfile,
-                hourlyRate: parseFloat(e.target.value) || 0,
-                annualSalary: Math.round((parseFloat(e.target.value) || 0) * 2080)
+                baseHourlyRate: parseFloat(e.target.value) || 0,
+                baseAnnualSalary: Math.round((parseFloat(e.target.value) || 0) * 2080)
               })}
               className={`text-xl font-bold w-20 bg-transparent border-b ${
                 theme === 'light' 
@@ -64,7 +69,7 @@ export function StatsGrid({
             <span className={`text-base sm:text-2xl font-bold ${
               theme === 'light' ? 'text-gray-900' : 'text-white'
             }`}>
-              ${(editedProfile?.hourlyRate || 0).toFixed(2)}
+              ${(editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0).toFixed(2)}
             </span>
             <span className={`text-[10px] sm:text-sm ${
               theme === 'light' ? 'text-gray-500' : 'text-gray-400'
@@ -98,7 +103,7 @@ export function StatsGrid({
           <span className={`text-base sm:text-2xl font-bold ${
             theme === 'light' ? 'text-gray-900' : 'text-white'
           }`}>
-            ${formatNumber(monthlyBase)}
+            ${formatNumber(actualMonthlyBase)}
           </span>
           <span className={`text-[10px] sm:text-sm ${
             theme === 'light' ? 'text-gray-500' : 'text-gray-400'
@@ -131,7 +136,7 @@ export function StatsGrid({
           <span className={`text-base sm:text-2xl font-bold ${
             theme === 'light' ? 'text-gray-900' : 'text-white'
           }`}>
-            ${formatNumber(editedProfile?.annualSalary || 0)}
+            ${formatNumber(editedProfile?.baseAnnualSalary || editedProfile?.annualSalary || 0)}
           </span>
           <span className={`text-[10px] sm:text-sm ${
             theme === 'light' ? 'text-gray-500' : 'text-gray-400'

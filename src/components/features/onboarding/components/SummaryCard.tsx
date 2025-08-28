@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { Edit2, Check, X } from 'lucide-react';
 import { useState } from 'react';
 import CustomDropdown from './CustomDropdown';
@@ -45,7 +45,7 @@ export default function SummaryCard({
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -53,18 +53,18 @@ export default function SummaryCard({
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-        <motion.div
+        <m.div
           initial={{ rotate: 0 }}
           animate={{ rotate: 360 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <Check className="w-5 h-5 text-green-500" />
-        </motion.div>
+        </m.div>
       </div>
 
       <div className="space-y-3">
         {items.map((item, index) => (
-          <motion.div
+          <m.div
             key={item.label}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -127,7 +127,7 @@ export default function SummaryCard({
             </div>
             
             {onEdit && editingLabel !== item.label && (
-              <motion.button
+              <m.button
                 type="button"
                 onClick={() => handleEditClick(item)}
                 className="p-2 text-gray-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
@@ -135,11 +135,11 @@ export default function SummaryCard({
                 whileTap={{ scale: 0.9 }}
               >
                 <Edit2 className="w-4 h-4" />
-              </motion.button>
+              </m.button>
             )}
-          </motion.div>
+          </m.div>
         ))}
       </div>
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,5 +1,5 @@
 // components/AnswersSection.tsx
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { memo } from 'react';
 
 interface AnswersSectionProps {
@@ -46,7 +46,7 @@ const AnswersSection = memo(
     };
 
     return (
-      <motion.div
+      <m.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -54,7 +54,7 @@ const AnswersSection = memo(
         {options ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {options.map((option) => (
-              <motion.button
+              <m.button
                 key={option}
                 variants={itemVariants}
                 onClick={() => onSubmit(option)}
@@ -65,11 +65,11 @@ const AnswersSection = memo(
                 <span className="block font-medium text-gray-900">
                   {option}
                 </span>
-              </motion.button>
+              </m.button>
             ))}
           </div>
         ) : (
-          <motion.div variants={itemVariants} className="space-y-4">
+          <m.div variants={itemVariants} className="space-y-4">
             <input
               type={inputType}
               value={currentValue}
@@ -84,7 +84,7 @@ const AnswersSection = memo(
               min={inputType === 'number' ? 0 : undefined}
               max={inputType === 'number' ? 50 : undefined}
             />
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ 
                 opacity: currentValue ? 1 : 0, 
@@ -92,7 +92,7 @@ const AnswersSection = memo(
               }}
               className="flex justify-end"
             >
-              <motion.button
+              <m.button
                 type="button"
                 onClick={() => currentValue && onSubmit(currentValue)}
                 disabled={!currentValue}
@@ -114,11 +114,11 @@ const AnswersSection = memo(
                     d="M13 7l5 5m0 0l-5 5m5-5H6" 
                   />
                 </svg>
-              </motion.button>
-            </motion.div>
-          </motion.div>
+              </m.button>
+            </m.div>
+          </m.div>
         )}
-      </motion.div>
+      </m.div>
     );
   }
 );

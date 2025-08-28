@@ -4,8 +4,8 @@ import axios from 'axios';
 import useAuthStore from 'src/hooks/useAuthStore';
 
 // 직접 AI API 호출
-// AI API는 SSL 인증서가 없어서 HTTP 사용 (하드코딩)
-const AI_API_BASE_URL = 'http://199.241.139.206:8000';
+// AI API HTTPS 적용됨
+const AI_API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'https://api.nurse-a-i.tech';
 const AI_API_KEY = process.env.NEXT_PUBLIC_AI_API_KEY || 'zetjam-Hywfek-2hixka-p3r4d6-8v9m3c-v5t7eu-w8y9za-b1c2d3-e4f5g6-h7i8j9-k0l1m2-n3o4p5-q6r7s8-t9u0v1';
 
 // AI Insight 타입 정의
@@ -36,7 +36,7 @@ const aiApiClient = axios.create({
     'X-API-Key': AI_API_KEY,
     'Content-Type': 'application/json'
   },
-  timeout: 5000 // 5초 타임아웃 설정 (기본 30초에서 단축)
+  timeout: 15000 // 15초 타임아웃 설정 (AI 생성 시간 고려)
 });
 
 // AI Insight 조회 (GET)
@@ -74,31 +74,12 @@ export const useAllAiInsights = (userId?: string) => useQuery({
     queryFn: async () => {
       if (!userId) throw new Error('User ID is required');
       
-      // TEMPORARY: AI API 서버가 다운되어 있으므로 즉시 mock 데이터 반환 (timeout 제거)
-      // console.log('AI API temporarily disabled - returning mock data');
-      return Promise.resolve({
-        nurseSummary: {
-          id: 'mock-1',
-          user_id: userId,
-          summary_type: 'nurse_summary' as SummaryType,
-          content: 'Your nursing career shows strong progression with competitive compensation.',
-          input_hash: 'mock',
-          prompt_template_id: 'mock',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-        culture: null,
-        skillTransfer: null
-      });
-      
-      /* ORIGINAL CODE - TEMPORARILY DISABLED
+      // 실제 AI API 호출
       try {
-        console.log('Calling AI API with userId:', userId);
         // 각 summary type을 개별적으로 호출
         const summaryTypes: SummaryType[] = ['nurse_summary', 'culture', 'skill_transfer'];
         const results = await Promise.allSettled(
           summaryTypes.map(async type => {
-            console.log(`Fetching AI insight: ${type}`);
             try {
               // 먼저 GET으로 조회 시도
               const response = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
@@ -106,66 +87,72 @@ export const useAllAiInsights = (userId?: string) => useQuery({
             } catch (err: any) {
               // 404인 경우 POST로 생성 시도
               if (err.response?.status === 404) {
-                console.log(`${type} not found, generating new insight...`);
                 try {
                   const postResponse = await aiApiClient.post(`/generate/${type}?user_id=${userId}`);
                   
                   // skill_transfer의 경우 "No skill transfer suggestions found" 응답 처리
                   if (type === 'skill_transfer' && postResponse.data?.message?.includes('No skill transfer suggestions found')) {
-                    console.log('No skill transfer recommendations available for this user');
                     return { type, data: null }; // null로 반환하여 "추천 없음" 상태로 처리
                   }
                   
                   // POST 성공 후 다시 GET으로 조회
                   const getResponse = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
                   return { type, data: getResponse.data };
-                } catch (postErr) {
-                  console.error(`Failed to generate ${type}:`, postErr);
-                  throw postErr;
+                } catch {
+                  // 생성 실패 시 null 반환
+                  return { type, data: null };
                 }
               }
-              console.error(`Failed to fetch ${type}:`, err.message);
-              throw err;
+              // 다른 에러도 null 반환
+              return { type, data: null };
             }
           })
         );
         
-        const insights: Record<SummaryType, AiInsight | null> = {
-          nurse_summary: null,
-          culture: null,
-          skill_transfer: null
+        // 결과를 정리된 형태로 반환
+        const insights = {
+          nurseSummary: null as AiInsight | null,
+          culture: null as AiInsight | null,
+          skillTransfer: null as AiInsight | null
         };
+        
         results.forEach((result) => {
           if (result.status === 'fulfilled') {
             const { type, data } = result.value;
-            insights[type] = data;
-            console.log(`Successfully fetched ${type}`);
-          } else {
-            console.log(`Failed to fetch insight:`, result.reason);
+            if (type === 'nurse_summary') insights.nurseSummary = data;
+            else if (type === 'culture') insights.culture = data;
+            else if (type === 'skill_transfer') insights.skillTransfer = data;
           }
         });
         
         return insights;
-      } catch (error) {
-        // CORS 에러나 네트워크 에러 처리
-        const axiosError = error as AxiosError;
-        console.error('AI API Error:', axiosError.message);
-        if (axiosError.code === 'ERR_NETWORK' || axiosError.message?.includes('CORS')) {
-          // AI Insights API is not accessible (CORS/Network error)
+      } catch {
+        // 에러 처리
+        // Fallback to mock data for development
+        if (process.env.NODE_ENV === 'development') {
           return {
-            nurse_summary: null,
+            nurseSummary: {
+              id: 'mock-1',
+              user_id: userId,
+              summary_type: 'nurse_summary' as SummaryType,
+              content: 'Your nursing career shows strong progression with competitive compensation.',
+              input_hash: 'mock',
+              prompt_template_id: 'mock',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
             culture: null,
-            skill_transfer: null
+            skillTransfer: null
           };
         }
-        // 다른 에러도 null 반환하여 앱이 중단되지 않도록
+        
+        // Production에서는 null 반환
         return {
-          nurse_summary: null,
+          nurseSummary: null,
           culture: null,
-          skill_transfer: null
+          skillTransfer: null
         };
       }
-      */
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000,
