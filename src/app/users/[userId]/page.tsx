@@ -2,20 +2,20 @@
 
 import React, { useState, lazy, Suspense } from 'react';
 import { LazyMotion } from 'framer-motion';
-import motionFeatures from '../../../lib/framer-motion-features';
 import { useRouter, useParams } from 'next/navigation';
 import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 
 import { useMyProfile } from 'src/api/useProfileData';
-import UserProfileCardSkeleton from '../../../components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
 import { useMyCompensation } from 'src/api/useCompensation';
 import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
 import { useAllAiInsights } from 'src/api/ai/useAiInsights';
 import useAuthStore from 'src/hooks/useAuthStore';
+import UserProfileCardSkeleton from '../../../components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
+import motionFeatures from '../../../lib/framer-motion-features';
 
 const UserProfileCard = lazy(() => import('src/components/features/dashboard/UserProfileCard'));
 const CareerDashboard = lazy(() => import('src/components/features/career/CareerDashboard'));
@@ -55,15 +55,6 @@ export default function UserPage() {
   const { data: profileData, error: profileError, refetch: refetchProfile } = useMyProfile();
   const { data: compensationData, error: compensationError, refetch: refetchCompensation } = useMyCompensation();
   
-  // Debug logging
-  React.useEffect(() => {
-    console.log('🔍 Compensation Data Debug:', {
-      compensationData,
-      compensationError,
-      hourlyRate: compensationData?.hourlyRate,
-      hasData: !!compensationData,
-    });
-  }, [compensationData, compensationError]);
   
   // 사용자 정보 기반으로 wage distribution 호출
   const userSpecialty = profileData?.specialty || '';
@@ -78,15 +69,6 @@ export default function UserPage() {
   const { data: aiInsights } = useAllAiInsights(user?.id);
   useDifferentialsSummary();
   
-  // 디버깅용 로깅
-  React.useEffect(() => {
-    if (metricsData) {
-      console.log('📊 Metrics Data:', {
-        userMetrics: metricsData.userMetrics,
-        regionalAverageMetrics: metricsData.regionalAverageMetrics
-      });
-    }
-  }, [metricsData]);
 
   // 데이터 처리
   const enhancedPayData = React.useMemo(() => {
@@ -101,8 +83,8 @@ export default function UserPage() {
       if (userRate && item.label) {
         const match = item.label.match(/\$(\d+)-(\d+)/);
         if (match) {
-          const min = parseInt(match[1]);
-          const max = parseInt(match[2]);
+          const min = parseInt(match[1], 10);
+          const max = parseInt(match[2], 10);
           if (userRate >= min && userRate < max) {
             return { ...item, isUser: true };
           }
@@ -115,7 +97,7 @@ export default function UserPage() {
   const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || 35;
   const actualRegionalAvgAnnualSalary = actualRegionalAvgHourlyRate * 2080;
 
-  const calculateDifference = (user: number, avg: number) => Math.round(((user - avg) / avg) * 100);
+  const calculateDifference = (userValue: number, avg: number) => Math.round(((userValue - avg) / avg) * 100);
 
   const getCompensationInsight = () => {
     if (!compensationData) return '';
@@ -268,41 +250,41 @@ export default function UserPage() {
                 {/* Header */}
                 <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-700">
                   <div className="flex justify-between items-center">
-                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-56"></div>
-                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-16"></div>
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-56" />
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-16" />
                   </div>
                 </div>
                 {/* Content */}
                 <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
                   {/* Primary Display */}
                   <div className="text-center space-y-2">
-                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded w-48 mx-auto"></div>
-                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-32 mx-auto"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded w-48 mx-auto" />
+                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-32 mx-auto" />
                   </div>
                   {/* Stats Grid */}
                   <div className="grid grid-cols-2 gap-4">
                     {[1,2,3,4].map(i => (
                       <div key={i} className="p-3 bg-gray-100 dark:bg-slate-700 rounded space-y-2">
-                        <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-20"></div>
-                        <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-20" />
+                        <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-16" />
                       </div>
                     ))}
                   </div>
                   {/* Differential Breakdown */}
                   <div className="space-y-3">
-                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-40" />
                     {[1,2,3].map(i => (
                       <div key={i} className="flex justify-between items-center">
-                        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-24" />
+                        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-16" />
                       </div>
                     ))}
                   </div>
                   {/* AI Insights */}
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg space-y-3">
-                    <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
+                    <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-32" />
+                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" />
                   </div>
                 </div>
               </div>
@@ -358,15 +340,15 @@ export default function UserPage() {
               <Suspense fallback={
                 <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                   <div className="p-4 sm:p-6 space-y-6">
-                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40" />
                     <div className="flex justify-center items-center h-64">
                       <div className="w-48 h-48 bg-gray-200 dark:bg-slate-700 rounded-full relative">
-                        <div className="absolute inset-8 bg-gray-300 dark:bg-slate-600 rounded-full"></div>
+                        <div className="absolute inset-8 bg-gray-300 dark:bg-slate-600 rounded-full" />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       {[1,2,3,4].map(i => (
-                        <div key={i} className="h-4 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                        <div key={i} className="h-4 bg-gray-200 dark:bg-slate-700 rounded" />
                       ))}
                     </div>
                   </div>
@@ -386,15 +368,15 @@ export default function UserPage() {
               // 로딩 중일 때 Skeleton 표시
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                 <div className="p-4 sm:p-6 space-y-6">
-                  <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40"></div>
+                  <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-40" />
                   <div className="flex justify-center items-center h-64">
                     <div className="w-48 h-48 bg-gray-200 dark:bg-slate-700 rounded-full relative">
-                      <div className="absolute inset-8 bg-gray-300 dark:bg-slate-600 rounded-full"></div>
+                      <div className="absolute inset-8 bg-gray-300 dark:bg-slate-600 rounded-full" />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     {[1,2,3,4].map(i => (
-                      <div key={i} className="h-4 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                      <div key={i} className="h-4 bg-gray-200 dark:bg-slate-700 rounded" />
                     ))}
                   </div>
                 </div>
@@ -407,17 +389,17 @@ export default function UserPage() {
             <Suspense fallback={
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                 <div className="p-4 sm:p-6 space-y-6">
-                  <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-56"></div>
+                  <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-56" />
                   <div className="h-64 bg-gray-100 dark:bg-slate-700 rounded-lg relative overflow-hidden">
                     <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-4 space-x-2">
                       {[1,2,3,4,5,6,7].map(i => (
-                        <div key={i} className="bg-gray-200 dark:bg-slate-600 rounded-t" style={{width: '12%', height: `${30 + i * 10}%`}}></div>
+                        <div key={i} className="bg-gray-200 dark:bg-slate-600 rounded-t" style={{width: '12%', height: `${30 + i * 10}%`}} />
                       ))}
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-24" />
+                    <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-32" />
                   </div>
                 </div>
               </div>
@@ -438,12 +420,12 @@ export default function UserPage() {
                   theme === 'light' ? 'border-gray-200' : 'border-slate-700'
                 } p-8`}>
                   <div className="animate-pulse space-y-4">
-                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
-                    <div className="h-64 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-3/4" />
+                    <div className="h-64 bg-gray-100 dark:bg-slate-900 rounded" />
                     <div className="grid grid-cols-3 gap-4">
-                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
-                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
-                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded"></div>
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded" />
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded" />
+                      <div className="h-20 bg-gray-100 dark:bg-slate-900 rounded" />
                     </div>
                   </div>
                 </div>
@@ -468,16 +450,16 @@ export default function UserPage() {
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                 <div className="p-4 sm:p-6 space-y-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-200 dark:bg-slate-700 rounded"></div>
-                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-44"></div>
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-slate-700 rounded" />
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-44" />
                   </div>
                   <div className="space-y-4">
                     {[1,2,3].map(i => (
                       <div key={i} className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-gray-200 dark:bg-slate-700 rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-gray-200 dark:bg-slate-700 rounded-full mt-2" />
                         <div className="flex-1 space-y-2">
-                          <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-full"></div>
-                          <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
+                          <div className="h-5 bg-gray-200 dark:bg-slate-700 rounded w-full" />
+                          <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4" />
                         </div>
                       </div>
                     ))}
@@ -491,14 +473,14 @@ export default function UserPage() {
               <div className={`${theme === 'light' ? 'bg-white' : 'bg-slate-800'} rounded-xl shadow-lg border ${theme === 'light' ? 'border-gray-200' : 'border-slate-700'} animate-pulse`}>
                 <div className="p-4 sm:p-6 space-y-6">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gray-200 dark:bg-slate-700 rounded"></div>
-                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-32"></div>
+                    <div className="w-8 h-8 bg-gray-200 dark:bg-slate-700 rounded" />
+                    <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-32" />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {[1,2,3,4].map(i => (
                       <div key={i} className="p-3 bg-gray-100 dark:bg-slate-700 rounded-lg space-y-2">
-                        <div className="h-5 bg-gray-200 dark:bg-slate-600 rounded w-3/4"></div>
-                        <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-full"></div>
+                        <div className="h-5 bg-gray-200 dark:bg-slate-600 rounded w-3/4" />
+                        <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-full" />
                       </div>
                     ))}
                   </div>

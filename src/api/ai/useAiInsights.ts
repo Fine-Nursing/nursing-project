@@ -76,12 +76,10 @@ export const useAllAiInsights = (userId?: string) => useQuery({
       
       // 실제 AI API 호출
       try {
-        console.log('Calling AI API with userId:', userId);
         // 각 summary type을 개별적으로 호출
         const summaryTypes: SummaryType[] = ['nurse_summary', 'culture', 'skill_transfer'];
         const results = await Promise.allSettled(
           summaryTypes.map(async type => {
-            console.log(`Fetching AI insight: ${type}`);
             try {
               // 먼저 GET으로 조회 시도
               const response = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
@@ -89,26 +87,22 @@ export const useAllAiInsights = (userId?: string) => useQuery({
             } catch (err: any) {
               // 404인 경우 POST로 생성 시도
               if (err.response?.status === 404) {
-                console.log(`${type} not found, generating new insight...`);
                 try {
                   const postResponse = await aiApiClient.post(`/generate/${type}?user_id=${userId}`);
                   
                   // skill_transfer의 경우 "No skill transfer suggestions found" 응답 처리
                   if (type === 'skill_transfer' && postResponse.data?.message?.includes('No skill transfer suggestions found')) {
-                    console.log('No skill transfer recommendations available for this user');
                     return { type, data: null }; // null로 반환하여 "추천 없음" 상태로 처리
                   }
                   
                   // POST 성공 후 다시 GET으로 조회
                   const getResponse = await aiApiClient.get(`/generate/${type}?user_id=${userId}`);
                   return { type, data: getResponse.data };
-                } catch (postErr) {
-                  console.error(`Failed to generate ${type}:`, postErr);
+                } catch {
                   // 생성 실패 시 null 반환
                   return { type, data: null };
                 }
               }
-              console.error(`Failed to fetch ${type}:`, err.message);
               // 다른 에러도 null 반환
               return { type, data: null };
             }
@@ -128,21 +122,14 @@ export const useAllAiInsights = (userId?: string) => useQuery({
             if (type === 'nurse_summary') insights.nurseSummary = data;
             else if (type === 'culture') insights.culture = data;
             else if (type === 'skill_transfer') insights.skillTransfer = data;
-            console.log(`Successfully processed ${type}`);
-          } else {
-            console.log(`Failed to fetch insight:`, result.reason);
           }
         });
         
         return insights;
-      } catch (error) {
+      } catch {
         // 에러 처리
-        const axiosError = error as AxiosError;
-        console.error('AI API Error:', axiosError.message);
-        
         // Fallback to mock data for development
         if (process.env.NODE_ENV === 'development') {
-          console.log('Using fallback mock data for development');
           return {
             nurseSummary: {
               id: 'mock-1',

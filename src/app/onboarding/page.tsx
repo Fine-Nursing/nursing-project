@@ -24,7 +24,8 @@ const pageVariants = {
 };
 
 // Form 로딩 컴포넌트 - WelcomePage와 동일한 레이아웃 유지
-const FormLoader = () => (
+function FormLoader() {
+  return (
   <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors flex items-start pt-16 sm:pt-20">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
       <div className="flex items-center justify-center min-h-[600px]">
@@ -32,7 +33,8 @@ const FormLoader = () => (
       </div>
     </div>
   </div>
-);
+  );
+}
 
 function OnboardingFlow() {
   const { currentStep } = useOnboardingStore();
