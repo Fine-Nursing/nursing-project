@@ -5,19 +5,19 @@ export const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
   hat: 'none',
   graphic: 'none',
   
-  // Basic features
-  hair: 'bun',
+  // Basic features - Professional preset
+  hair: 'none',
   hairColor: 'brown',
   eyes: 'normal',
   eyebrows: 'raised',
   mouth: 'serious',
   clothing: 'dressShirt',
   clothingColor: 'white',
-  accessory: 'roundGlasses',
+  accessory: 'none',
   facialHair: 'none',
   skinTone: 'light',
-  body: 'breasts',
-  lashes: true,
+  body: 'chest',
+  lashes: false,
   lipColor: 'red'
 };
 

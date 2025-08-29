@@ -53,7 +53,7 @@ export default function CustomizeSectionUpdated({ avatarConfig, setAvatarConfig,
     }`;
 
   return (
-    <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
+    <div className="space-y-4 pb-4">
       {/* Hat */}
       <div>
         <label className={`text-sm font-medium block mb-2 ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
