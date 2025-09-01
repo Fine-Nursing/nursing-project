@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Activity, BarChart3, CircuitBoard, Cpu, Database, GitBranch, Network, Zap } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -68,9 +68,18 @@ function AnalyzingDataScreenContent() {
   const [dataPoints, setDataPoints] = useState(0);
   const [aiGenerationStarted, setAiGenerationStarted] = useState(false);
 
+  // AI 생성 함수를 useCallback으로 안정화
+  const handleAiGeneration = useCallback(() => {
+    if (!aiGenerationStarted) {
+      setAiGenerationStarted(true);
+      generateAll().catch(() => {
+        // AI 서버 문제로 실패해도 사용자 경험에는 영향 없음
+      });
+    }
+  }, [generateAll, aiGenerationStarted]);
+
   useEffect(() => {
     let currentIndex = 0;
-    let progressTimer: NodeJS.Timeout;
     let stepTimer: NodeJS.Timeout;
 
     const runAnalysis = async () => {
@@ -82,12 +91,8 @@ function AnalyzingDataScreenContent() {
         setProgress(stepProgress);
 
         // AI 인사이트 생성 (3번째 단계에서 실행) - 백그라운드에서 실행
-        if (currentIndex === 2 && !aiGenerationStarted) {
-          setAiGenerationStarted(true);
-          // 백그라운드에서 실행하고 에러가 발생해도 무시
-          generateAll().catch(() => {
-            // AI 서버 문제로 실패해도 사용자 경험에는 영향 없음
-          });
+        if (currentIndex === 2) {
+          handleAiGeneration();
         }
 
         // Move to next step
@@ -104,8 +109,9 @@ function AnalyzingDataScreenContent() {
           if (targetUserId) {
             router.push(`/users/${targetUserId}`);
           } else {
-            // userId도 없고 로그인도 안되어있으면 user-page로
-            router.push('/user-page');
+            // userId도 없고 user?.id도 없으면 홈으로 리다이렉트
+            console.warn('No userId found, redirecting to home');
+            router.push('/');
           }
         }, 500);
       }
@@ -115,18 +121,15 @@ function AnalyzingDataScreenContent() {
     runAnalysis();
 
     return () => {
-      clearTimeout(progressTimer);
       clearTimeout(stepTimer);
     };
-  }, [router, userId, user?.id, generateAll, aiGenerationStarted]);
+  }, [router, userId, user?.id]);
 
   // Reset onboarding form when component unmounts or user navigates away
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       // Clean up onboarding data when leaving the analyzing page
       resetForm();
-    };
-  }, [resetForm]);
+    }, [resetForm]);
 
   // Counter animation for data points
   useEffect(() => {

@@ -180,4 +180,4 @@ function DifferentialItem({
       </div>
     </div>
   );
-}
+}export default DifferentialBreakdown

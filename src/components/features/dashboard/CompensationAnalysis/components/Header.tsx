@@ -49,4 +49,4 @@ export function Header({ theme, isEditing, setIsEditing }: HeaderProps) {
       </div>
     </div>
   );
-}
+}export default Header

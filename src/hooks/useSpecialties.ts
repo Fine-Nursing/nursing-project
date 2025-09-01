@@ -22,8 +22,7 @@ export const useSpecialties = () => {
   });
 
   // 특정 specialty의 sub-specialties 조회
-  const getSubSpecialties = (specialtyId: string | null) => {
-    return useQuery<{ subSpecialties: SubSpecialty[] }>({
+  const getSubSpecialties = (specialtyId: string | null) => useQuery<{ subSpecialties: SubSpecialty[] }>({
       queryKey: ['specialties', specialtyId, 'sub-specialties'],
       queryFn: async () => {
         if (!specialtyId) throw new Error('Specialty ID is required');
@@ -35,7 +34,6 @@ export const useSpecialties = () => {
       enabled: !!specialtyId,
       staleTime: 1000 * 60 * 30, // 30분 캐싱
     });
-  };
 
   return {
     getAllSpecialties,

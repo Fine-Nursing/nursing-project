@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import useAuthStore from 'src/hooks/useAuthStore';
 import type { AuthMode } from '../AuthModal';
 
-export const useAuth = () => {
+const useAuth = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   
@@ -38,3 +38,5 @@ export const useAuth = () => {
     signOut,
   };
 };
+
+export default useAuth;

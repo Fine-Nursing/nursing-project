@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuthValidation } from '../hooks/useAuthValidation';
+import useAuthValidation from '../hooks/useAuthValidation';
 
 interface LoginFormProps {
   onSuccess?: () => void;

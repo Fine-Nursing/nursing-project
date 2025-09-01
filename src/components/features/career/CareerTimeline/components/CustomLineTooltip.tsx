@@ -7,7 +7,7 @@ interface CustomLineTooltipProps extends TooltipProps<number, string> {
   theme?: 'light' | 'dark';
 }
 
-export function CustomLineTooltip({
+function CustomLineTooltip({
   active,
   payload,
   theme = 'light',
@@ -55,3 +55,5 @@ export function CustomLineTooltip({
     </div>
   );
 }
+
+export default CustomLineTooltip;

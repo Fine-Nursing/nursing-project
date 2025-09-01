@@ -86,7 +86,7 @@ export default function AiPerformanceInsights({ theme, scoreDiff, userId }: AiPe
                           theme === 'light' ? 'text-gray-700' : 'text-gray-300'
                         }`}>
                           {(() => {
-                            const content = (allInsights as any).skillTransfer.content;
+                            const {content} = (allInsights as any).skillTransfer;
                             const firstPoint = content.split('•')[0];
                             return firstPoint?.trim() || content;
                           })()}

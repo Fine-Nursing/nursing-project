@@ -84,4 +84,4 @@ export function PrimaryCompensationDisplay({
       </div>
     </div>
   );
-}
+}export default PrimaryCompensationDisplay

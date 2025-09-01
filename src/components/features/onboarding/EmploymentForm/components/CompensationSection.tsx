@@ -2,10 +2,10 @@ import { m } from 'framer-motion';
 import { DollarSign, X, Check, Plus } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
-import AnimatedInput from '../../components/AnimatedInput';
-import CustomDropdown from '../../components/CustomDropdown';
 import toast from 'react-hot-toast';
 import type { IndividualDifferentialItem } from 'src/types/onboarding';
+import AnimatedInput from '../../components/AnimatedInput';
+import CustomDropdown from '../../components/CustomDropdown';
 
 interface CompensationSectionProps {
   formData: any;

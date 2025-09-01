@@ -6,7 +6,7 @@ import {
   validateSignUpForm 
 } from '../utils/validation';
 
-export function useAuthValidation() {
+function useAuthValidation() {
   const [errors, setErrors] = useState<ValidationErrors>({});
 
   const clearError = useCallback((field: keyof ValidationErrors) => {
@@ -46,3 +46,5 @@ export function useAuthValidation() {
     validateSignUp,
   };
 }
+
+export default useAuthValidation;

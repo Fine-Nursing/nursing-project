@@ -6,7 +6,7 @@ interface TimelineHeaderProps {
   itemCount: number;
 }
 
-export function TimelineHeader({ theme, itemCount }: TimelineHeaderProps) {
+function TimelineHeader({ theme, itemCount }: TimelineHeaderProps) {
   const bgClass = theme === 'light' 
     ? 'bg-slate-50 border-slate-200' 
     : 'bg-slate-800 border-slate-600';
@@ -39,4 +39,4 @@ export function TimelineHeader({ theme, itemCount }: TimelineHeaderProps) {
       </p>
     </div>
   );
-}
+}export default TimelineHeader;

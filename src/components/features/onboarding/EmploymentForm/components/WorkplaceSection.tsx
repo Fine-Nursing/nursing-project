@@ -2,8 +2,8 @@ import { m } from 'framer-motion';
 import { MapPin, Building2, Building } from 'lucide-react';
 import { useRef, useEffect, useState, useCallback } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
-import AnimatedInput from '../../components/AnimatedInput';
 import { normalizeCity } from 'src/lib/constants/cityMapping';
+import AnimatedInput from '../../components/AnimatedInput';
 
 interface WorkplaceSectionProps {
   formData: any;
@@ -50,7 +50,7 @@ export default function WorkplaceSection({
           
           // 주소 컴포넌트에서 모든 정보 추출
           place.address_components.forEach((component) => {
-            const types = component.types;
+            const {types} = component;
             
             if (types.includes('locality')) {
               rawCity = component.long_name;
@@ -92,9 +92,9 @@ export default function WorkplaceSection({
             name: place.name,
             originalCity: rawCity,
             normalizedCity: finalCity,
-            state: state,
-            neighborhood: neighborhood,
-            county: county,
+            state,
+            neighborhood,
+            county,
             fullAddress: place.formatted_address,
             addressComponents: place.address_components
           });

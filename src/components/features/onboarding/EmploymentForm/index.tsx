@@ -2,14 +2,14 @@ import { m, AnimatePresence } from 'framer-motion';
 import { useState, useCallback, useMemo } from 'react';
 import { useJsApiLoader, type Libraries } from '@react-google-maps/api';
 import toast from 'react-hot-toast';
+import { DIFFERENTIAL_LIST } from 'src/lib/constants/differential';
+import type { IndividualDifferentialItem } from 'src/types/onboarding';
 import CompactStepIndicator from '../components/CompactStepIndicator';
 import WorkplaceSection from './components/WorkplaceSection';
 import RoleSection from './components/RoleSection';
 import CompensationSection from './components/CompensationSection';
 import SummaryView from './components/SummaryView';
 import { useEmploymentForm } from './hooks/useEmploymentForm';
-import { DIFFERENTIAL_LIST } from 'src/lib/constants/differential';
-import type { IndividualDifferentialItem } from 'src/types/onboarding';
 
 const libraries: Libraries = ['places'];
 

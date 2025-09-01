@@ -151,8 +151,8 @@ export default function CardBoard() {
                 onMouseDown={(e) => {
                   const slider = e.currentTarget;
                   let isDown = true;
-                  let startX = e.pageX - slider.offsetLeft;
-                  let scrollLeft = slider.scrollLeft;
+                  const startX = e.pageX - slider.offsetLeft;
+                  const {scrollLeft} = slider;
                   
                   const handleMouseMove = (e: MouseEvent) => {
                     if (!isDown) return;

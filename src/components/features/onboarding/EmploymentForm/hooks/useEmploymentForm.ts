@@ -2,8 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import useOnboardingStore from 'src/store/onboardingStores';
 import useEmploymentMutation from 'src/api/onboarding/useEmploymentMutation';
 import toast from 'react-hot-toast';
-import type { SectionInfo } from '../types';
 import type { EmploymentType, ShiftType } from 'src/types/onboarding';
+import type { SectionInfo } from '../types';
 import { validateCompensationSection } from '../utils/calculations';
 
 export function useEmploymentForm() {
@@ -35,22 +35,18 @@ export function useEmploymentForm() {
     },
   ], [completedSections, currentSection]);
 
-  const validateWorkplaceSection = useCallback(() => {
-    return !!(
+  const validateWorkplaceSection = useCallback(() => !!(
       formData.organizationName &&
       formData.organizationCity &&
       formData.organizationState
-    );
-  }, [formData]);
+    ), [formData]);
 
-  const validateRoleSection = useCallback(() => {
-    return !!(
+  const validateRoleSection = useCallback(() => !!(
       formData.employmentType &&
       formData.specialty &&
       formData.shiftType &&
       formData.nurseToPatientRatio
-    );
-  }, [formData]);
+    ), [formData]);
 
   const validateCurrentSection = useCallback(() => {
     switch (currentSection) {

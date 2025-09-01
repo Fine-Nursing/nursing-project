@@ -5,11 +5,11 @@ import {
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
+import { useSpecialties } from 'src/hooks/useSpecialties';
+import type { EmploymentType, ShiftType } from 'src/types/onboarding';
 import SelectionCard from '../../components/SelectionCard';
 import CustomDropdown from '../../components/CustomDropdown';
 import AnimatedInput from '../../components/AnimatedInput';
-import { useSpecialties } from 'src/hooks/useSpecialties';
-import type { EmploymentType, ShiftType } from 'src/types/onboarding';
 
 interface RoleSectionProps {
   formData: any;

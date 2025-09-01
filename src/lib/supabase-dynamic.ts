@@ -109,6 +109,4 @@ export const onAuthStateChange = async (callback: (event: AuthChangeEvent, sessi
 };
 
 // Export a method to get supabase client if needed
-export const getSupabaseClient = async () => {
-  return initializeSupabase();
-};
+export const getSupabaseClient = async () => initializeSupabase();

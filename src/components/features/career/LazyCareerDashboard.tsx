@@ -20,8 +20,8 @@ function CareerSkeleton() {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-6 h-64">
       <div className="animate-pulse">
-        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-4"></div>
-        <div className="h-32 bg-gray-100 dark:bg-slate-600 rounded"></div>
+        <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-1/4 mb-4" />
+        <div className="h-32 bg-gray-100 dark:bg-slate-600 rounded" />
       </div>
     </div>
   );
@@ -38,11 +38,11 @@ export default function LazyCareerDashboard({ theme }: LazyCareerDashboardProps)
         { timeout: 1000 } // 최대 1초 대기
       );
       return () => cancelIdleCallback(handle);
-    } else {
+    } 
       // fallback: 500ms 후 로드
       const timer = setTimeout(() => setShouldLoad(true), 500);
       return () => clearTimeout(timer);
-    }
+    
   }, []);
 
   if (!shouldLoad) {

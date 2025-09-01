@@ -147,4 +147,4 @@ export function StatsGrid({
       </div>
     </div>
   );
-}
+}export default StatsGrid

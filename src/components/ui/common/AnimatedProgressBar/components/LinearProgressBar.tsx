@@ -32,7 +32,7 @@ export function LinearProgressBar({
         setAnimatedProgress(percentage);
       }, 100);
       return () => clearTimeout(timer);
-    } else if (!animated) {
+    } if (!animated) {
       setAnimatedProgress(percentage);
     }
   }, [isInView, percentage, animated]);

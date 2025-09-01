@@ -16,10 +16,10 @@ import { Tooltip } from 'recharts/es6/component/Tooltip';
 import { Line } from 'recharts/es6/cartesian/Line';
 import type { CareerProgressionChartProps } from '../types';
 import { prepareChartData } from '../utils';
-import { CustomLineTooltip } from './CustomLineTooltip';
-import { CareerStatistics } from './CareerStatistics';
+import CustomLineTooltip from './CustomLineTooltip';
+import CareerStatistics from './CareerStatistics';
 
-export function CareerProgressionChart({ theme, filteredAndSortedCareerData }: CareerProgressionChartProps) {
+function CareerProgressionChart({ theme, filteredAndSortedCareerData }: CareerProgressionChartProps) {
   const lineData = prepareChartData(filteredAndSortedCareerData);
   
   return (
@@ -107,3 +107,5 @@ export function CareerProgressionChart({ theme, filteredAndSortedCareerData }: C
     </div>
   );
 }
+
+export default CareerProgressionChart;

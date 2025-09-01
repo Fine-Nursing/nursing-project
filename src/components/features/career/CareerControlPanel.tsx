@@ -1,9 +1,8 @@
 import React from 'react';
 import { m } from 'framer-motion';
-import { Plus, Filter, SortDesc } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 interface CareerControlPanelProps {
-  theme: 'light' | 'dark';
   formVisible: boolean;
   setFormVisible: (visible: boolean) => void;
   // filterRole: string;
@@ -13,7 +12,6 @@ interface CareerControlPanelProps {
 }
 
 export default function CareerControlPanel({
-  theme,
   formVisible,
   setFormVisible,
 }: CareerControlPanelProps) {

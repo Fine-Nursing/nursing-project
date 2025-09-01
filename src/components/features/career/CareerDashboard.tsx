@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
@@ -11,7 +11,6 @@ import { LoadingState } from 'src/components/ui/feedback';
 
 import type { CareerItem, NewItemInput } from './types';
 // 하위 컴포넌트들을 lazy loading으로 변경
-import { lazy, Suspense } from 'react';
 
 const CareerHeader = lazy(() => import('./CareerHeader'));
 const CareerStatsGrid = lazy(() => import('./CareerStatsGrid'));
@@ -256,7 +255,7 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
     }
     
     const highestRate = Math.max(...sorted.map(item => item.hourlyRate), 0);
-    const currentRole = sorted.length ? sorted[sorted.length - 1] : null;
+    const latestRole = sorted.length ? sorted[sorted.length - 1] : null;
 
     return {
       sortedCareerData: sorted,
@@ -264,7 +263,7 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       remainingMonths: months % 12,
       highestHourlyRate: highestRate,
       totalPositions: sorted.length,
-      currentRole
+      currentRole: latestRole
     };
   }, [careerData]);
 
@@ -304,11 +303,11 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       <Suspense fallback={
         <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-700 animate-pulse">
           <div className="flex items-center justify-between">
-            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48"></div>
+            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48" />
             <div className="flex gap-4">
-              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-16"></div>
-              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-20"></div>
-              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-16" />
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-20" />
+              <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-24" />
             </div>
           </div>
         </div>
@@ -327,8 +326,8 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-pulse">
             {[1,2,3,4].map((i) => (
               <div key={i} className="p-4 bg-gray-100 dark:bg-slate-700 rounded-lg">
-                <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-16 mb-2"></div>
-                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-20"></div>
+                <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-16 mb-2" />
+                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-20" />
               </div>
             ))}
           </div>
@@ -345,7 +344,6 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
 
         {/* Control Panel - No Suspense needed for static import */}
         <CareerControlPanel
-          theme={theme}
           formVisible={formVisible}
           setFormVisible={setFormVisible}
         />
@@ -362,14 +360,14 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
               <Suspense fallback={
                 <div className="space-y-4 animate-pulse">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
-                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
-                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
-                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded"></div>
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded" />
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded" />
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded" />
+                    <div className="h-12 bg-gray-200 dark:bg-slate-700 rounded" />
                   </div>
                   <div className="flex gap-2">
-                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-24"></div>
-                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-28"></div>
+                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-24" />
+                    <div className="h-10 bg-gray-200 dark:bg-slate-700 rounded w-28" />
                   </div>
                 </div>
               }>
@@ -400,15 +398,15 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
         {/* Career Timeline */}
         <Suspense fallback={
           <div className="space-y-4 animate-pulse">
-            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-32 mb-4"></div>
+            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-32 mb-4" />
             {[1,2,3].map((i) => (
               <div key={i} className="flex items-center space-x-4 p-4 bg-gray-100 dark:bg-slate-700 rounded-lg">
-                <div className="w-3 h-3 bg-gray-200 dark:bg-slate-600 rounded-full"></div>
+                <div className="w-3 h-3 bg-gray-200 dark:bg-slate-600 rounded-full" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-5 bg-gray-200 dark:bg-slate-600 rounded w-48"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-64"></div>
+                  <div className="h-5 bg-gray-200 dark:bg-slate-600 rounded w-48" />
+                  <div className="h-4 bg-gray-200 dark:bg-slate-600 rounded w-64" />
                 </div>
-                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-16"></div>
+                <div className="h-8 bg-gray-200 dark:bg-slate-600 rounded w-16" />
               </div>
             ))}
           </div>
@@ -428,10 +426,10 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
         {/* Progression Bar Chart */}
         <Suspense fallback={
           <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-40 mb-4"></div>
+            <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-40 mb-4" />
             <div className="h-64 bg-gray-100 dark:bg-slate-700 rounded-lg flex items-end justify-between p-4">
               {[1,2,3,4,5,6].map((i) => (
-                <div key={i} className={`bg-gray-200 dark:bg-slate-600 rounded-t w-8`} style={{height: `${20 + i * 15}%`}}></div>
+                <div key={i} className="bg-gray-200 dark:bg-slate-600 rounded-t w-8" style={{height: `${20 + i * 15}%`}} />
               ))}
             </div>
           </div>

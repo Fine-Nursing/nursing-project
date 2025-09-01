@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export, react/no-array-index-key */
 import React from 'react';
 import { Sparkles, ChevronRight, Loader2 } from 'lucide-react';
 import { useAllAiInsights } from 'src/api/ai/useAiInsights';
@@ -112,4 +113,4 @@ export function AIInsights({
       </div>
     </div>
   );
-}
+}export default AIInsights
