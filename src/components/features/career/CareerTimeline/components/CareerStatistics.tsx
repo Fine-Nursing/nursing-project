@@ -2,7 +2,7 @@ import React from 'react';
 import type { CareerStatisticsProps } from '../types';
 import { calculateGrowthRate, calculateRateIncrease } from '../utils';
 
-export function CareerStatistics({ theme, lineData }: CareerStatisticsProps) {
+function CareerStatistics({ theme, lineData }: CareerStatisticsProps) {
   return (
     <div className={`mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg border ${
       theme === 'light' 
@@ -38,3 +38,5 @@ export function CareerStatistics({ theme, lineData }: CareerStatisticsProps) {
     </div>
   );
 }
+
+export default CareerStatistics;

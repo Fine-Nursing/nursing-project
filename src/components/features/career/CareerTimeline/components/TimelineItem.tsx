@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export, no-nested-ternary, @typescript-eslint/no-use-before-define */
 import React from 'react';
 import dayjs from 'dayjs';
 import { 
@@ -15,7 +16,7 @@ import {
 import type { TimelineItemProps } from '../types';
 import { calculateDuration, renderDuration, calculateGap } from '../utils';
 
-export function TimelineItem({
+function TimelineItem({
   item,
   theme,
   index,
@@ -208,4 +209,4 @@ function GapIndicator({ theme, currentEndDate, nextStartDate }: GapIndicatorProp
       )}
     </div>
   );
-}
+}export default TimelineItem;

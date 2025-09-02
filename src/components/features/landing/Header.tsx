@@ -25,7 +25,7 @@ interface HeaderProps {
 }
 
 // Named export without memo - Header는 자주 리렌더링되지 않음
-export const Header = ({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderProps) => {
+export function Header({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderProps) {
   const router = useRouter();
 
   const handleProfileClick = useCallback(() => {
@@ -97,6 +97,6 @@ export const Header = ({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderPro
       </div>
     </header>
   );
-};
+}
 
 export default Header;

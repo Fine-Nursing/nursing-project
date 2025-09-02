@@ -1,3 +1,5 @@
+import type { DifferentialDetail } from './types';
+
 export const formatNumber = (num: number): string => {
   if (num >= 1000000) {
     return `${(num / 1000000).toFixed(1)}M`;
@@ -10,8 +12,6 @@ export const formatNumber = (num: number): string => {
   }
   return num.toLocaleString();
 };
-
-import type { DifferentialDetail } from './types';
 
 export const calculateMonthlyCompensation = (
   annualSalary: number,

@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import { MapPin, Plus } from 'lucide-react';
 import type { EmptyStateProps } from '../types';
 
-export function EmptyState({ theme, careerData, filterRole, setFormVisible }: EmptyStateProps) {
+function EmptyState({ theme, careerData, filterRole, setFormVisible }: EmptyStateProps) {
   return (
     <m.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -54,3 +54,5 @@ export function EmptyState({ theme, careerData, filterRole, setFormVisible }: Em
     </m.div>
   );
 }
+
+export default EmptyState;

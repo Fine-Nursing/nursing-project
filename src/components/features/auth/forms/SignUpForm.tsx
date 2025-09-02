@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuthValidation } from '../hooks/useAuthValidation';
+import useAuthValidation from '../hooks/useAuthValidation';
 import PasswordStrength from '../components/PasswordStrength';
 
 interface SignUpFormProps {

@@ -1,7 +1,7 @@
 'use client';
 
+import React, { lazy, Suspense } from 'react';
 import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion';
-import { lazy, Suspense } from 'react';
 import useInitializeOnboarding from 'src/api/onboarding/useInitializeOnboarding';
 import { LoadingState } from 'src/components/ui/feedback';
 import { ONBOARDING_STEPS } from 'src/constants/onboarding';
@@ -37,8 +37,13 @@ function FormLoader() {
 }
 
 function OnboardingFlow() {
-  const { currentStep } = useOnboardingStore();
+  const { currentStep, restoreFromServer } = useOnboardingStore();
   const { isLoading, error } = useInitializeOnboarding();
+
+  // 컴포넌트 마운트 시 서버에서 상태 복원
+  React.useEffect(() => {
+    restoreFromServer();
+  }, [restoreFromServer]);
 
   const renderStep = (step: OnboardingStep) => {
     const Component = (() => {

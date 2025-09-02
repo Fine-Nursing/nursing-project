@@ -28,22 +28,16 @@ export function useCultureForm() {
     return (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1);
   }, [formData]);
 
-  const getCompletedCategories = useCallback(() => {
-    return RATING_CATEGORIES.filter((cat) => formData[cat.key]).length;
-  }, [formData]);
+  const getCompletedCategories = useCallback(() => RATING_CATEGORIES.filter((cat) => formData[cat.key]).length, [formData]);
 
-  const getProgress = useCallback(() => {
-    return (getCompletedCategories() / RATING_CATEGORIES.length) * 100;
-  }, [getCompletedCategories]);
+  const getProgress = useCallback(() => (getCompletedCategories() / RATING_CATEGORIES.length) * 100, [getCompletedCategories]);
 
-  const validateForm = useCallback(() => {
-    return !!(
+  const validateForm = useCallback(() => !!(
       formData.unitCulture &&
       formData.benefits &&
       formData.growthOpportunities &&
       formData.hospitalQuality
-    );
-  }, [formData]);
+    ), [formData]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();

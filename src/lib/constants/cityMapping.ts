@@ -45,7 +45,7 @@ export const CITY_MAPPINGS = {
   // Chicago Neighborhoods
   IL: {
     chicagoAreas: ['Lincoln Park', 'Hyde Park', 'Loop', 'River North'],
-    handleChicago: function(area: string, hasChicago: boolean) {
+    handleChicago(area: string, hasChicago: boolean) {
       if (hasChicago && this.chicagoAreas.includes(area)) {
         return 'Chicago';
       }
@@ -63,10 +63,10 @@ export const CITY_MAPPINGS = {
   // Miami-Dade
   FL: {
     miamiDade: ['Coral Gables', 'Hialeah', 'Miami Beach', 'Aventura'],
-    handleMiami: (city: string) => {
+    handleMiami: (city: string) => 
       // Miami Beach는 독립 도시지만 Miami Metro의 일부
-      return city;
-    }
+       city
+    
   }
 };
 

@@ -1,6 +1,6 @@
 import React from 'react';
-import { m } from 'framer-motion';
-import { Star, TrendingUp } from 'lucide-react';
+// framer-motion import 제거 (사용하지 않음)
+import { TrendingUp } from 'lucide-react';
 
 interface CareerHeaderProps {
   theme: 'light' | 'dark';

@@ -32,7 +32,7 @@ interface AuthModalProps {
 }
 
 // memo 제거 - 모달은 자주 리렌더링되지 않음
-const AuthModal = ({
+function AuthModal({
   isOpen,
   onClose,
   mode = 'login',
@@ -41,7 +41,7 @@ const AuthModal = ({
   onLogin,
   onSignUp,
   isLoading = false,
-}: AuthModalProps) => {
+}: AuthModalProps) {
   // AuthModal received props
   const [currentMode, setCurrentMode] = useState<AuthMode>(mode);
   
@@ -140,6 +140,6 @@ const AuthModal = ({
       </div>
     </>
   );
-};
+}
 
 export default AuthModal;

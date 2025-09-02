@@ -25,8 +25,8 @@ export const formatCurrency = (amount: number, unit: 'hourly' | 'annual'): strin
   return unit === 'hourly' ? `${formatted}/hr` : `${formatted}/year`;
 };
 
-export const validateCompensationSection = (formData: any): boolean => {
+export const validateCompensationSection = (formData: any): boolean => 
   // Compensation section only needs base pay info to be valid
   // Other fields like differentials and union status are optional
-  return true; // Always valid since all fields in compensation are optional
-};
+   true // Always valid since all fields in compensation are optional
+;

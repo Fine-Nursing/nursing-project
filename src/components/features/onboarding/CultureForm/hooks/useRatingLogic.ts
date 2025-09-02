@@ -12,9 +12,7 @@ export function useRatingLogic() {
     setHoveredRating(null);
   }, []);
 
-  const isRatingHovered = useCallback((category: string, value: number) => {
-    return hoveredRating?.category === category && hoveredRating?.value === value;
-  }, [hoveredRating]);
+  const isRatingHovered = useCallback((category: string, value: number) => hoveredRating?.category === category && hoveredRating?.value === value, [hoveredRating]);
 
   return {
     hoveredRating,

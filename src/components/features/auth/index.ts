@@ -14,8 +14,8 @@ export { default as AuthDivider } from './components/AuthDivider';
 export { default as PasswordStrength } from './components/PasswordStrength';
 
 // Hooks
-export { useAuthValidation } from './hooks/useAuthValidation';
-export { useAuth } from './hooks/useAuth';
+export { default as useAuthValidation } from './hooks/useAuthValidation';
+export { default as useAuth } from './hooks/useAuth';
 
-// Default export
-export { default } from './AuthModal';
+// Main component export
+export { default as Auth } from './AuthModal';

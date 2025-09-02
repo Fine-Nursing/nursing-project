@@ -146,7 +146,7 @@ function FilterSection({
               {/* Insights Section */}
               <div className="pt-4 border-t border-gray-100 dark:border-zinc-800">
                 <div className="text-sm text-gray-600 dark:text-zinc-400 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                   {processedData.length} specialties found
                 </div>
                 {/* Top Paying Section */}

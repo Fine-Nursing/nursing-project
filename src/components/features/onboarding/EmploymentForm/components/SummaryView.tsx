@@ -1,8 +1,8 @@
 import { m } from 'framer-motion';
 import { Building, MapPinned, Heart, Award, Briefcase, Clock, Users, DollarSign } from 'lucide-react';
 import ActionButton from 'src/components/ui/button/ActionButton';
-import SummaryCard from '../../components/SummaryCard';
 import type { EmploymentType, ShiftType } from 'src/types/onboarding';
+import SummaryCard from '../../components/SummaryCard';
 
 interface SummaryViewProps {
   formData: any;

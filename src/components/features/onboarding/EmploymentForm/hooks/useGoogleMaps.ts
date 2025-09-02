@@ -68,7 +68,7 @@ export function useGoogleMaps() {
 
       // Update map center and marker
       if (place.geometry?.location && mapRef.current) {
-        const location = place.geometry.location;
+        const {location} = place.geometry;
         mapRef.current.setCenter(location);
         mapRef.current.setZoom(15);
 
