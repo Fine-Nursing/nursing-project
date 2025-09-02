@@ -81,11 +81,15 @@ export function AIInsights({
             {nurseSummary ? 'AI Career Insights' : 'AI Insights'}
           </h4>
           
-          <p className={`text-sm mb-3 ${
+          <div className={`text-sm mb-3 ${
             theme === 'light' ? 'text-gray-600' : 'text-gray-300'
           }`}>
-            {displayInsight}
-          </p>
+            {displayInsight.split('.').filter((sentence: string) => sentence.trim()).map((sentence: string, index: number) => (
+              <div key={index} className="mb-1">
+                {sentence.trim()}{index < displayInsight.split('.').filter((sentence: string) => sentence.trim()).length - 1 ? '.' : ''}
+              </div>
+            ))}
+          </div>
           
           {displayOpportunities.length > 0 && (
             <div className="space-y-1.5">

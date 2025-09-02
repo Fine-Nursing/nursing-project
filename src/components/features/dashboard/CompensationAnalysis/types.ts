@@ -19,6 +19,10 @@ export interface CompensationAnalysisProps {
   theme: 'light' | 'dark';
   getCompensationInsight: () => string;
   calculatePotentialDifferentials: () => string[] | number | string;
+  userSpecialty?: string;
+  userState?: string;
+  regionalAvgWage?: number;
+  specialtyAvgWage?: number;
 }
 
 export interface MonthlyCalculations {

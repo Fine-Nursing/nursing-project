@@ -13,6 +13,7 @@ import useWageDistribution from 'src/api/useDashboard';
 import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
 import { useAllAiInsights } from 'src/api/ai/useAiInsights';
+import { useSpecialtyAverageCompensation } from 'src/api/useSpecialties';
 import useAuthStore from 'src/hooks/useAuthStore';
 import UserProfileCardSkeleton from '../../../components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
 import motionFeatures from '../../../lib/framer-motion-features';
@@ -64,6 +65,12 @@ export default function UserPage() {
     specialty: userSpecialty,
     state: userState,
   });
+
+  // Get specialty-specific average compensation data
+  const { data: specialtyCompensationData } = useSpecialtyAverageCompensation({
+    search: userSpecialty,
+    limit: 5,
+  });
   
   const { data: metricsData, isLoading: isMetricsLoading, error: metricsError } = useUserMetrics();
   const { data: aiInsights } = useAllAiInsights(user?.id);
@@ -96,6 +103,21 @@ export default function UserPage() {
 
   const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || 35;
   const actualRegionalAvgAnnualSalary = actualRegionalAvgHourlyRate * 2080;
+
+  // Calculate specialty average from API data
+  const specialtyAvgHourlyRate = React.useMemo(() => {
+    if (!specialtyCompensationData || specialtyCompensationData.length === 0) {
+      return actualRegionalAvgHourlyRate; // Fallback to regional average
+    }
+    
+    // Get the first matching specialty (since we filtered by userSpecialty)
+    const matchingSpecialty = specialtyCompensationData.find(item => 
+      item.specialty.toLowerCase().includes(userSpecialty.toLowerCase())
+    ) || specialtyCompensationData[0]; // Use first result if no exact match
+    
+    // Convert annual to hourly (totalCompensation is annual)
+    return Math.round(matchingSpecialty.totalCompensation / 2080);
+  }, [specialtyCompensationData, userSpecialty, actualRegionalAvgHourlyRate]);
 
   const calculateDifference = (userValue: number, avg: number) => Math.round(((userValue - avg) / avg) * 100);
 
@@ -332,6 +354,10 @@ export default function UserPage() {
                 theme={theme}
                 getCompensationInsight={getCompensationInsight}
                 calculatePotentialDifferentials={calculatePotentialDifferentials}
+                userSpecialty={userSpecialty}
+                userState={userState}
+                regionalAvgWage={actualRegionalAvgHourlyRate}
+                specialtyAvgWage={specialtyAvgHourlyRate}
               />
             </Suspense>
             
@@ -487,7 +513,12 @@ export default function UserPage() {
                 </div>
               </div>
             }>
-              <NextSteps theme={theme} />
+              <NextSteps 
+                theme={theme} 
+                userSpecialty={userSpecialty}
+                userState={userState}
+                userHourlyRate={compensationData?.hourlyRate}
+              />
             </Suspense>
           </div>
 

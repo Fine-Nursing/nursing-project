@@ -1,7 +1,7 @@
 // components/NurseDashboard/AiCareerInsights.tsx
 import React, { useEffect } from 'react';
-import { Brain, TrendingUp, Loader2, RefreshCw, Sparkles, Target } from 'lucide-react';
-import { useAllAiInsights, useGenerateAllInsights, type AiInsight } from 'src/api/ai/useAiInsights';
+import { Target, ArrowRight, Loader2, RefreshCw, Briefcase, TrendingUp } from 'lucide-react';
+import { useAiInsight, useGenerateAiInsight } from 'src/api/ai/useAiInsights';
 import useAuthStore from 'src/hooks/useAuthStore';
 
 interface AiCareerInsightsProps {
@@ -12,33 +12,57 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
   const { user } = useAuthStore();
   const userId = user?.id;
   
-  const { data: insights, isLoading } = useAllAiInsights(userId);
-  const { generateAll, isLoading: isGenerating } = useGenerateAllInsights();
+  // Only use skill_transfer API
+  const { data: skillTransferData, isLoading } = useAiInsight('skill_transfer', userId);
+  const generateSkillTransfer = useGenerateAiInsight();
   
-  const nurseSummary = insights?.nurseSummary as AiInsight | null | undefined;
-  const culture = insights?.culture as AiInsight | null | undefined;
-  const skillTransfer = insights?.skillTransfer as AiInsight | null | undefined;
-  
-  // 데이터가 없을 때 자동으로 생성 시도 (한 번만)
+  // Auto-generate skill transfer analysis if no data
   useEffect(() => {
-    const hasData = nurseSummary || culture || skillTransfer;
-    const shouldGenerate = userId && !hasData && !isLoading && !isGenerating;
+    const shouldGenerate = userId && !skillTransferData && !isLoading && !generateSkillTransfer.isPending;
     
     if (shouldGenerate) {
       const timeoutId = setTimeout(() => {
-        generateAll();
-      }, 1000); // 1초 딜레이로 초기 렌더링 안정화
+        generateSkillTransfer.mutate({ summaryType: 'skill_transfer' });
+      }, 1000);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [userId]); // 의존성 배열을 userId만으로 제한
+    return undefined;
+  }, [userId, skillTransferData, isLoading, generateSkillTransfer]);
   
   const handleRefreshInsights = async () => {
     if (userId) {
-      await generateAll();
+      generateSkillTransfer.mutate({ summaryType: 'skill_transfer' });
     }
   };
   
+  // Parse skill transfer opportunities
+  const parseSkillTransferOpportunities = (content: string): string[] => {
+    if (!content) return [];
+    
+    const opportunities: string[] = [];
+    
+    // Try splitting by bullet points first
+    let lines = content.split('•').map(line => line.trim()).filter(Boolean);
+    
+    // If no bullet points found, try splitting by dashes with regex
+    if (lines.length <= 1) {
+      lines = content.split(/\s*-\s*/).map(line => line.trim()).filter(Boolean);
+    }
+    
+    lines.forEach(line => {
+      if (line && line.length > 10) { // Filter out empty or very short lines
+        opportunities.push(line);
+      }
+    });
+    
+    return opportunities.length > 0 ? opportunities : [content];
+  };
+
+  const transitionOpportunities = skillTransferData?.content 
+    ? parseSkillTransferOpportunities(skillTransferData.content)
+    : [];
+
   return (
     <div
       className={`flex-1 ${
@@ -54,178 +78,129 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
           }`}
         >
           <div className={`p-1.5 sm:p-2 rounded-lg ${
-            theme === 'light' ? 'bg-slate-600' : 'bg-slate-700'
+            theme === 'light' ? 'bg-purple-600' : 'bg-purple-700'
           }`}>
-            <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
-          AI Career Insights
+          Career Transition Opportunities
         </h3>
         <p className={`text-sm mt-1 font-medium ${
           theme === 'light' ? 'text-slate-600' : 'text-slate-300'
         }`}>
-          Data-driven analysis of your career progression
+          AI-powered analysis of your transferable skills and career paths
         </p>
       </div>
       {/* Refresh Button */}
       <button
+        type="button"
         onClick={handleRefreshInsights}
-        disabled={isGenerating || isLoading}
+        disabled={generateSkillTransfer.isPending || isLoading}
         className={`absolute top-4 right-4 sm:top-6 sm:right-6 p-1.5 sm:p-2 rounded-lg transition-all ${
           theme === 'light' 
             ? 'hover:bg-slate-100 text-slate-600' 
             : 'hover:bg-slate-700 text-slate-400'
-        } ${isGenerating || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        title="Refresh AI Insights"
+        } ${generateSkillTransfer.isPending || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        title="Refresh Career Analysis"
       >
-        <RefreshCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} />
+        <RefreshCw className={`w-4 h-4 ${generateSkillTransfer.isPending ? 'animate-spin' : ''}`} />
       </button>
       
-      {isLoading || isGenerating ? (
+      {isLoading || generateSkillTransfer.isPending ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+          <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
           <span className={`ml-3 text-sm font-medium ${
             theme === 'light' ? 'text-slate-600' : 'text-slate-400'
           }`}>
-            Analyzing your career data...
+            Analyzing career transition opportunities...
           </span>
         </div>
       ) : (
         <div className="space-y-4 sm:space-y-6">
-          {/* Main Insight */}
-          <div className={`p-3 sm:p-4 rounded-lg border ${
-            theme === 'light' 
-              ? 'bg-emerald-50 border-emerald-200' 
-              : 'bg-emerald-900/20 border-emerald-700'
-          }`}>
-            <div className="flex items-start gap-3">
-              <TrendingUp className={`w-5 h-5 mt-0.5 ${
-                theme === 'light' ? 'text-emerald-600' : 'text-emerald-400'
-              }`} />
-              <div>
-                <h4 className={`font-semibold text-sm sm:text-base mb-1.5 sm:mb-2 ${
-                  theme === 'light' ? 'text-emerald-800' : 'text-emerald-300'
-                }`}>
-                  Career Growth Analysis
-                </h4>
-                <p className={`text-sm leading-relaxed ${
-                  theme === 'light' ? 'text-emerald-700' : 'text-emerald-200'
-                }`}>
-                  {nurseSummary?.content || "Analyzing your nursing career profile..."}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Culture Insights */}
-          {culture && culture.content && (
-            <div className={`p-3 sm:p-4 rounded-lg border ${
-              theme === 'light'
-                ? 'bg-blue-50 border-blue-200'
-                : 'bg-blue-900/20 border-blue-700'
-            }`}>
-              <div className="flex items-start gap-3">
-                <Sparkles className={`w-5 h-5 mt-0.5 ${
-                  theme === 'light' ? 'text-blue-600' : 'text-blue-400'
-                }`} />
-                <div>
-                  <h4 className={`font-semibold text-sm sm:text-base mb-1.5 sm:mb-2 ${
-                    theme === 'light' ? 'text-blue-800' : 'text-blue-300'
-                  }`}>
-                    Work Culture Analysis
-                  </h4>
-                  <div className={`text-sm leading-relaxed ${
-                    theme === 'light' ? 'text-blue-700' : 'text-blue-200'
-                  }`}>
-                    {culture.content.split('•').map((point: string, idx: number) => point.trim() && (
-                      <div key={idx} className="flex items-start gap-2 mb-1">
-                        <span className="text-blue-500">•</span>
-                        <span>{point.trim()}</span>
-                      </div>
-                    ))}
+          {skillTransferData?.content ? (
+            <>
+              {/* Transition Opportunities */}
+              <div className={`p-4 rounded-lg border ${
+                theme === 'light' 
+                  ? 'bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-200' 
+                  : 'bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border-purple-700'
+              }`}>
+                <div className="flex items-start gap-3 mb-4">
+                  <Briefcase className={`w-5 h-5 mt-0.5 ${
+                    theme === 'light' ? 'text-purple-600' : 'text-purple-400'
+                  }`} />
+                  <div>
+                    <h4 className={`font-semibold text-base mb-2 ${
+                      theme === 'light' ? 'text-purple-800' : 'text-purple-300'
+                    }`}>
+                      Recommended Career Paths
+                    </h4>
+                    <p className={`text-sm ${
+                      theme === 'light' ? 'text-purple-600' : 'text-purple-400'
+                    }`}>
+                      Based on your skills and experience profile
+                    </p>
                   </div>
                 </div>
-              </div>
-            </div>
-          )}
-          
-          {/* Skill Transfer Opportunities */}
-          <div className={`p-3 sm:p-4 rounded-lg border ${
-            theme === 'light'
-              ? 'bg-purple-50 border-purple-200'
-              : 'bg-purple-900/20 border-purple-700'
-          }`}>
-            <div className="flex items-start gap-3">
-              <Target className={`w-5 h-5 mt-0.5 ${
-                theme === 'light' ? 'text-purple-600' : 'text-purple-400'
-              }`} />
-              <div>
-                <h4 className={`font-semibold text-sm sm:text-base mb-1.5 sm:mb-2 ${
-                  theme === 'light' ? 'text-purple-800' : 'text-purple-300'
-                }`}>
-                  Career Transition Opportunities
-                </h4>
-                <div className={`text-sm leading-relaxed ${
-                  theme === 'light' ? 'text-purple-700' : 'text-purple-200'
-                }`}>
-                  {skillTransfer && skillTransfer.content ? (
-                    skillTransfer.content.split('•').map((point: string, idx: number) => point.trim() && (
-                      <div key={idx} className="flex items-start gap-2 mb-1">
-                        <span className="text-purple-500">•</span>
-                        <span>{point.trim()}</span>
+                
+                <div className="space-y-3">
+                  {transitionOpportunities.map((opportunity, index) => (
+                    <div key={`opportunity-${index}-${opportunity.slice(0, 20)}`} className={`p-3 rounded-lg ${
+                      theme === 'light' ? 'bg-white/80' : 'bg-slate-800/50'
+                    }`}>
+                      <div className="flex items-start gap-3">
+                        <ArrowRight className={`w-4 h-4 mt-0.5 flex-shrink-0 ${
+                          theme === 'light' ? 'text-purple-500' : 'text-purple-400'
+                        }`} />
+                        <span className={`text-sm leading-relaxed ${
+                          theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                        }`}>
+                          {opportunity}
+                        </span>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-2">
-                      <p className={`${
-                        theme === 'light' ? 'text-purple-600' : 'text-purple-300'
-                      }`}>
-                        Career transition analysis requires complete profile data.
-                      </p>
-                      <p className={`text-xs mt-2 ${
-                        theme === 'light' ? 'text-purple-500' : 'text-purple-400'
-                      }`}>
-                        To generate personalized recommendations, please ensure your profile includes:
-                      </p>
-                      <ul className={`text-xs mt-2 text-left inline-block ${
-                        theme === 'light' ? 'text-purple-500' : 'text-purple-400'
-                      }`}>
-                        <li>• Nursing specialty</li>
-                        <li>• Base hourly pay rate</li>
-                        <li>• Years of experience range</li>
-                        <li>• Work location (state/province)</li>
-                      </ul>
-                      <p className={`text-xs mt-2 italic ${
-                        theme === 'light' ? 'text-purple-400' : 'text-purple-500'
-                      }`}>
-                        Update your profile to see career transition opportunities.
-                      </p>
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
-            </div>
-          </div>
-          
-          {/* No Data State */}
-          {!nurseSummary && !culture && !skillTransfer && !isLoading && !isGenerating && (
-            <div className={`p-3 sm:p-4 rounded-lg border ${
+
+              {/* AI Attribution */}
+              <div className={`text-center text-xs ${
+                theme === 'light' ? 'text-purple-600' : 'text-purple-400'
+              }`}>
+                ✨ AI-powered career transition analysis
+              </div>
+            </>
+          ) : (
+            /* No Data State */
+            <div className={`p-4 sm:p-6 rounded-lg border text-center ${
               theme === 'light'
                 ? 'bg-gray-50 border-gray-200'
                 : 'bg-gray-700 border-gray-600'
             }`}>
-              <p className={`text-sm text-center ${
+              <Target className={`w-8 h-8 mx-auto mb-3 ${
+                theme === 'light' ? 'text-gray-400' : 'text-gray-500'
+              }`} />
+              <h4 className={`font-semibold mb-2 ${
+                theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+              }`}>
+                Career Analysis Ready
+              </h4>
+              <p className={`text-sm mb-4 ${
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
               }`}>
-                AI insights will be generated based on your profile data.
-                <button
-                  onClick={handleRefreshInsights}
-                  className={`block mx-auto mt-2 text-sm font-medium ${
-                    theme === 'light' ? 'text-emerald-600 hover:text-emerald-700' : 'text-emerald-400 hover:text-emerald-300'
-                  }`}
-                >
-                  Generate Insights
-                </button>
+                Complete your profile to unlock personalized career transition opportunities and skill transfer recommendations.
               </p>
+              <button
+                type="button"
+                onClick={handleRefreshInsights}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  theme === 'light' 
+                    ? 'bg-purple-600 text-white hover:bg-purple-700' 
+                    : 'bg-purple-700 text-white hover:bg-purple-600'
+                }`}
+              >
+                <TrendingUp className="w-4 h-4 inline mr-2" />
+                Generate Career Analysis
+              </button>
             </div>
           )}
         </div>
@@ -238,7 +213,7 @@ export default function AiCareerInsights({ theme }: AiCareerInsightsProps) {
           : 'border-slate-600 text-slate-400'
       }`}>
         <div className="flex flex-col sm:flex-row sm:justify-between gap-1">
-          <span>Data sources: Bureau of Labor Statistics, ANA, Hospital surveys</span>
+          <span>Career analysis powered by AI skill matching algorithms</span>
           <span>Last updated: March 2025</span>
         </div>
       </div>
