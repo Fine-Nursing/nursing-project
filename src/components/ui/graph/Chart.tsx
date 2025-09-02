@@ -99,8 +99,6 @@ function createTopLabelsLayer(isMobile: boolean) {
 }
 
 function ChartTooltip({
-  id,
-  value,
   indexValue,
   data,
   states,
@@ -111,21 +109,41 @@ function ChartTooltip({
       : 'All Locations';
 
   return (
-    <div className="bg-white p-3 sm:p-4 shadow-xl rounded-lg border border-gray-100">
-      <div className="font-semibold text-gray-800 text-sm sm:text-lg mb-1 sm:mb-2">
+    <div className="bg-white p-3 sm:p-4 shadow-xl rounded-lg border border-gray-100 min-w-[250px]">
+      <div className="font-semibold text-gray-800 text-sm sm:text-lg mb-2 sm:mb-3">
         {typeof indexValue === 'number' ? indexValue.toString() : indexValue}
       </div>
-      <div className="flex items-center justify-between text-xs sm:text-base">
-        <span className="text-gray-700">{id}:</span>
-        <span className="ml-2 sm:ml-4 font-medium">
-          ${new Intl.NumberFormat().format(value as number)}
+      
+      {/* Base Pay */}
+      <div className="flex items-center justify-between text-xs sm:text-sm mb-1">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
+          <span className="text-gray-700">Base Pay:</span>
+        </div>
+        <span className="font-medium text-indigo-600">
+          ${new Intl.NumberFormat().format(data['Base Pay'])}
         </span>
       </div>
-      <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-gray-100">
-        <div className="font-semibold text-gray-800 text-xs sm:text-base">
-          Total: ${new Intl.NumberFormat().format(data.total)}
+      
+      {/* Differential Pay */}
+      <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-indigo-300"></div>
+          <span className="text-gray-700">Differential Pay:</span>
         </div>
-        <div className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1">
+        <span className="font-medium text-indigo-400">
+          ${new Intl.NumberFormat().format(data['Differential Pay'])}
+        </span>
+      </div>
+      
+      <div className="pt-2 border-t border-gray-100">
+        <div className="flex items-center justify-between font-semibold text-gray-800 text-xs sm:text-base mb-1">
+          <span>Total Compensation:</span>
+          <span className="text-emerald-600">
+            ${new Intl.NumberFormat().format(data.total)}
+          </span>
+        </div>
+        <div className="text-xs sm:text-sm text-gray-600">
           Location: {stateName || data.state}
         </div>
       </div>
@@ -190,8 +208,9 @@ function Chart({ data, states }: ChartProps) {
         valueScale={{ type: 'linear' }}
         indexScale={{ type: 'band', round: true }}
         colors={isDark ? ['#818cf8', '#a5b4fc'] : ['#7986cb', '#a4b0f5']}
-        borderRadius={0}
-        borderWidth={0}
+        borderRadius={2}
+        borderWidth={1}
+        borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
         enableLabel={false}
         animate
         motionConfig="gentle"

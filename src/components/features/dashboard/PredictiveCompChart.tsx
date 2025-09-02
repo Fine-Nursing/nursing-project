@@ -140,14 +140,29 @@ export default function PredictiveCompChart({
   // Find which bar represents the user's wage range
   const userBarLabel = React.useMemo(() => {
     // Find the range that contains the user's hourly rate
-    for (const item of payDistributionData) {
+    // Use [min, max) for all ranges except the last one which uses [min, max]
+    const sortedData = [...payDistributionData].sort((a, b) => {
+      const aMatch = a.label?.match(/\$(\d+)-(\d+)/);
+      const bMatch = b.label?.match(/\$(\d+)-(\d+)/);
+      if (!aMatch || !bMatch) return 0;
+      return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+    });
+    
+    for (let i = 0; i < sortedData.length; i++) {
+      const item = sortedData[i];
       if (item.label) {
         const match = item.label.match(/\$(\d+)-(\d+)/);
         if (match) {
           const min = parseInt(match[1]);
           const max = parseInt(match[2]);
-          // Use <= for the upper bound to include exact matches at the boundary
-          if (userHourlyRate >= min && userHourlyRate <= max) {
+          const isLastRange = i === sortedData.length - 1;
+          
+          // For last range: [min, max], for others: [min, max)
+          const inRange = isLastRange 
+            ? (userHourlyRate >= min && userHourlyRate <= max)
+            : (userHourlyRate >= min && userHourlyRate < max);
+            
+          if (inRange) {
             console.log('🎯 Found user bar:', item.label, 'for rate:', userHourlyRate);
             return item.label;
           }
@@ -161,14 +176,29 @@ export default function PredictiveCompChart({
   // Find which bar represents the regional average
   const avgBarLabel = React.useMemo(() => {
     // Find the range that contains the regional average
-    for (const item of payDistributionData) {
+    // Use [min, max) for all ranges except the last one which uses [min, max]
+    const sortedData = [...payDistributionData].sort((a, b) => {
+      const aMatch = a.label?.match(/\$(\d+)-(\d+)/);
+      const bMatch = b.label?.match(/\$(\d+)-(\d+)/);
+      if (!aMatch || !bMatch) return 0;
+      return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+    });
+    
+    for (let i = 0; i < sortedData.length; i++) {
+      const item = sortedData[i];
       if (item.label) {
         const match = item.label.match(/\$(\d+)-(\d+)/);
         if (match) {
           const min = parseInt(match[1]);
           const max = parseInt(match[2]);
-          // Use <= for the upper bound to include exact matches at the boundary
-          if (regionalAvgWage >= min && regionalAvgWage <= max) {
+          const isLastRange = i === sortedData.length - 1;
+          
+          // For last range: [min, max], for others: [min, max)
+          const inRange = isLastRange 
+            ? (regionalAvgWage >= min && regionalAvgWage <= max)
+            : (regionalAvgWage >= min && regionalAvgWage < max);
+            
+          if (inRange) {
             return item.label;
           }
         }

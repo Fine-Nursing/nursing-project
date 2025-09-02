@@ -26,7 +26,7 @@ export function CareerInsights({ content, isLoading, theme }: CareerInsightsProp
               <TrendingUp className="w-4 h-4 text-green-500" />
             )}
           </div>
-          <p 
+          <div 
             className={`text-base leading-relaxed ${
               theme === 'light' ? 'text-gray-700' : 'text-gray-300'
             }`}
@@ -34,9 +34,13 @@ export function CareerInsights({ content, isLoading, theme }: CareerInsightsProp
             {isLoading ? (
               <span className="animate-pulse">{content}</span>
             ) : (
-              content
+              content.split('.').filter((sentence: string) => sentence.trim()).map((sentence: string, index: number) => (
+                <div key={index} className="mb-1">
+                  {sentence.trim()}{index < content.split('.').filter((sentence: string) => sentence.trim()).length - 1 ? '.' : ''}
+                </div>
+              ))
             )}
-          </p>
+          </div>
         </div>
         <ChevronRight className="w-5 h-5 text-gray-400 cursor-pointer" />
       </div>

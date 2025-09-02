@@ -10,7 +10,7 @@ import {
   PrimaryCompensationDisplay,
   StatsGrid,
   DifferentialBreakdown,
-  AIInsights,
+  CompensationComparison,
   ActionButtons
 } from './components';
 
@@ -19,6 +19,10 @@ function CompensationAnalysis({
   theme,
   getCompensationInsight,
   calculatePotentialDifferentials,
+  userSpecialty,
+  userState,
+  regionalAvgWage,
+  specialtyAvgWage,
 }: CompensationAnalysisProps) {
   const {
     isEditing,
@@ -85,10 +89,13 @@ function CompensationAnalysis({
           differentialAmounts={differentialAmounts}
         />
 
-        <AIInsights
+        <CompensationComparison
           theme={theme}
-          getCompensationInsight={getCompensationInsight}
-          potentialDifferentials={potentialDifferentials}
+          userHourlyRate={editedProfile?.hourlyRate || 0}
+          userSpecialty={userSpecialty}
+          userState={userState}
+          regionalAvgWage={regionalAvgWage}
+          specialtyAvgWage={specialtyAvgWage}
         />
 
         <ActionButtons
