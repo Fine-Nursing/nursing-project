@@ -1,12 +1,19 @@
 import type { SpecialtyCompensation } from 'src/types/specialty';
 import type { ProcessedDataItem, SalaryRangeValues } from '../types';
 
+// Convert annual salary to hourly wage
+const annualToHourly = (annualSalary: number): number => {
+  return Math.round((annualSalary / 2080) * 100) / 100; // Round to 2 decimal places
+};
+
 export const calculateSalaryRange = (compensations: SpecialtyCompensation[] | undefined): SalaryRangeValues => {
   if (!compensations || compensations.length === 0) {
-    return { min: 70000, max: 120000 };
+    // Default hourly range: $35-60/hour (roughly equivalent to 70k-120k annually)
+    return { min: 35, max: 60 };
   }
 
-  const values = compensations.map((item) => item.totalCompensation);
+  // Convert annual compensation to hourly
+  const values = compensations.map((item) => annualToHourly(item.totalCompensation));
   const min = Math.min(...values);
   const max = Math.max(...values);
 
@@ -26,16 +33,18 @@ export const processCompensationData = (
 
   return compensations
     .filter((item) => {
+      // Convert annual compensation to hourly for comparison
+      const hourlyTotal = annualToHourly(item.totalCompensation);
       const matchesSalary =
-        item.totalCompensation >= salaryRange[0] &&
-        item.totalCompensation <= salaryRange[1];
+        hourlyTotal >= salaryRange[0] &&
+        hourlyTotal <= salaryRange[1];
       return matchesSalary;
     })
     .map((item) => ({
       specialty: item.specialty,
-      'Base Pay': item.basePay,
-      'Differential Pay': item.differentialPay,
-      total: item.totalCompensation,
+      'Base Pay': item.basePay, // Keep as annual, will be converted in Chart component
+      'Differential Pay': item.differentialPay, // Keep as annual, will be converted in Chart component
+      total: item.totalCompensation, // Keep as annual, will be converted in Chart component
       state: selectedLocations[0] || 'ALL',
     }));
 };

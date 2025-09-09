@@ -267,22 +267,6 @@ export default function CardBoard() {
           )}
       </div>
 
-      {/* Footer */}
-      <div className="border-t-2 border-zinc-100/30 dark:border-zinc-800/30 p-3 sm:p-4 rounded-b-xl bg-gradient-to-r from-blue-50/30 to-sky-50/30 dark:from-zinc-950/50 dark:to-black/50 shadow-sm transition-colors">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-300/80">
-          <span>{getStatusText()}</span>
-          {shouldShowLoadMore && (
-            <button
-              type="button"
-              onClick={handleLoadMore}
-              disabled={isFetching}
-              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium transition-colors disabled:opacity-50"
-            >
-              {isFetching ? 'Loading...' : 'Load More'}
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 }

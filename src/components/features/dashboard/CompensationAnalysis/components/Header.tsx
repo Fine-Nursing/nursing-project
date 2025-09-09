@@ -17,12 +17,12 @@ export function Header({ theme, isEditing, setIsEditing }: HeaderProps) {
           <h2 className={`text-lg font-semibold ${
             theme === 'light' ? 'text-gray-900' : 'text-white'
           }`}>
-            Compensation Analysis
+            Base and Differential Pay
           </h2>
           <p className={`text-sm mt-0.5 ${
             theme === 'light' ? 'text-gray-500' : 'text-gray-400'
           }`}>
-            Your earnings breakdown and insights
+            Your base pay and differential breakdown
           </p>
         </div>
         

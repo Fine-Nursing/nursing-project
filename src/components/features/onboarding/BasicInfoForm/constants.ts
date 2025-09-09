@@ -4,14 +4,14 @@ import type { BasicQuestion } from './types';
 export const BASIC_INFO_QUESTIONS: BasicQuestion[] = [
   {
     key: 'name',
-    title: "Hi! Let's begin with your name — what should we call you?",
+    title: "Hi! Let's begin with your name what should we call you?",
     subtitle: '',
     validation: (value: string) => value.length > 0,
   },
   {
     key: 'education',
-    title: "Awesome — what's your highest completed education level?",
-    subtitle: 'This helps us understand your academic background',
+    title: "Awesome. What's your highest completed education level?",
+    subtitle: '',
     options: [
       'High School Diploma or Equivalent',
       'Vocational/Technical Certificate',
@@ -53,7 +53,7 @@ export const BASIC_INFO_QUESTIONS: BasicQuestion[] = [
   {
     key: 'experienceYears',
     title: 'And lastly, how many years of experience do you have?',
-    subtitle: 'Your experience is valuable to us',
+    subtitle: '',
     inputType: 'number',
     validation: (value: string) => {
       const num = Number(value);

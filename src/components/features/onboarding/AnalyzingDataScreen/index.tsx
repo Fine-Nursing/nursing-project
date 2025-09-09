@@ -11,43 +11,43 @@ import useAuthStore from 'src/hooks/useAuthStore';
 const analysisSteps = [
   {
     icon: <Database className="w-6 h-6" />,
-    title: "Initializing Data Pipeline",
-    subtitle: "Establishing secure connection to career database",
-    metrics: "50K+ data points",
+    title: "AI Nursing Data Mining",
+    subtitle: "Deep learning algorithms extracting patterns from nursing salary data",
+    metrics: "50K+ nurse profiles analyzed",
     duration: 2000
   },
   {
     icon: <Network className="w-6 h-6" />,
     title: "Neural Network Processing",
-    subtitle: "Analyzing patterns across 10,000+ nursing profiles",
-    metrics: "98.5% accuracy",
+    subtitle: "AI models analyzing your specialty, location & experience against market data",
+    metrics: "98.5% prediction accuracy",
     duration: 2500
   },
   {
     icon: <Cpu className="w-6 h-6" />,
-    title: "AI Model Computation",
-    subtitle: "Running predictive algorithms on compensation data",
-    metrics: "ML confidence: 94%",
+    title: "ML Compensation Analysis",
+    subtitle: "Machine learning calculating differential pay & career opportunities",
+    metrics: "AI confidence: 94%",
     duration: 2000
   },
   {
     icon: <GitBranch className="w-6 h-6" />,
-    title: "Career Path Optimization",
-    subtitle: "Mapping optimal progression trajectories",
-    metrics: "15 pathways identified",
+    title: "AI Career Path Mapping",
+    subtitle: "Intelligent algorithms identifying nursing advancement trajectories",
+    metrics: "15 AI-generated pathways",
     duration: 2500
   },
   {
     icon: <BarChart3 className="w-6 h-6" />,
-    title: "Generating Insights",
-    subtitle: "Synthesizing personalized recommendations",
-    metrics: "Processing complete",
+    title: "Smart Insights Generation",
+    subtitle: "AI synthesizing personalized nursing career & salary recommendations",
+    metrics: "AI processing complete",
     duration: 2000
   },
   {
     icon: <Zap className="w-6 h-6" />,
-    title: "Deploying Dashboard",
-    subtitle: "Initializing your personalized interface",
+    title: "Launching Your AI Dashboard",
+    subtitle: "Deploying your personalized nurse analytics platform",
     metrics: "Ready to launch",
     duration: 1500
   }
@@ -426,13 +426,13 @@ function AnalyzingDataScreenContent() {
             <div className={`${isDark ? 'text-gray-500' : 'text-gray-600'} mb-2`}>[SYSTEM STATUS]</div>
             <div className="space-y-1">
               <div className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
-                ▸ Neural Network: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>ACTIVE</span>
+                ▸ AI Salary Assistant: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>ACTIVE</span>
               </div>
               <div className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
-                ▸ Data Pipeline: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>STREAMING</span>
+                ▸ Smart Data Processing: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>STREAMING</span>
               </div>
               <div className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
-                ▸ ML Models: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>OPTIMIZING</span>
+                ▸ AI Career Advisor: <span className={isDark ? 'text-cyan-400' : 'text-teal-600'}>OPTIMIZING</span>
               </div>
               <div className={isDark ? 'text-emerald-400' : 'text-emerald-600'}>
                 ▸ Security: <span className={isDark ? 'text-green-400' : 'text-green-600'}>ENCRYPTED</span>

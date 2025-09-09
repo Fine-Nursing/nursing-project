@@ -37,10 +37,6 @@ export function HeaderSection({
                 <div className="w-2 h-2 bg-emerald-500 rounded-full" />
                 {processedDataLength} specialties found
               </span>
-              <span className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                Live data
-              </span>
             </div>
           )}
         </div>
