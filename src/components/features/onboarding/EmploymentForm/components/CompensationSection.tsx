@@ -1,5 +1,5 @@
 import { m } from 'framer-motion';
-import { DollarSign, X, Check, Plus } from 'lucide-react';
+import { DollarSign, X, Check, Plus, TrendingUp, Calculator } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import ActionButton from 'src/components/ui/button/ActionButton';
 import toast from 'react-hot-toast';
@@ -125,13 +125,7 @@ export default function CompensationSection({
       className="bg-white rounded-xl shadow-sm p-6 space-y-6"
     >
       <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-        <m.span
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 3, repeat: Infinity, repeatDelay: 5 }}
-          className="text-2xl"
-        >
-          💵
-        </m.span>
+        <TrendingUp className="w-6 h-6 text-emerald-600" />
         Let's talk money & benefits
       </h3>
 
@@ -172,27 +166,13 @@ export default function CompensationSection({
         transition={{ delay: 0.3 }}
         className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 space-y-4 border-2 border-green-100"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <m.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              className="text-3xl"
-            >
-              💰
-            </m.div>
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900">
-                Boost Your Total Compensation
-              </h4>
-              <p className="text-sm text-gray-600">
-                Add your differential pay to see your true earnings
-              </p>
-            </div>
-          </div>
-          <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
-            Optional
-          </span>
+        <div>
+          <h4 className="text-lg font-semibold text-gray-900">
+            Boost Your Total Compensation
+          </h4>
+          <p className="text-sm text-gray-600">
+            Add your differential pay to see your true earnings
+          </p>
         </div>
 
         {/* Add Differential Form */}
@@ -213,6 +193,20 @@ export default function CompensationSection({
                   className="w-full"
                   icon={<Plus className="w-5 h-5" />}
                 />
+                <div className="flex flex-wrap gap-1">
+                  {POPULAR_DIFFERENTIALS.slice(0, 8).map((diffType) => (
+                    <m.button
+                      key={diffType}
+                      type="button"
+                      onClick={() => handleDifferentialChange(diffType)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-2 py-1 text-xs bg-gray-100 hover:bg-emerald-100 text-gray-600 hover:text-emerald-700 rounded-md transition-colors"
+                    >
+                      {diffType}
+                    </m.button>
+                  ))}
+                </div>
                 <p className="text-xs text-gray-500">
                   Can't find your differential? Select "Other" to enter custom
                 </p>
@@ -257,36 +251,8 @@ export default function CompensationSection({
                 </p>
               </>
             )}
-            {customDiff.type && !showCustomDifferential && (
-              <m.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-sm text-emerald-600"
-              >
-                <Check className="w-4 h-4" />
-                <span>Selected: {customDiff.type}</span>
-              </m.div>
-            )}
           </div>
 
-          {/* Quick suggestions */}
-          <div className="space-y-2">
-            <p className="text-xs text-gray-500">Popular differentials:</p>
-            <div className="flex flex-wrap gap-1">
-              {POPULAR_DIFFERENTIALS.slice(0, 8).map((diffType) => (
-                <m.button
-                  key={diffType}
-                  type="button"
-                  onClick={() => handleDifferentialChange(diffType)}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-2 py-1 text-xs bg-gray-100 hover:bg-emerald-100 text-gray-600 hover:text-emerald-700 rounded-md transition-colors"
-                >
-                  {diffType}
-                </m.button>
-              ))}
-            </div>
-          </div>
 
           {/* Amount and Unit - only show when type is selected */}
           {customDiff.type && (

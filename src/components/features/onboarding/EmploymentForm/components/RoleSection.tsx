@@ -1,6 +1,6 @@
 import { m } from 'framer-motion';
 import { 
-  Briefcase, Heart, Award, Check, Clock, Calendar, 
+  Briefcase, Stethoscope, Award, Check, Clock, Calendar, 
   Activity, MapPin, Users, Sun, Moon, Sunrise 
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -151,7 +151,7 @@ export default function RoleSection({
               placeholder={specialtiesLoading ? "Loading specialties..." : "Search or select your specialty"}
               searchable
               className="w-full"
-              icon={<Heart className="w-5 h-5" />}
+              icon={<Stethoscope className="w-5 h-5" />}
               disabled={specialtiesLoading}
             />
             <p className="text-xs text-gray-500">
@@ -165,7 +165,7 @@ export default function RoleSection({
                 value={customSpecialty}
                 onChange={setCustomSpecialty}
                 placeholder="Enter your specialty"
-                icon={<Heart className="w-5 h-5" />}
+                icon={<Stethoscope className="w-5 h-5" />}
                 className="flex-1"
               />
               <ActionButton

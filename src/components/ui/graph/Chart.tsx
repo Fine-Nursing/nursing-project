@@ -38,14 +38,13 @@ interface ChartTooltipProps extends BarTooltipProps<NursingBarDatum> {
 // -------------------------------------------
 // Utility functions
 // -------------------------------------------
+function annualToHourly(annualSalary: number): number {
+  // Convert annual salary to hourly wage (assuming 40 hours/week * 52 weeks = 2080 hours/year)
+  return Math.round((annualSalary / 2080) * 100) / 100; // Round to 2 decimal places
+}
+
 function formatCompactNumber(num: number): string {
-  if (num >= 1_000_000) {
-    return `$${(num / 1_000_000).toFixed(1)}M`;
-  }
-  if (num >= 1_000) {
-    return `$${(num / 1_000).toFixed(1)}K`;
-  }
-  return `$${num}`;
+  return `$${Math.round(num * 100) / 100}`; // Show hourly wage with 2 decimal places
 }
 
 function truncateSpecialty(name: string): string {
@@ -90,7 +89,7 @@ function createTopLabelsLayer(isMobile: boolean) {
             fontSize={isMobile ? 9 : 11}
             fontWeight="500"
           >
-            {formatCompactNumber(bar.total)}
+            ${bar.total.toFixed(2)}
           </text>
         ))}
       </g>
@@ -118,10 +117,10 @@ function ChartTooltip({
       <div className="flex items-center justify-between text-xs sm:text-sm mb-1">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-indigo-500"></div>
-          <span className="text-gray-700">Base Pay:</span>
+          <span className="text-gray-700">Base Pay (hourly):</span>
         </div>
         <span className="font-medium text-indigo-600">
-          ${new Intl.NumberFormat().format(data['Base Pay'])}
+          ${annualToHourly(data['Base Pay']).toFixed(2)}
         </span>
       </div>
       
@@ -129,18 +128,18 @@ function ChartTooltip({
       <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-indigo-300"></div>
-          <span className="text-gray-700">Differential Pay:</span>
+          <span className="text-gray-700">Differential Pay (hourly):</span>
         </div>
         <span className="font-medium text-indigo-400">
-          ${new Intl.NumberFormat().format(data['Differential Pay'])}
+          ${annualToHourly(data['Differential Pay']).toFixed(2)}
         </span>
       </div>
       
       <div className="pt-2 border-t border-gray-100">
         <div className="flex items-center justify-between font-semibold text-gray-800 text-xs sm:text-base mb-1">
-          <span>Total Compensation:</span>
+          <span>Total Hourly Compensation:</span>
           <span className="text-emerald-600">
-            ${new Intl.NumberFormat().format(data.total)}
+            ${annualToHourly(data.total).toFixed(2)}
           </span>
         </div>
         <div className="text-xs sm:text-sm text-gray-600">
@@ -190,10 +189,18 @@ function Chart({ data, states }: ChartProps) {
     );
   }
 
+  // Convert annual data to hourly
+  const hourlyData = validData.map(item => ({
+    ...item,
+    'Base Pay': annualToHourly(item['Base Pay']),
+    'Differential Pay': annualToHourly(item['Differential Pay']),
+    total: annualToHourly(item.total),
+  }));
+
   return (
     <div className="h-[650px] w-full">
       <ResponsiveBar
-        data={validData as NursingBarDatum[]}
+        data={hourlyData as NursingBarDatum[]}
         keys={['Base Pay', 'Differential Pay']}
         indexBy="specialty"
         groupMode="stacked"
@@ -229,10 +236,10 @@ function Chart({ data, states }: ChartProps) {
           tickSize: 5,
           tickPadding: 10,
           tickRotation: 0,
-          legend: 'Annual Compensation ($)',
+          legend: 'Hourly Compensation ($)',
           legendPosition: 'middle',
           legendOffset: -70,
-          format: (value) => `$${(value as number) / 1000}k`,
+          format: (value) => `$${Math.round(value as number)}`,
           tickValues: 5,
         }}
         enableGridY

@@ -61,24 +61,24 @@ export default function QuestionStep({
             className="space-y-8"
           >
             <div className="mb-10 text-center">
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
-                <EnhancedTypingEffect 
-                  text={activeQuestion.title} 
-                  onComplete={handleTypingComplete}
-                  speed={20}  // 30ms → 20ms (1.5배 빠르게)
-                  showCursor
-                />
-              </h2>
-              {activeQuestion.subtitle && (
-                <m.p
-                  className="text-lg text-gray-500 dark:text-gray-400"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isTypingComplete ? 1 : 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {activeQuestion.subtitle}
-                </m.p>
-              )}
+                  <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+                    <EnhancedTypingEffect 
+                      text={activeQuestion.title} 
+                      onComplete={handleTypingComplete}
+                      speed={20}  // 30ms → 20ms (1.5배 빠르게)
+                      showCursor
+                    />
+                  </h2>
+                  {activeQuestion.subtitle && (
+                    <m.p
+                      className="text-lg text-gray-500 dark:text-gray-400"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: isTypingComplete ? 1 : 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {activeQuestion.subtitle}
+                    </m.p>
+                  )}
             </div>
 
             {isTypingComplete && (
