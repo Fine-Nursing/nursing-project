@@ -1,18 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import { apiClient } from 'src/lib/axios';
 import toast from 'react-hot-toast';
-
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
-
-// Axios instance with credentials
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
 
 export interface CareerHistoryItem {
   id: string;
