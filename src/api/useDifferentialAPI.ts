@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000'}/api`;
 
 // Types
 export interface DifferentialItem {
