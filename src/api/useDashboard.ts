@@ -1,17 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
-
-// Axios instance with credentials
-const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
+import { apiClient } from 'src/lib/axios';
 
 interface WageDistributionResponse {
   payDistributionData: Array<{
