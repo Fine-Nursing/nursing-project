@@ -2,8 +2,10 @@ export interface DifferentialDetail {
   type: string;
   label: string;
   value: number;
-  estimatedHours: number;
-  description: string;
+  frequency: number; // Weekly frequency
+  monthlyAmount: number; // BE calculated monthly amount
+  estimatedHours?: number; // Legacy - for backward compatibility
+  description?: string; // Optional description
 }
 
 export interface UserProfile {
@@ -23,6 +25,8 @@ export interface CompensationAnalysisProps {
   userState?: string;
   regionalAvgWage?: number;
   specialtyAvgWage?: number;
+  shiftHours?: number;
+  onEditCompensation?: () => void;
 }
 
 export interface MonthlyCalculations {

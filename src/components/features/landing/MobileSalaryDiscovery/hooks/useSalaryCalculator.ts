@@ -3,6 +3,7 @@ import { useNursingTable } from 'src/api/useNursingTable';
 import type { NursingTableParams } from 'src/api/useNursingTable';
 import type { ExperienceGroup } from 'src/types/common';
 import type { CalculatorResult } from '../types';
+import { CompensationCalculator } from 'src/utils/compensation';
 
 interface UseSalaryCalculatorProps {
   selectedSpecialty: string;
@@ -39,7 +40,7 @@ export function useSalaryCalculator({
       const avg = Math.round(salaries.reduce((a, b) => a + b, 0) / salaries.length);
       const min = Math.min(...salaries);
       const max = Math.max(...salaries);
-      const annual = Math.round(avg * 2080);
+      const annual = CompensationCalculator.hourlyToAnnual(avg, 12); // Default to 12-hour shifts
       return { min, avg, max, annual, dataPoints: filteredData.meta.total };
     }
     
@@ -57,7 +58,7 @@ export function useSalaryCalculator({
         min: Math.round(baseRate - 15),
         avg: Math.round(baseRate),
         max: Math.round(baseRate + 20),
-        annual: Math.round(baseRate * 2080),
+        annual: CompensationCalculator.hourlyToAnnual(baseRate, 12),
         dataPoints: 0
       };
     }

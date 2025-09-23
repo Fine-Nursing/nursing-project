@@ -12,6 +12,7 @@ export interface UserDto {
   public: {
     firstName: string; // e.g.: "John"
     lastName: string; // e.g.: "Doe"
+    emojiJson?: string; // beanheads avatar config JSON
   };
 
   /** Private information section */

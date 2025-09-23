@@ -6,9 +6,10 @@ interface ProfileHeaderProps {
   name: string;
   role: string;
   theme: 'light' | 'dark';
+  onEditClick?: () => void;
 }
 
-export function ProfileHeader({ name, role, theme }: ProfileHeaderProps) {
+export function ProfileHeader({ name, role, theme, onEditClick }: ProfileHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 text-center sm:text-left">
       <m.div
@@ -23,10 +24,11 @@ export function ProfileHeader({ name, role, theme }: ProfileHeaderProps) {
           {role}
         </p>
       </m.div>
-      <m.button 
+      <m.button
+        onClick={onEditClick}
         className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all mx-auto sm:mx-0 mt-2 sm:mt-0 ${
-          theme === 'light' 
-            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' 
+          theme === 'light'
+            ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
             : 'bg-emerald-900/30 text-emerald-300 hover:bg-emerald-900/50'
         }`}
         whileHover={{ scale: 1.05 }}

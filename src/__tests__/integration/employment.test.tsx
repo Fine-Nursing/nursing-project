@@ -5,6 +5,7 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import EmploymentForm from '../../components/features/onboarding/EmploymentForm';
 import useOnboardingStore from '../../store/onboardingStores';
+import { CompensationCalculator } from '../../utils/compensation';
 
 // Mock 설정
 vi.mock('../../hooks/useSpecialties', () => ({
@@ -233,14 +234,15 @@ describe('EmploymentForm - 실제 API 연동', () => {
       { type: 'Holiday', amount: 5, unit: 'hourly' }
     ];
 
-    // 실시간 계산
+    // 실시간 계산 - Use proper shift-aware calculation
     const totalDifferentials = differentials.reduce((sum, diff) => sum + diff.amount, 0);
     const totalHourly = basePay + totalDifferentials;
-    const totalAnnual = totalHourly * 2080;
+    const shiftHours = 12; // Standard nursing shift
+    const totalAnnual = CompensationCalculator.hourlyToAnnual(totalHourly, shiftHours);
 
     expect(totalDifferentials).toBe(10);
     expect(totalHourly).toBe(48);
-    expect(totalAnnual).toBe(99840);
+    expect(totalAnnual).toBe(89856); // 48 * 1872 hours/year for 12-hour shifts
 
     // Store 적용 및 관리
     useOnboardingStore.getState().updateFormData({

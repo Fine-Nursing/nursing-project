@@ -5,17 +5,18 @@ import { m, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import toast from 'react-hot-toast';
-import useCareerHistory from 'src/api/useCareerHistory';
+import useCareerHistory, { useAddCareer, useDeleteCareer } from 'src/api/useCareerHistory';
 import { useMyCompensation } from 'src/api/useCompensation';
+import { useUserProfile } from 'src/api/useProfileData';
 import { LoadingState } from 'src/components/ui/feedback';
 
-import type { CareerItem, NewItemInput } from './types';
+import type { CareerItem } from './types';
 // 하위 컴포넌트들을 lazy loading으로 변경
 
 const CareerHeader = lazy(() => import('./CareerHeader'));
 const CareerStatsGrid = lazy(() => import('./CareerStatsGrid'));
 const CareerControlPanel = lazy(() => import('./CareerControlPanel'));
-const CareerForm = lazy(() => import('./CareerForm'));
+const CompactCareerForm = lazy(() => import('./CompactCareerFormWithTabs'));
 const CareerTimeline = lazy(() => import('./CareerTimeline'));
 const AiRoleModal = lazy(() => import('./AiRoleModal'));
 const SalaryTrendModal = lazy(() => import('./SalaryTrendModal'));
@@ -29,15 +30,6 @@ interface CareerDashboardProps {
 function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   // State
   const [careerData, setCareerData] = useState<CareerItem[]>([]);
-  const [newItem, setNewItem] = useState<NewItemInput>({
-    facility: '',
-    role: '',
-    specialty: '',
-    startDate: new Date(),
-    endDate: null,
-    hourlyRate: '',
-  });
-  const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [aiReason, setAiReason] = useState<string | null>(null);
   const [showTrend, setShowTrend] = useState(false);
@@ -46,6 +38,9 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   // API calls
   const { data: careerHistoryData, isLoading: isCareerLoading } = useCareerHistory();
   const { data: compensationData, isLoading: isCompensationLoading } = useMyCompensation();
+  const { data: userProfile } = useUserProfile();
+  const addCareerMutation = useAddCareer();
+  const deleteCareerMutation = useDeleteCareer();
 
   // Transform API data and remove duplicates - Optimized O(n) complexity
   useEffect(() => {
@@ -63,6 +58,7 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
       
       const transformedData = Array.from(uniqueMap.values()).map((item, index) => ({
         id: index + 1,
+        jobId: item.id,  // Store the actual job ID
         facility: item.facility,
         role: item.role,
         specialty: item.specialty,
@@ -76,118 +72,48 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   }, [careerHistoryData]);
 
   // Event handlers
-  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewItem((prev) => ({ ...prev, [name]: value }));
-  };
-  const handleChangeStartDate = (date: Date | null) => {
-    setNewItem((prev) => ({ ...prev, startDate: date }));
-  };
-  const handleChangeEndDate = (date: Date | null) => {
-    setNewItem((prev) => ({ ...prev, endDate: date }));
-  };
 
-  const handleAdd = useCallback(() => {
-    if (!newItem.facility || !newItem.role) {
-      toast.error('Facility & Role are required!');
-      return;
-    }
-    setCareerData((prev) => {
-      const nextId = prev.length ? Math.max(...prev.map((d) => d.id)) + 1 : 1;
-      return [
-        ...prev,
-        {
-          id: nextId,
-          facility: newItem.facility,
-          role: newItem.role,
-          specialty: newItem.specialty,
-          startDate: newItem.startDate || new Date(),
-          endDate: newItem.endDate || null,
-          hourlyRate: parseFloat(newItem.hourlyRate || '0'),
+  const handleAddCareer = useCallback(async (formData: any) => {
+    return new Promise<void>((resolve, reject) => {
+      addCareerMutation.mutate(formData, {
+        onSuccess: () => {
+          setFormVisible(false);
+          resolve();
         },
-      ];
+        onError: (error) => {
+          reject(error);
+        },
+      });
     });
-    // reset
-    setNewItem({
-      facility: '',
-      role: '',
-      specialty: '',
-      startDate: new Date(),
-      endDate: null,
-      hourlyRate: '',
-    });
-    setFormVisible(false);
-  }, [newItem]); // Removed careerData dependency - not needed with functional update
+  }, [addCareerMutation]);
 
   const handleEdit = useCallback((id: number) => {
-    const itemToEdit = careerData.find((item) => item.id === id);
-    if (itemToEdit) {
-      setNewItem({
-        facility: itemToEdit.facility,
-        role: itemToEdit.role,
-        specialty: itemToEdit.specialty || '',
-        startDate: itemToEdit.startDate,
-        endDate: itemToEdit.endDate,
-        hourlyRate: itemToEdit.hourlyRate.toString(),
-      });
-      setEditingItemId(id);
-      setFormVisible(true);
-    }
-  }, [careerData]);
-
-  const handleUpdate = useCallback(() => {
-    if (editingItemId === null) return;
-
-    setCareerData((prev) =>
-      prev.map((item) => {
-        if (item.id === editingItemId) {
-          return {
-            ...item,
-            facility: newItem.facility,
-            role: newItem.role,
-            specialty: newItem.specialty,
-            startDate: newItem.startDate || new Date(),
-            endDate: newItem.endDate,
-            hourlyRate: parseFloat(newItem.hourlyRate || '0'),
-          };
-        }
-        return item;
-      })
-    );
-
-    setNewItem({
-      facility: '',
-      role: '',
-      specialty: '',
-      startDate: new Date(),
-      endDate: null,
-      hourlyRate: '',
+    // TODO: Implement edit functionality with ImprovedCareerForm
+    toast('Edit functionality coming soon', {
+      icon: 'ℹ️',
     });
-    setEditingItemId(null);
-    setFormVisible(false);
-  }, [editingItemId, newItem]);
+  }, []);
 
   const handleCancel = useCallback(() => {
-    setNewItem({
-      facility: '',
-      role: '',
-      specialty: '',
-      startDate: new Date(),
-      endDate: null,
-      hourlyRate: '',
-    });
-    setEditingItemId(null);
     setFormVisible(false);
   }, []);
 
-  const handleDelete = useCallback((id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
+    // Find the item to get the actual jobId
+    const item = careerData.find((career) => career.id === id);
+    if (!item) return;
+
     // TODO: Replace with a proper confirmation modal
     // eslint-disable-next-line no-alert
     if (window.confirm('Are you sure you want to delete this career entry?')) {
-      setCareerData((prev) => prev.filter((item) => item.id !== id));
-      toast.success('Career entry deleted successfully');
+      try {
+        await deleteCareerMutation.mutateAsync(item.jobId);
+        // The UI will be updated automatically through React Query's invalidation
+      } catch (error) {
+        console.error('Failed to delete career entry:', error);
+      }
     }
-  }, []);
+  }, [careerData, deleteCareerMutation]);
 
   // AI helpers
   const getAiRoleRecommendation = () => {
@@ -219,8 +145,7 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   };
 
   const handleAiSuggest = useCallback(() => {
-    const { role, specialty, reason } = getAiRoleRecommendation();
-    setNewItem((prev) => ({ ...prev, role, specialty }));
+    const { reason } = getAiRoleRecommendation();
     setAiReason(reason);
   }, []);
 
@@ -268,6 +193,8 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
   }, [careerData]);
 
   const annualSalary = compensationData?.annualSalary || 0;
+  const currentHourlyRate = compensationData?.hourlyRate || 0;
+  const shiftHours = compensationData?.shiftHours || 12;
 
   // Loading state
   if (isCareerLoading || isCompensationLoading) {
@@ -339,6 +266,8 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
             currentRole={currentRole}
             highestHourlyRate={highestHourlyRate}
             annualSalary={annualSalary}
+            currentHourlyRate={currentHourlyRate}
+            shiftHours={shiftHours}
           />
         </Suspense>
 
@@ -371,26 +300,13 @@ function CareerDashboard({ theme = 'light' }: CareerDashboardProps) {
                   </div>
                 </div>
               }>
-                <CareerForm
-                  newItem={newItem}
-                  onChangeText={handleChangeText}
-                  onChangeStartDate={handleChangeStartDate}
-                  onChangeEndDate={handleChangeEndDate}
-                  onAdd={editingItemId ? handleUpdate : handleAdd}
-                  onAiSuggest={handleAiSuggest}
-                  onSalaryTrend={handleSalaryTrend}
-                  editingItemId={editingItemId}
+                <CompactCareerForm
+                  onSubmit={handleAddCareer}
+                  onCancel={handleCancel}
+                  isSubmitting={addCareerMutation.isPending}
+                  isLoaded={typeof google !== 'undefined' && typeof google.maps !== 'undefined'}
                 />
               </Suspense>
-              <div className="flex justify-end gap-2 mt-4">
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className={`px-4 py-2 border rounded-lg ${theme === 'light' ? 'border-gray-300 text-gray-600 hover:bg-gray-50' : 'border-slate-500 text-gray-300 hover:bg-slate-600'} text-sm`}
-                >
-                  Cancel
-                </button>
-              </div>
             </m.div>
           )}
         </AnimatePresence>

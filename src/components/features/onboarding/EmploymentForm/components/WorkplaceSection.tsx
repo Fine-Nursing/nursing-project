@@ -88,16 +88,6 @@ export default function WorkplaceSection({
           }
 
           // 디버깅용 로그
-          console.log('Google Places Data:', {
-            name: place.name,
-            originalCity: rawCity,
-            normalizedCity: finalCity,
-            state,
-            neighborhood,
-            county,
-            fullAddress: place.formatted_address,
-            addressComponents: place.address_components
-          });
           
           // 모든 정보 한번에 업데이트
           updateFormData({
@@ -117,7 +107,6 @@ export default function WorkplaceSection({
         }
       };
     } catch (error) {
-      console.warn('Google Places API not available. Manual input only.', error);
       // Billing 문제시 자동완성 없이 수동 입력만 가능
     }
   }, [isLoaded, updateFormData]);
@@ -202,7 +191,7 @@ export default function WorkplaceSection({
           type="button"
           onClick={handlePreviousSection}
           variant="outline"
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           ← Back
         </ActionButton>
@@ -210,7 +199,7 @@ export default function WorkplaceSection({
           type="button"
           onClick={handleNextSection}
           disabled={!validateWorkplaceSection()}
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           Next: Your Role →
         </ActionButton>

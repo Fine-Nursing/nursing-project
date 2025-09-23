@@ -137,6 +137,45 @@ export default function RoleSection({
         </div>
       </div>
 
+      {/* Shift Hours */}
+      <div className="space-y-3">
+        <label className="block text-sm font-medium text-gray-700">
+          Shift Length (Hours per shift)
+        </label>
+        <div className="grid grid-cols-3 sm:flex gap-2">
+          {[8, 10, 12, 16].map((hours) => (
+            <m.button
+              key={hours}
+              type="button"
+              onClick={() => updateFormData({ shiftHours: hours })}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`px-3 py-2 text-sm rounded-lg font-medium transition-all ${
+                formData.shiftHours === hours
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {hours}h
+            </m.button>
+          ))}
+          <AnimatedInput
+            type="number"
+            value={formData.shiftHours && ![8, 10, 12, 16].includes(formData.shiftHours) ? formData.shiftHours.toString() : ''}
+            onChange={(value) => updateFormData({ shiftHours: parseInt(value) || undefined })}
+            placeholder="Other"
+            min={1}
+            max={24}
+            className="col-span-2 sm:w-20"
+          />
+        </div>
+        {formData.shiftHours && (
+          <p className="text-xs sm:text-sm text-green-600">
+            ✓ Selected: {formData.shiftHours} hours per shift
+          </p>
+        )}
+      </div>
+
       {/* Specialty Field - With Custom Input Option */}
       <div className="space-y-3">
         <label className="block text-sm font-medium text-gray-700">
@@ -176,7 +215,7 @@ export default function RoleSection({
                     setShowCustomSpecialty(false);
                   }
                 }}
-                className="px-4 py-2"
+                className="px-3 py-1.5 text-sm"
               >
                 Set
               </ActionButton>
@@ -188,7 +227,7 @@ export default function RoleSection({
                   updateFormData({ specialty: '' });
                 }}
                 variant="outline"
-                className="px-4 py-2"
+                className="px-3 py-1.5 text-sm"
               >
                 Cancel
               </ActionButton>
@@ -269,7 +308,7 @@ export default function RoleSection({
                   setCustomRatio('');
                 }
               }}
-              className="px-4 py-2"
+              className="px-3 py-1.5 text-sm"
             >
               Set
             </ActionButton>
@@ -280,7 +319,7 @@ export default function RoleSection({
                 setCustomRatio('');
               }}
               variant="outline"
-              className="px-4 py-2"
+              className="px-3 py-1.5 text-sm"
             >
               Cancel
             </ActionButton>
@@ -316,32 +355,32 @@ export default function RoleSection({
         )}
       </div>
 
-      {/* Union Membership */}
-      <m.div 
+      {/* Union Membership - Mobile optimized */}
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-100"
+        className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 rounded-xl border border-blue-100"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 sm:gap-4 flex-1">
             <m.div
-              animate={{ scale: formData.isUnionized ? [1, 1.2, 1] : 1 }}
+              animate={{ scale: formData.isUnionized ? [1, 1.1, 1] : 1 }}
               transition={{ duration: 0.3 }}
-              className="text-2xl"
+              className="text-xl sm:text-2xl flex-shrink-0"
             >
               {formData.isUnionized ? '🤝' : '🏢'}
             </m.div>
-            <div>
-              <label htmlFor="isUnionized" className="text-lg font-medium text-gray-900 cursor-pointer">
+            <div className="flex-1">
+              <label htmlFor="isUnionized" className="text-sm sm:text-lg font-medium text-gray-900 cursor-pointer">
                 Are you in a union?
               </label>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5 sm:mt-1 hidden sm:block">
                 Union membership can affect your benefits and pay structure
               </p>
             </div>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
+          <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
             <input
               type="checkbox"
               id="isUnionized"
@@ -349,7 +388,7 @@ export default function RoleSection({
               onChange={(e) => updateFormData({ isUnionized: e.target.checked })}
               className="sr-only peer"
             />
-            <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600" />
+            <div className="w-11 h-6 sm:w-14 sm:h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 sm:after:h-6 sm:after:w-6 after:transition-all peer-checked:bg-emerald-600" />
           </label>
         </div>
       </m.div>
@@ -360,23 +399,17 @@ export default function RoleSection({
           type="button"
           onClick={handlePreviousSection}
           variant="outline"
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           ← Back
         </ActionButton>
         <ActionButton
           type="button"
           onClick={() => {
-            console.log('Role validation check:', {
-              employmentType: formData.employmentType,
-              specialty: formData.specialty,
-              shiftType: formData.shiftType,
-              nurseToPatientRatio: formData.nurseToPatientRatio
-            });
             handleNextSection();
           }}
           disabled={!validateRoleSection()}
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           Next: Compensation →
         </ActionButton>

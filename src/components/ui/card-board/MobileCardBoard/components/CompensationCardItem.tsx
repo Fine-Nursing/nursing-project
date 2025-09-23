@@ -2,6 +2,7 @@ import React from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Sparkles } from 'lucide-react';
 import type { CompensationCardProps } from '../types';
+import { CompensationCalculator } from 'src/utils/compensation';
 
 export function CompensationCardItem({ 
   card, 
@@ -43,7 +44,7 @@ export function CompensationCardItem({
               <div className="text-xs">
                 <span className="text-gray-500 dark:text-zinc-500">Annual: </span>
                 <span className="font-semibold text-gray-700 dark:text-zinc-300">
-                  ${(card.totalPay * 2080 / 1000).toFixed(0)}k
+                  ${(CompensationCalculator.hourlyToAnnual(card.totalPay, 12) / 1000).toFixed(0)}k
                 </span>
               </div>
             </div>

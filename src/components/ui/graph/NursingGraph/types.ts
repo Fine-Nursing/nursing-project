@@ -19,6 +19,7 @@ export interface ProcessedDataItem {
   'Differential Pay': number;
   total: number;
   state: string;
+  shiftHours?: number;
 }
 
 export interface SalaryRangeValues {

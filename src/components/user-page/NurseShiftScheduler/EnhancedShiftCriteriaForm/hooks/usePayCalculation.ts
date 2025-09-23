@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { DIFFERENTIALS, UNIT_BASE_PAY } from '../../../../../utils/constants';
+import { CompensationCalculator, SHIFT_PATTERNS } from 'src/utils/compensation';
 import type { Criteria, PayEstimates } from '../types';
 
 export function usePayCalculation(criteria: Criteria): PayEstimates {
@@ -20,25 +21,36 @@ export function usePayCalculation(criteria: Criteria): PayEstimates {
 
     const totalHourly = basePay + diffs;
 
-    let weeklyHours = 40;
+    // Use enhanced shift pattern detection
+    let shiftHours = 12; // Default
+    let weeklyHours = 36;
+
     if (criteria.shiftPattern === '3x12s') {
-      weeklyHours = 36;
+      shiftHours = 12;
+      weeklyHours = SHIFT_PATTERNS[12].hoursPerWeek;
     } else if (criteria.shiftPattern === 'Baylor') {
-      weeklyHours = 24;
+      shiftHours = 12;
+      weeklyHours = 24; // Special case - weekend only
     } else if (criteria.shiftPattern === '7on-7off') {
-      weeklyHours = 42;
+      shiftHours = 12;
+      weeklyHours = 42; // Special case
+    } else {
+      // Default to 8-hour if not specified
+      shiftHours = 8;
+      weeklyHours = SHIFT_PATTERNS[8].hoursPerWeek;
     }
 
     const weeklyEarnings = totalHourly * weeklyHours;
     const totalEarnings = weeklyEarnings * criteria.totalWeeks;
 
+    // Use standardized formatting
     return {
       basePay: basePay.toFixed(2),
       diffRate: diffs.toFixed(2),
       totalRate: totalHourly.toFixed(2),
       weeklyHours,
-      weeklyEarnings: weeklyEarnings.toFixed(2),
-      totalEarnings: totalEarnings.toFixed(2),
+      weeklyEarnings: CompensationCalculator.formatCurrency(weeklyEarnings, 0).replace('$', ''),
+      totalEarnings: CompensationCalculator.formatCurrency(totalEarnings, 0).replace('$', ''),
     };
   }, [criteria]);
 }

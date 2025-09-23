@@ -55,11 +55,11 @@ export default function RatingSection({
                 </div>
               </div>
 
-              <div className="flex gap-1.5 sm:gap-2 pl-0 sm:pl-11">
+              <div className="flex gap-1 sm:gap-2 pl-0 sm:pl-11">
                 {RATING_OPTIONS.map((option) => {
                   const isSelected = formData[category.key] === option.value;
                   const isHovered = isRatingHovered(category.key, option.value);
-                  
+
                   return (
                     <button
                       key={option.value}
@@ -68,7 +68,7 @@ export default function RatingSection({
                       onMouseEnter={() => handleRatingHover(category.key, option.value)}
                       onMouseLeave={handleRatingLeave}
                       className={`
-                        flex-1 min-h-[75px] py-3 px-1 rounded-lg border-2 transition-all duration-200
+                        flex-1 min-h-[55px] sm:min-h-[75px] py-1.5 sm:py-3 px-0.5 sm:px-1 rounded-lg border-2 transition-all duration-200
                         ${
                           isSelected
                             ? 'border-emerald-500 bg-emerald-50 shadow-md scale-105'
@@ -79,7 +79,7 @@ export default function RatingSection({
                       `}
                     >
                       <div className="text-center">
-                        <div className={`text-2xl font-bold mb-1 ${
+                        <div className={`text-lg sm:text-2xl font-bold mb-0 sm:mb-1 ${
                           isSelected
                             ? 'text-emerald-700'
                             : 'text-gray-500'
@@ -87,7 +87,7 @@ export default function RatingSection({
                           {option.value}
                         </div>
                         <div
-                          className={`text-[11px] font-medium ${
+                          className={`text-[9px] sm:text-[11px] font-medium ${
                             isSelected
                               ? 'text-emerald-600'
                               : 'text-gray-400'
@@ -95,14 +95,14 @@ export default function RatingSection({
                         >
                           {option.label}
                         </div>
-                        <div className="flex justify-center gap-0.5 mt-1">
+                        <div className="flex justify-center gap-0.5 mt-0.5 sm:mt-1">
                           {[...Array(5)].map((_, i) => (
                             <div
                               key={i}
-                              className={`w-1.5 h-1.5 rounded-full ${
+                              className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${
                                 i < option.value
-                                  ? isSelected 
-                                    ? 'bg-emerald-600' 
+                                  ? isSelected
+                                    ? 'bg-emerald-600'
                                     : 'bg-gray-300'
                                   : 'bg-gray-200'
                               }`}

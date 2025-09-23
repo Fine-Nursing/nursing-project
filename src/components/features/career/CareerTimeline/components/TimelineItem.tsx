@@ -117,13 +117,16 @@ function TimelineItem({
             >
               <Edit className="w-4 h-4" />
             </button>
-            <button
-              type="button"
-              onClick={() => onDelete(item.id)}
-              className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-red-600' : 'text-gray-500 hover:text-red-400'} rounded`}
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            {!ongoing && (
+              <button
+                type="button"
+                onClick={() => onDelete(item.id)}
+                className={`p-1 ${theme === 'light' ? 'text-gray-400 hover:text-red-600' : 'text-gray-500 hover:text-red-400'} rounded`}
+                title="Delete career entry"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 

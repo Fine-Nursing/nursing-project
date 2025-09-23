@@ -563,7 +563,7 @@ export default function NextSteps({
           ? 'border-slate-200 text-slate-500' 
           : 'border-slate-600 text-slate-400'
       }`}>
-        🎯 Personalized recommendations based on your profile • Updated daily
+        Personalized recommendations based on your profile • Updated daily
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import { m } from 'framer-motion';
 import type { CompensationAnalysisProps } from './types';
 import { calculateMonthlyCompensation } from './utils';
 import { useCompensationState } from './hooks';
+import { CompensationCalculator } from 'src/utils/compensation';
 import {
   Header,
   PrimaryCompensationDisplay,
@@ -23,6 +24,8 @@ function CompensationAnalysis({
   userState,
   regionalAvgWage,
   specialtyAvgWage,
+  shiftHours = 12,
+  onEditCompensation,
 }: CompensationAnalysisProps) {
   const {
     isEditing,
@@ -42,8 +45,9 @@ function CompensationAnalysis({
     totalMonthly,
     differentialAmounts
   } = calculateMonthlyCompensation(
-    editedProfile?.annualSalary || 0, 
-    editedProfile?.differentials || []
+    editedProfile?.annualSalary || 0,
+    editedProfile?.differentials || [],
+    shiftHours
   );
 
   const potentialDifferentials = calculatePotentialDifferentials();
@@ -63,6 +67,8 @@ function CompensationAnalysis({
         theme={theme}
         isEditing={isEditing}
         setIsEditing={setIsEditing}
+        onEditCompensation={onEditCompensation}
+        shiftHours={shiftHours}
       />
 
       <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
@@ -71,6 +77,8 @@ function CompensationAnalysis({
           totalMonthly={totalMonthly}
           monthlyBase={monthlyBase}
           totalMonthlyDifferentials={totalMonthlyDifferentials}
+          hourlyRate={userProfile?.hourlyRate}
+          shiftHours={shiftHours}
         />
 
         <StatsGrid
@@ -79,6 +87,7 @@ function CompensationAnalysis({
           editedProfile={editedProfile}
           setEditedProfile={setEditedProfile}
           monthlyBase={monthlyBase}
+          shiftHours={shiftHours}
         />
 
         <DifferentialBreakdown
@@ -91,7 +100,7 @@ function CompensationAnalysis({
 
         <CompensationComparison
           theme={theme}
-          userHourlyRate={editedProfile?.hourlyRate || 0}
+          userHourlyRate={userProfile?.hourlyRate || CompensationCalculator.monthlyToHourly(totalMonthly, shiftHours)}
           userSpecialty={userSpecialty}
           userState={userState}
           regionalAvgWage={regionalAvgWage}

@@ -29,11 +29,9 @@ export function useIntersectionObserver({
     const observer = new IntersectionObserver(
       ([entry]) => {
         const visible = entry.isIntersecting;
-        console.log('🔍 Intersection Observer:', { visible, hasBeenVisible, isReady });
         setIsVisible(visible);
         if (visible && !hasBeenVisible) {
           setHasBeenVisible(true);
-          console.log('✅ Career section became visible');
         }
       },
       { threshold, rootMargin }

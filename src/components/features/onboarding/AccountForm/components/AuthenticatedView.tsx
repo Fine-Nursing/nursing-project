@@ -56,7 +56,7 @@ export function AuthenticatedView({ user, isLoading }: AuthenticatedViewProps) {
         <ActionButton
           onClick={() => setStep('culture')}
           variant="outline"
-          className="px-6 py-3"
+          className="px-4 py-2 sm:px-6 sm:py-3"
           disabled={isLoading}
         >
           ← Back

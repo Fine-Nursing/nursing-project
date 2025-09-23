@@ -92,14 +92,14 @@ export default function SummaryView({
         <ActionButton
           onClick={() => setShowSummary(false)}
           variant="outline"
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           ← Edit Details
         </ActionButton>
         <ActionButton
           onClick={handleContinue}
           disabled={employmentMutation.isPending}
-          className="px-8 py-3"
+          className="px-3 py-1.5 sm:px-8 sm:py-3 text-sm sm:text-base"
         >
           {employmentMutation.isPending ? (
             <span className="flex items-center gap-2">

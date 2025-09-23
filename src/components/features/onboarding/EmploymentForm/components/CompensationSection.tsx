@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import type { IndividualDifferentialItem } from 'src/types/onboarding';
 import AnimatedInput from '../../components/AnimatedInput';
 import CustomDropdown from '../../components/CustomDropdown';
+import DifferentialWithFrequency from './DifferentialWithFrequency';
+import type { DifferentialItem } from 'src/api/useDifferentialAPI';
 
 interface CompensationSectionProps {
   formData: any;
@@ -105,6 +107,8 @@ export default function CompensationSection({
 }: CompensationSectionProps) {
   const [showCustomDifferential, setShowCustomDifferential] = useState(false);
   const [customDifferentialName, setCustomDifferentialName] = useState('');
+  const [useAdvancedDifferentials, setUseAdvancedDifferentials] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
 
   // Handle differential selection from dropdown
   const handleDifferentialChange = (value: string) => {
@@ -116,6 +120,25 @@ export default function CompensationSection({
       setCustomDiff({ type: value, amount: 0, unit: 'hourly' });
       setShowCustomDifferential(false);
     }
+  };
+
+  // Convert legacy differentials to new format
+  const convertToNewFormat = (legacy: IndividualDifferentialItem[]): DifferentialItem[] => {
+    return legacy.map(item => ({
+      type: item.type,
+      value: item.amount,
+      frequency: 1, // Default frequency for legacy data
+    }));
+  };
+
+  // Convert new format back to legacy for compatibility
+  const convertToLegacyFormat = (newItems: DifferentialItem[]): IndividualDifferentialItem[] => {
+    return newItems.map(item => ({
+      type: item.type,
+      amount: item.value,
+      unit: 'hourly' as const,
+      group: 'Custom', // Will be updated based on backend category
+    }));
   };
   return (
     <m.div
@@ -159,263 +182,38 @@ export default function CompensationSection({
         </div>
       </div>
 
-      {/* Differential Pay Section - From Extras */}
-      <m.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 space-y-4 border-2 border-green-100"
-      >
-        <div>
-          <h4 className="text-lg font-semibold text-gray-900">
-            Boost Your Total Compensation
-          </h4>
-          <p className="text-sm text-gray-600">
-            Add your differential pay to see your true earnings
-          </p>
-        </div>
+      {/* Enhanced Differential Calculator - Question-based */}
+      <DifferentialWithFrequency
+        basePay={formData.basePay || 0}
+        paymentFrequency={formData.paymentFrequency || 'hourly'}
+        shiftType={formData.shiftType}
+        shiftHours={formData.shiftHours}
+        differentials={convertToNewFormat(formData.individualDifferentials || [])}
+        onDifferentialsChange={(newDifferentials) => {
+          const legacyFormat = convertToLegacyFormat(newDifferentials);
+          updateFormData({ individualDifferentials: legacyFormat });
+        }}
+        onPreviewChange={setPreviewData}
+      />
 
-        {/* Add Differential Form */}
-        <div className="space-y-4">
-          {/* Differential Selection Dropdown */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Differential Type <span className="text-red-500">*</span>
-            </label>
-            {!showCustomDifferential ? (
-              <>
-                <CustomDropdown
-                  value={customDiff.type || ''}
-                  onChange={handleDifferentialChange}
-                  options={ALL_DIFFERENTIALS}
-                  placeholder="Search or select a differential"
-                  searchable
-                  className="w-full"
-                  icon={<Plus className="w-5 h-5" />}
-                />
-                <div className="flex flex-wrap gap-1">
-                  {POPULAR_DIFFERENTIALS.slice(0, 8).map((diffType) => (
-                    <m.button
-                      key={diffType}
-                      type="button"
-                      onClick={() => handleDifferentialChange(diffType)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-2 py-1 text-xs bg-gray-100 hover:bg-emerald-100 text-gray-600 hover:text-emerald-700 rounded-md transition-colors"
-                    >
-                      {diffType}
-                    </m.button>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500">
-                  Can't find your differential? Select "Other" to enter custom
-                </p>
-              </>
-            ) : (
-              <>
-                <div className="flex gap-2">
-                  <AnimatedInput
-                    value={customDifferentialName}
-                    onChange={setCustomDifferentialName}
-                    placeholder="Enter your differential"
-                    icon={<Plus className="w-5 h-5" />}
-                    className="flex-1"
-                  />
-                  <ActionButton
-                    type="button"
-                    onClick={() => {
-                      if (customDifferentialName.trim()) {
-                        setCustomDiff({ type: customDifferentialName.trim(), amount: 0, unit: 'hourly' });
-                        setShowCustomDifferential(false);
-                      }
-                    }}
-                    className="px-4 py-2"
-                  >
-                    Set
-                  </ActionButton>
-                  <ActionButton
-                    type="button"
-                    onClick={() => {
-                      setShowCustomDifferential(false);
-                      setCustomDifferentialName('');
-                      setCustomDiff({ type: '', amount: 0, unit: 'hourly' });
-                    }}
-                    variant="outline"
-                    className="px-4 py-2"
-                  >
-                    Cancel
-                  </ActionButton>
-                </div>
-                <p className="text-xs text-gray-500">
-                  Enter your specific differential or benefit type
-                </p>
-              </>
-            )}
-          </div>
-
-
-          {/* Amount and Unit - only show when type is selected */}
-          {customDiff.type && (
-            <m.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-4 bg-emerald-50 rounded-xl border-2 border-emerald-200"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-medium text-gray-700">
-                  Setting differential for: <span className="font-semibold text-emerald-700">{customDiff.type}</span>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setCustomDiff({ type: '', amount: 0, unit: 'hourly' });
-                    setShowCustomDifferential(false);
-                    setCustomDifferentialName('');
-                  }}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  ✕
-                </button>
-              </div>
-              
-              <div className="flex gap-2 items-end">
-                <div className="flex-1">
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Amount
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">$</span>
-                    <input
-                      type="number"
-                      placeholder="0.00"
-                      min="0"
-                      step="0.5"
-                      value={customDiff.amount || ''}
-                      onChange={(e) => setCustomDiff({
-                        ...customDiff,
-                        amount: parseFloat(e.target.value) || 0,
-                      })}
-                      autoFocus
-                      className="w-full px-2 py-2 pl-6 text-sm bg-white border border-gray-200 rounded-lg
-                               focus:border-emerald-500 focus:ring-1 focus:ring-emerald-200 outline-none"
-                    />
-                  </div>
-                </div>
-
-                <CustomDropdown
-                  options={['per hour', 'per year']}
-                  value={customDiff.unit === 'annual' ? 'per year' : 'per hour'}
-                  onChange={(value) => setCustomDiff({
-                    ...customDiff,
-                    unit: value === 'per year' ? 'annual' : 'hourly',
-                  })}
-                  className="w-28"
-                />
-
-                <ActionButton
-                  type="button"
-                  onClick={addCustomDifferential}
-                  disabled={!customDiff.type || customDiff.amount <= 0}
-                  className="px-4 py-2 text-sm"
-                >
-                  Add
-                </ActionButton>
-              </div>
-            </m.div>
-          )}
-        </div>
-
-        {/* Current Differentials List */}
-        {formData.individualDifferentials && formData.individualDifferentials.length > 0 && (
-          <div className="space-y-3">
-            <h5 className="text-sm font-medium text-gray-700">
-              Your Differentials:
-            </h5>
-            <div className="space-y-2">
-              {formData.individualDifferentials.map((diff: IndividualDifferentialItem, index: number) => (
-                <div
-                  key={`${diff.group}-${diff.type}-${diff.amount}-${diff.unit}`}
-                  className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-600 rounded-full font-medium">
-                      {diff.group}
-                    </span>
-                    <span className="font-medium text-gray-900">
-                      {diff.type}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-green-600 font-semibold">
-                      +${diff.amount}/hr
-                      {/* 모든 값이 시급으로 저장되므로 항상 /hr 표시 */}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeDifferential(index)}
-                      className="text-red-500 hover:text-red-700 p-1 rounded transition-colors"
-                      aria-label={`Remove ${diff.type} differential`}
-                    >
-                      ✕
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Total Display */}
-            {formData.individualDifferentials && formData.individualDifferentials.length > 0 && (
-              <div className="bg-green-50 p-4 rounded-xl border border-green-200">
-                {(() => {
-                  const totals = calculateTotalDifferentials(formData.individualDifferentials);
-                  return (
-                    <>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium text-green-800">
-                          Total Hourly Differentials:
-                        </span>
-                        <span className="text-lg font-bold text-green-600">
-                          +${totals.hourly.toFixed(2)}/hr
-                        </span>
-                      </div>
-                      {totals.annual > 0 && (
-                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-green-200">
-                          <span className="font-medium text-green-800">
-                            Annual Bonuses:
-                          </span>
-                          <span className="text-lg font-bold text-green-600">
-                            +${totals.annual.toLocaleString()}/year
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Additional Notes */}
-        <div className="space-y-2">
-          <label
-            htmlFor="differential-notes-textarea"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Additional notes about your differentials (optional):
-          </label>
-          <textarea
-            id="differential-notes-textarea"
-            value={formData.differentialsFreeText || ''}
-            onChange={(e) => updateFormData({ differentialsFreeText: e.target.value })}
-            placeholder="e.g., Specific conditions for bonuses, additional details, etc."
-            className="w-full p-3 bg-white border-2 border-gray-200 rounded-xl text-sm resize-none
-                     focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
-            rows={2}
-          />
-        </div>
-      </m.div>
-
+      {/* Additional Notes */}
+      <div className="space-y-2">
+        <label
+          htmlFor="differential-notes-textarea"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Additional notes about your differentials (optional):
+        </label>
+        <textarea
+          id="differential-notes-textarea"
+          value={formData.differentialsFreeText || ''}
+          onChange={(e) => updateFormData({ differentialsFreeText: e.target.value })}
+          placeholder="e.g., Specific conditions for bonuses, additional details, etc."
+          className="w-full p-3 bg-white border-2 border-gray-200 rounded-xl text-sm resize-none
+                   focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+          rows={2}
+        />
+      </div>
 
       {/* Navigation for Section 3 */}
       <div className="flex justify-between mt-6">
@@ -423,14 +221,14 @@ export default function CompensationSection({
           type="button"
           onClick={handlePreviousSection}
           variant="outline"
-          className="px-6 py-3"
+          className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
         >
           ← Back
         </ActionButton>
         <ActionButton
           type="submit"
           onClick={handleSubmit}
-          className="px-8 py-3"
+          className="px-3 py-1.5 sm:px-8 sm:py-3 text-sm sm:text-base"
         >
           Review Everything →
         </ActionButton>

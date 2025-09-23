@@ -78,9 +78,9 @@ export default function SummaryCard({
                 </div>
               )}
               <div className="flex-1">
-                <p className="text-sm text-gray-500 dark:text-gray-400">{item.label}</p>
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{item.label}</p>
                 {editingLabel === item.label ? (
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-1 sm:gap-2 mt-1">
                     {item.options ? (
                       <div className="flex-1">
                         <CustomDropdown
@@ -88,7 +88,7 @@ export default function SummaryCard({
                           value={editValue}
                           onChange={setEditValue}
                           searchable={item.options.length > 5}
-                          className="text-sm"
+                          className="text-xs sm:text-sm"
                         />
                       </div>
                     ) : (
@@ -101,7 +101,7 @@ export default function SummaryCard({
                             handleSave(item);
                           }
                         }}
-                        className="flex-1 px-2 py-1 text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="flex-1 px-2 py-1 text-sm sm:text-base border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500"
                         autoFocus
                       />
                     )}
@@ -110,18 +110,18 @@ export default function SummaryCard({
                       onClick={() => handleSave(item)}
                       className="p-1 text-green-600 hover:bg-green-50 rounded"
                     >
-                      <Check className="w-4 h-4" />
+                      <Check className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={handleCancel}
                       className="p-1 text-red-600 hover:bg-red-50 rounded"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 ) : (
-                  <p className="text-base font-medium text-gray-900">{item.value}</p>
+                  <p className="text-sm sm:text-base font-medium text-gray-900 break-words">{item.value}</p>
                 )}
               </div>
             </div>

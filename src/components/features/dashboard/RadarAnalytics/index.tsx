@@ -46,38 +46,38 @@ function RadarAnalytics({
   };
 
   return (
-    <div className={`${tc.cardClass} p-6`}>
+    <div className={`${tc.cardClass} p-3 sm:p-6`}>
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${tc.getClass(
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className={`p-1.5 sm:p-2 rounded-lg ${tc.getClass(
               'bg-blue-50',
               'bg-blue-900/30'
             )}`}>
-              <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <div>
-              <h2 className={`text-lg font-semibold ${tc.text.primary}`}>
+            <div className="flex-1">
+              <h2 className={`text-base sm:text-lg font-semibold ${tc.text.primary}`}>
                 Performance Analytics
               </h2>
-              <p className={`text-sm ${tc.text.secondary}`}>
+              <p className={`text-xs sm:text-sm ${tc.text.secondary}`}>
                 Your profile vs. market average
               </p>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <div className={`px-3 py-1.5 rounded-lg ${tc.getClass(
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <div className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg ${tc.getClass(
               'bg-gray-50',
               'bg-slate-700'
             )}`}>
-              <div className="flex items-center gap-2">
-                <Zap className="w-4 h-4 text-amber-500" />
-                <span className={`text-sm font-semibold ${tc.text.primary}`}>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Zap className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500" />
+                <span className={`text-xs sm:text-sm font-semibold ${tc.text.primary}`}>
                   {performanceScore.toFixed(1)}
                 </span>
-                <span className={`text-xs ${getScoreColor(parseFloat(scoreDiff), theme)}`}>
+                <span className={`text-[10px] sm:text-xs ${getScoreColor(parseFloat(scoreDiff), theme)}`}>
                   {parseFloat(scoreDiff) >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(scoreDiff))}%
                 </span>
               </div>

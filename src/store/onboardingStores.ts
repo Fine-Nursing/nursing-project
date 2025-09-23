@@ -149,13 +149,11 @@ const useOnboardingStore = create<OnboardingStore>((set, get) => ({
       // localStorage에서 tempUserId 가져오기
       const sessionData = localStorage.getItem('onboarding_session');
       if (!sessionData) {
-        console.log('No onboarding session found');
         return;
       }
 
       const { tempUserId } = JSON.parse(sessionData);
       if (!tempUserId) {
-        console.log('No tempUserId found in session');
         return;
       }
 
@@ -169,7 +167,6 @@ const useOnboardingStore = create<OnboardingStore>((set, get) => ({
       );
 
       if (!response.ok) {
-        console.log('Failed to fetch onboarding progress from server');
         return;
       }
 
@@ -191,7 +188,6 @@ const useOnboardingStore = create<OnboardingStore>((set, get) => ({
       // 적절한 단계로 이동
       get().continueFromLastStep();
 
-      console.log('Successfully restored onboarding progress from server');
     } catch (error) {
       console.error('Error restoring onboarding progress:', error);
       // 에러가 발생해도 앱은 계속 동작하도록 함

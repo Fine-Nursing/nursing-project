@@ -33,17 +33,17 @@ export default function CultureForm(): JSX.Element {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <ProgressHeader
         progress={getProgress()}
         completedCategories={getCompletedCategories()}
         totalCategories={RATING_CATEGORIES.length}
       />
 
-      {/* Main Content - 2 Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-8">
-        {/* Left Column - Form (3/5 width) */}
-        <div className="lg:col-span-3">
+      {/* Main Content - Mobile first layout */}
+      <div className="flex flex-col lg:grid lg:grid-cols-5 gap-4 sm:gap-8">
+        {/* Form Section - Full width on mobile */}
+        <div className="w-full lg:col-span-3">
           <m.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -60,27 +60,27 @@ export default function CultureForm(): JSX.Element {
                 onFeedbackChange={handleFeedbackChange}
               />
 
-              {/* Navigation */}
-              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              {/* Navigation - Mobile optimized */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <ActionButton
                   onClick={handleBack}
                   variant="outline"
-                  className="px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base w-full sm:w-auto"
+                  className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base w-full sm:w-auto order-2 sm:order-1"
                 >
                   ← Back
                 </ActionButton>
 
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="text-center">
-                    <div className="text-xs sm:text-sm text-gray-500">Overall Score</div>
-                    <div className="text-xl sm:text-2xl font-bold text-emerald-600">
+                <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-4 order-1 sm:order-2">
+                  <div className="text-center sm:text-left">
+                    <div className="text-xs text-gray-500">Overall Score</div>
+                    <div className="text-base sm:text-xl font-bold text-emerald-600">
                       {calculateAverageScore()}/5.0
                     </div>
                   </div>
 
                   <ActionButton
                     type="submit"
-                    className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base"
+                    className="px-3 py-1.5 sm:px-6 sm:py-3 text-sm sm:text-base"
                     disabled={isLoading || calculateAverageScore() === '0.0'}
                   >
                     {isLoading ? (
@@ -98,8 +98,10 @@ export default function CultureForm(): JSX.Element {
           </m.div>
         </div>
 
-        {/* Right Column - Reviews (2/5 width) */}
-        <ReviewsSection />
+        {/* Reviews Section - Hidden on mobile, visible on desktop */}
+        <div className="hidden lg:block lg:col-span-2">
+          <ReviewsSection />
+        </div>
       </div>
     </div>
   );

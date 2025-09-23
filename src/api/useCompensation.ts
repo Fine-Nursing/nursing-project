@@ -8,6 +8,8 @@ import queryKeys from 'src/constants/queryKeys';
 interface DifferentialDetail {
   type: string;
   value: number;
+  frequency: number;
+  monthlyAmount: number;
   label: string;
 }
 
@@ -24,6 +26,7 @@ interface CompensationData {
   differentials: Differentials;
   baseHourlyRate?: number;  // Base hourly rate without differentials
   totalDifferentialHourly?: number;  // Total differential as hourly rate
+  shiftHours?: number;  // Shift hours per day (8, 12, or 16)
 }
 
 interface CompensationResponse {
