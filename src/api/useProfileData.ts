@@ -49,3 +49,6 @@ export const prefetchMyProfile = async (queryClient: QueryClient) => {
     queryFn: fetchMyProfile,
   });
 };
+
+// Export as useUserProfile too for backward compatibility
+export const useUserProfile = useMyProfile;

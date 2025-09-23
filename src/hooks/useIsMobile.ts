@@ -1,35 +1,44 @@
 import { useState, useEffect } from 'react';
 
 const useIsMobile = (breakpoint: number = 768) => {
-  // 초기값은 항상 false로 설정하여 서버와 클라이언트가 동일하게 시작
-  const [isMobile, setIsMobile] = useState(false);
+  // Check if window is defined (client side) and get initial state
+  const getInitialState = () => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < breakpoint;
+    }
+    return false;
+  };
+
+  const [isMobile, setIsMobile] = useState(getInitialState);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Set mounted to true
     setMounted(true);
-    
+
     const checkIsMobile = () => {
       const mobile = window.innerWidth < breakpoint;
       setIsMobile(mobile);
     };
 
-    // 초기 체크
+    // Initial check after mount
     checkIsMobile();
 
-    // 리사이즈 이벤트 리스너
-    window.addEventListener('resize', checkIsMobile);
+    // Add resize event listener
+    const handleResize = () => {
+      checkIsMobile();
+    };
+
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', checkIsMobile);
+      window.removeEventListener('resize', handleResize);
     };
   }, [breakpoint]);
 
-  // 마운트되지 않았을 때는 false 반환 (SSR 대응)
-  if (!mounted) {
-    return false;
-  }
-
-  return isMobile;
+  // During SSR or before mount, return false to avoid hydration mismatch
+  // But after mount, return the actual state
+  return mounted ? isMobile : false;
 };
 
 export default useIsMobile;

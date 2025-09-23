@@ -8,6 +8,8 @@ interface CareerStatsGridProps {
   currentRole: any;
   highestHourlyRate: number;
   annualSalary: number;
+  currentHourlyRate?: number;
+  shiftHours?: number;
 }
 
 export default function CareerStatsGrid({
@@ -16,7 +18,9 @@ export default function CareerStatsGrid({
   remainingMonths,
   currentRole,
   highestHourlyRate,
-  annualSalary
+  annualSalary,
+  currentHourlyRate = 0,
+  shiftHours = 12
 }: CareerStatsGridProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
@@ -58,7 +62,7 @@ export default function CareerStatsGrid({
         </div>
       </div>
 
-      {/* Highest Rate */}
+      {/* Current Hourly Rate */}
       <div className={`p-3 rounded-lg border text-center ${
         theme === 'light' ? 'bg-white border-gray-200' : 'bg-slate-800 border-slate-600'
       }`}>
@@ -68,12 +72,17 @@ export default function CareerStatsGrid({
         <div className={`text-xs font-medium ${
           theme === 'light' ? 'text-gray-600' : 'text-gray-400'
         }`}>
-          Peak Rate
+          Current Rate
         </div>
         <div className={`text-lg font-bold ${
           theme === 'light' ? 'text-gray-900' : 'text-white'
         }`}>
-          ${highestHourlyRate.toFixed(2)}
+          ${currentHourlyRate.toFixed(2)}
+        </div>
+        <div className={`text-[10px] ${
+          theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+        }`}>
+          {shiftHours}hr shifts
         </div>
       </div>
 

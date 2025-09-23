@@ -73,14 +73,14 @@ export default function ActionButton({
 }: ActionButtonProps) {
   return (
     <button
-      type="button"
+      {...props}
+      type={props.type || "button"}
       className={cn(
         'rounded-md font-bold transition duration-200',
         sizeStyles[size],
         colorVariantClasses[color][variant],
         className
       )}
-      {...props}
     >
       {children}
     </button>

@@ -3,7 +3,8 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { LazyMotion } from 'framer-motion';
 import { useRouter, useParams } from 'next/navigation';
-import { Stethoscope, RefreshCw, AlertCircle, Home } from 'lucide-react';
+import { HeartHandshake, RefreshCw, AlertCircle, Home } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useTheme } from 'src/contexts/ThemeContext';
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
 
@@ -14,9 +15,11 @@ import { useUserMetrics } from 'src/api/useUserMetrics';
 import { useDifferentialsSummary } from 'src/api/useDifferentials';
 import { useAllAiInsights } from 'src/api/ai/useAiInsights';
 import { useSpecialtyAverageCompensation } from 'src/api/useSpecialties';
+import { useUpdateCompensation } from 'src/api/useUpdateCompensation';
 import useAuthStore from 'src/hooks/useAuthStore';
 import UserProfileCardSkeleton from '../../../components/features/dashboard/UserProfileCard/components/UserProfileCardSkeleton';
 import motionFeatures from '../../../lib/framer-motion-features';
+import { CompensationCalculator } from 'src/utils/compensation';
 
 const UserProfileCard = lazy(() => import('src/components/features/dashboard/UserProfileCard'));
 const CareerDashboard = lazy(() => import('src/components/features/career/CareerDashboard'));
@@ -25,6 +28,7 @@ const RadarAnalytics = lazy(() => import('src/components/features/dashboard/Rada
 const PredictiveCompChart = lazy(() => import('src/components/features/dashboard/PredictiveCompChart'));
 const AiCareerInsights = lazy(() => import('src/components/features/dashboard/AiCareerInsights'));
 const NextSteps = lazy(() => import('src/components/features/dashboard/NextSteps'));
+const EditCompensationModal = lazy(() => import('src/components/features/profile/EditCompensationModal'));
 
 // 기본값 - 실제 데이터가 없을 때만 사용
 const defaultMetrics = {
@@ -74,35 +78,59 @@ export default function UserPage() {
   
   const { data: metricsData, isLoading: isMetricsLoading, error: metricsError } = useUserMetrics();
   const { data: aiInsights } = useAllAiInsights(user?.id);
+  const updateCompensationMutation = useUpdateCompensation();
   useDifferentialsSummary();
+
+  // Edit Compensation Modal state
+  const [showEditCompensationModal, setShowEditCompensationModal] = useState(false);
   
 
-  // 데이터 처리
+  // 데이터 처리 - wage distribution은 조정하지 않음
   const enhancedPayData = React.useMemo(() => {
     if (!wageDistributionData?.payDistributionData) return [];
-    
-    // 사용자의 임금 범위 찾기 (예: $37 -> $35-40 범위)
+
+    // 사용자의 임금 범위 찾기
     const userRate = compensationData?.hourlyRate;
-    
+
     return wageDistributionData.payDistributionData.map((item) => {
-      // wageValue는 범위의 중간값 (예: 37.5는 $35-40 범위)
-      // label이 "$35-40" 형태일 때, 사용자가 이 범위에 속하는지 확인
-      if (userRate && item.label) {
+      // 백엔드의 wage distribution은 이미 모든 사용자의 실제 시급 기반
+      // 조정할 필요 없이 직접 비교
+      if (item.label) {
         const match = item.label.match(/\$(\d+)-(\d+)/);
         if (match) {
           const min = parseInt(match[1], 10);
           const max = parseInt(match[2], 10);
-          if (userRate >= min && userRate < max) {
-            return { ...item, isUser: true };
-          }
+
+          // 사용자가 이 범위에 속하는지 확인
+          const isUser = !!(userRate && userRate >= min && userRate < max);
+
+          return {
+            ...item,
+            isUser,
+            highlight: isUser // 사용자 범위 하이라이트
+          };
         }
       }
       return { ...item, isUser: false };
     });
   }, [wageDistributionData, compensationData]);
 
+  // Regional average wage - 백엔드에서 이미 실제 시급으로 계산됨
   const actualRegionalAvgHourlyRate = wageDistributionData?.regionalAvgWage || 35;
-  const actualRegionalAvgAnnualSalary = actualRegionalAvgHourlyRate * 2080;
+  const shiftHours = compensationData?.shiftHours || 12; // Get shift hours from compensation data
+  const actualRegionalAvgAnnualSalary = CompensationCalculator.hourlyToAnnual(actualRegionalAvgHourlyRate, shiftHours);
+
+  // 디버그: 세 컴포넌트 데이터 비교
+  React.useEffect(() => {
+    if (compensationData) {
+      const pattern = CompensationCalculator.getShiftPattern(compensationData.shiftHours || 12);
+
+      // Base and Differential Pay 계산 확인
+      const totalMonthly = CompensationCalculator.hourlyToMonthly(compensationData.hourlyRate, compensationData.shiftHours || 12);
+      const calculatedHourlyFromMonthly = CompensationCalculator.monthlyToHourly(totalMonthly, compensationData.shiftHours || 12);
+
+    }
+  }, [compensationData, enhancedPayData]);
 
   // Calculate specialty average from API data
   const specialtyAvgHourlyRate = React.useMemo(() => {
@@ -115,8 +143,8 @@ export default function UserPage() {
       item.specialty.toLowerCase().includes(userSpecialty.toLowerCase())
     ) || specialtyCompensationData[0]; // Use first result if no exact match
     
-    // Convert annual to hourly (totalCompensation is annual)
-    return Math.round(matchingSpecialty.totalCompensation / 2080);
+    // Convert annual to hourly using shift pattern
+    return CompensationCalculator.annualToHourly(matchingSpecialty.totalCompensation, shiftHours);
   }, [specialtyCompensationData, userSpecialty, actualRegionalAvgHourlyRate]);
 
   const calculateDifference = (userValue: number, avg: number) => Math.round(((userValue - avg) / avg) * 100);
@@ -200,6 +228,38 @@ export default function UserPage() {
     return opportunities;
   };
 
+  // Handle Edit Compensation Modal
+  const handleEditCompensation = () => {
+    setShowEditCompensationModal(true);
+  };
+
+  const handleCompensationSave = async (data: {
+    basePay: number;
+    basePayUnit: 'hourly' | 'yearly';
+    shiftHours?: number;
+    differentials: {
+      type: string;
+      value: number;
+      frequency: number;
+    }[];
+  }) => {
+    try {
+      await updateCompensationMutation.mutateAsync(data);
+      toast.success('Compensation updated successfully!', {
+        icon: '💰',
+        duration: 3000,
+      });
+      setShowEditCompensationModal(false);
+    } catch (error) {
+      console.error('Failed to update compensation:', error);
+      toast.error('Failed to update compensation. Please try again.', {
+        icon: '❌',
+        duration: 4000,
+      });
+      throw error; // Re-throw to prevent modal from closing
+    }
+  };
+
   // 에러 상태
   const hasError = profileError || compensationError || wageDistributionError;
   if (hasError) {
@@ -231,11 +291,8 @@ export default function UserPage() {
           {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3">
             <div className="flex items-center">
-              <div className="bg-slate-100 dark:bg-slate-700 p-2 rounded-full mr-3 transition-colors">
-                <Stethoscope className="w-5 h-5 sm:w-6 sm:h-6 text-slate-500" />
-              </div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-700 dark:text-slate-300 transition-colors">
-                Nurse Pay Buddy
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400 transition-colors">
+                Nurse Journey
               </h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">
@@ -316,36 +373,47 @@ export default function UserPage() {
                   hourlyRate: compensationData.hourlyRate, // 총 보상 시급 (맨 위 Total에 사용)
                   annualSalary: compensationData.annualSalary, // 총 보상 연봉 (맨 위 Total에 사용)
                   baseHourlyRate: compensationData.baseHourlyRate, // Base pay 시급 (Base Pay Section에 사용)
-                  baseAnnualSalary: (compensationData.baseHourlyRate || compensationData.hourlyRate) * 2080, // Base pay 연봉
-                  differentials: compensationData.differentials.details && compensationData.differentials.details.length > 0 ? 
+                  baseAnnualSalary: CompensationCalculator.hourlyToAnnual(
+                    compensationData.baseHourlyRate || compensationData.hourlyRate,
+                    shiftHours
+                  ), // Base pay 연봉
+                  differentials: compensationData.differentials.details && compensationData.differentials.details.length > 0 ?
                     compensationData.differentials.details
                       .filter(detail => detail.value > 0)
                       .map(detail => ({
                         type: detail.type,
                         label: detail.label,
                         value: detail.value,
-                        estimatedHours: getEstimatedHours(detail.type), 
+                        frequency: detail.frequency, // Use BE-calculated frequency
+                        monthlyAmount: detail.monthlyAmount, // Use BE-calculated monthly amount
+                        estimatedHours: getEstimatedHours(detail.type), // Keep for backward compatibility
                         description: `${detail.label} differential pay`
                       })) : [
                     // Fallback to old structure if details not available
                     compensationData.differentials.night > 0 ? {
                       type: 'night',
                       label: 'Night Shift',
-                      value: compensationData.differentials.night,
-                      estimatedHours: 40,
+                      value: CompensationCalculator.monthlyToHourly(compensationData.differentials.night, shiftHours),
+                      frequency: 3, // Default: 3 nights per week
+                      monthlyAmount: compensationData.differentials.night,
+                      estimatedHours: 40, // Keep for compatibility
                       description: 'Night shift differential pay'
                     } : null,
                     compensationData.differentials.weekend > 0 ? {
                       type: 'weekend',
                       label: 'Weekend',
-                      value: compensationData.differentials.weekend,
-                      estimatedHours: 32,
+                      value: CompensationCalculator.monthlyToHourly(compensationData.differentials.weekend, shiftHours),
+                      frequency: 2, // Default: 2 weekends per month
+                      monthlyAmount: compensationData.differentials.weekend,
+                      estimatedHours: 32, // Keep for compatibility
                       description: 'Weekend differential pay'
                     } : null,
                     compensationData.differentials.other > 0 ? {
                       type: 'other',
                       label: 'Other',
-                      value: compensationData.differentials.other,
+                      value: CompensationCalculator.monthlyToHourly(compensationData.differentials.other, shiftHours),
+                      frequency: 1, // Default frequency
+                      monthlyAmount: compensationData.differentials.other,
                       estimatedHours: 20,
                       description: 'Other differential pay'
                     } : null
@@ -358,6 +426,8 @@ export default function UserPage() {
                 userState={userState}
                 regionalAvgWage={actualRegionalAvgHourlyRate}
                 specialtyAvgWage={specialtyAvgHourlyRate}
+                shiftHours={shiftHours}
+                onEditCompensation={handleEditCompensation}
               />
             </Suspense>
             
@@ -529,6 +599,34 @@ export default function UserPage() {
             </p>
           </div>
         </div>
+
+        {/* Edit Compensation Modal */}
+        <Suspense fallback={null}>
+          <EditCompensationModal
+            isOpen={showEditCompensationModal}
+            onClose={() => setShowEditCompensationModal(false)}
+            currentCompensation={{
+              basePay: compensationData?.baseHourlyRate || compensationData?.hourlyRate || 0,
+              basePayUnit: 'hourly' as const,
+              shiftHours: compensationData?.shiftHours || 12,
+              differentials: compensationData?.differentials?.details?.filter(detail => {
+                // Filter out entries with invalid data
+                return detail.type && detail.value > 0;
+              }).map(detail => ({
+                // Remove any null bytes from the type string
+                type: String(detail.type)
+                  .split('')
+                  .filter(char => char.charCodeAt(0) !== 0)
+                  .join('')
+                  .trim(),
+                value: Number(detail.value) || 0,
+                frequency: Number(detail.frequency) || 1, // Use actual frequency value
+              })).filter(d => d.type && d.type.length > 0) || [],
+            }}
+            onSave={handleCompensationSave}
+            theme={theme}
+          />
+        </Suspense>
       </div>
     </LazyMotion>
   );

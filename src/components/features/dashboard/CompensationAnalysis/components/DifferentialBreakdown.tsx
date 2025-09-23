@@ -71,7 +71,7 @@ export function DifferentialBreakdown({
               icon={getIcon(differential.type)}
               iconColor={getIconColor(differential.type)}
               title={differential.label}
-              description={differential.description}
+              description={differential.description || ''}
               value={differential.value}
               monthlyAmount={differential.monthlyAmount}
               onChange={(value) => {
@@ -168,12 +168,12 @@ function DifferentialItem({
             <p className={`text-sm font-semibold ${
               theme === 'light' ? 'text-gray-900' : 'text-white'
             }`}>
-              +${value}/hr
+              +${value.toFixed(2)}/hr
             </p>
             <p className={`text-xs ${
               theme === 'light' ? 'text-gray-500' : 'text-gray-400'
             }`}>
-              ${monthlyAmount}/month
+              ${monthlyAmount.toLocaleString('en-US', { maximumFractionDigits: 0 })}/month
             </p>
           </div>
         )}

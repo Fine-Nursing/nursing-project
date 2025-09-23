@@ -64,7 +64,7 @@ export function Header({ user, onSignOut, onShowLogin, onShowSignUp }: HeaderPro
                   onClick={handleProfileClick}
                   className="px-3 sm:px-4 py-2 text-sm sm:text-base text-emerald-500 hover:text-emerald-600 font-medium"
                 >
-                  Profile
+                  Dashboard
                 </button>
                 <ActionButton
                   onClick={onSignOut}

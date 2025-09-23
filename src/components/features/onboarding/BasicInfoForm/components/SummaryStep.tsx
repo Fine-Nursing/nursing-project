@@ -70,14 +70,14 @@ export default function SummaryStep({
           <ActionButton
             onClick={handleReset}
             variant="outline"
-            className="px-6 py-3 text-base"
+            className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base"
           >
             Start Over
           </ActionButton>
           <ActionButton
             onClick={() => setStep('welcome')}
             variant="outline"
-            className="px-6 py-3 text-base"
+            className="px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base"
           >
             Cancel
           </ActionButton>
@@ -85,7 +85,7 @@ export default function SummaryStep({
         <ActionButton
           onClick={handleContinue}
           disabled={isLoading || !isFormValid()}
-          className="w-full sm:w-auto px-8 py-4 text-lg order-1 sm:order-2"
+          className="w-full sm:w-auto px-6 py-2 sm:px-8 sm:py-4 text-base sm:text-lg order-1 sm:order-2"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">

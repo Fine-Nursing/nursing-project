@@ -122,7 +122,6 @@ apiClient.interceptors.request.use(
   (config) => {
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log('API Request:', config.method?.toUpperCase(), config.url);
     }
     return config;
   },

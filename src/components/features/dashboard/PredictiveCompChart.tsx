@@ -72,12 +72,12 @@ function CustomTooltip(
         </p>
         {isUserWage && (
           <p className="text-blue-600 dark:text-blue-400 text-sm font-medium mt-1">
-            ⭐ Your Position
+            Your Position
           </p>
         )}
         {isAvgWage && !isUserWage && (
           <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium mt-1">
-            📊 Regional Average
+            Regional Average
           </p>
         )}
       </div>
@@ -115,15 +115,17 @@ export default function PredictiveCompChart({
   userSpecialty = '',
   userState = '',
 }: PredictiveCompChartProps) {
-  // 디버깅용 로그
+  // Check if mobile
+  const [isMobile, setIsMobile] = React.useState(false);
+
   React.useEffect(() => {
-    console.log('📊 PredictiveCompChart Debug:', {
-      userHourlyRate,
-      regionalAvgWage,
-      payDistributionDataLength: payDistributionData?.length,
-      firstDistItem: payDistributionData?.[0],
-    });
-  }, [userHourlyRate, regionalAvgWage, payDistributionData]);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (!payDistributionData || payDistributionData.length === 0) {
     return (
@@ -163,13 +165,11 @@ export default function PredictiveCompChart({
             : (userHourlyRate >= min && userHourlyRate < max);
             
           if (inRange) {
-            console.log('🎯 Found user bar:', item.label, 'for rate:', userHourlyRate);
             return item.label;
           }
         }
       }
     }
-    console.log('❌ User bar not found for rate:', userHourlyRate);
     return null;
   }, [payDistributionData, userHourlyRate]);
 
@@ -254,8 +254,9 @@ export default function PredictiveCompChart({
               }
             </p>
           </div>
-          
-          <div className={`px-3 py-2 rounded-lg ${
+
+          {/* Live Data - Hidden on mobile */}
+          <div className={`hidden sm:block px-3 py-2 rounded-lg ${
             theme === 'light' ? 'bg-green-50' : 'bg-green-900/30'
           }`}>
             <div className="flex items-center gap-2">
@@ -276,16 +277,27 @@ export default function PredictiveCompChart({
         <div className={`rounded-lg p-3 sm:p-6 ${
           theme === 'light' ? 'bg-gray-50' : 'bg-slate-900/30'
         }`}>
+          {/* Mobile Legend with text */}
+          <div className="flex justify-end gap-3 mb-2 sm:hidden">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-blue-500 rounded-full" />
+              <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>You</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-emerald-500 rounded-full" />
+              <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Avg</span>
+            </div>
+          </div>
           <div className="w-full">
             <div className="h-64 sm:h-80 lg:h-96">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={payDistributionData}
-                  margin={{ 
-                    top: 40, 
-                    right: 20, 
-                    bottom: 40, 
-                    left: 20 
+                  margin={{
+                    top: 50,  // Increased top margin for YOU label
+                    right: 20,
+                    bottom: 40,
+                    left: 20
                   }}
                 >
               <CartesianGrid
@@ -327,8 +339,8 @@ export default function PredictiveCompChart({
                 }}
               />
               <Tooltip content={tooltipRenderer} />
-              {/* User position marker - using ReferenceLine with categorical X */}
-              {userBarLabel && (
+              {/* User position marker - hidden on mobile */}
+              {userBarLabel && !isMobile && (
                 <ReferenceLine
                   x={userBarLabel}
                   stroke="#3b82f6"
@@ -337,8 +349,8 @@ export default function PredictiveCompChart({
                   label={<CuteWageLabel wage={userHourlyRate} />}
                 />
               )}
-              {/* Regional average marker - only if different from user */}
-              {avgBarLabel && avgBarLabel !== userBarLabel && (
+              {/* Regional average marker - hidden on mobile */}
+              {avgBarLabel && avgBarLabel !== userBarLabel && !isMobile && (
                 <ReferenceLine
                   x={avgBarLabel}
                   stroke="#10b981"
@@ -360,23 +372,20 @@ export default function PredictiveCompChart({
               <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={30}>
                 {payDistributionData.map((entry) => {
                   let fillColor = theme === 'light' ? '#e5e7eb' : '#4b5563'; // Gray-200/Gray-600 default
-                  
-                  // Highlight user's bar with blue (no border)
+
+                  // Highlight user's bar with blue
                   if (entry.label === userBarLabel) {
-                    fillColor = theme === 'light' ? '#3b82f6' : '#60a5fa'; // Blue-500/Blue-400
+                    fillColor = '#3b82f6'; // Blue-500 for both themes
                   }
                   // Highlight regional average bar with green (if different from user)
                   else if (entry.label === avgBarLabel) {
-                    fillColor = theme === 'light' ? '#10b981' : '#34d399'; // Emerald-500/Emerald-400
+                    fillColor = '#10b981'; // Emerald-500 for both themes
                   }
-                  // Nearby ranges get subtle purple highlighting
-                  else if (entry.highlight) {
-                    fillColor = theme === 'light' ? '#c7d2fe' : '#6366f1'; // Indigo-200/Indigo-500
-                  }
-                  
+                  // Remove purple highlighting - just use default gray for other bars
+
                   return (
-                    <Cell 
-                      key={`cell-${entry.id}`} 
+                    <Cell
+                      key={`cell-${entry.id}`}
                       fill={fillColor}
                     />
                   );
@@ -410,8 +419,14 @@ export default function PredictiveCompChart({
               }`}>
                 ${userHourlyRate}/hr
               </p>
-              <p className="text-[10px] sm:text-xs text-green-600 dark:text-green-400">
-                {userHourlyRate > regionalAvgWage 
+              <p className={`text-[10px] sm:text-xs ${
+                userHourlyRate > regionalAvgWage
+                  ? 'text-green-600 dark:text-green-400'
+                  : userHourlyRate < regionalAvgWage
+                  ? 'text-red-600 dark:text-red-400'
+                  : 'text-gray-600 dark:text-gray-400'
+              }`}>
+                {userHourlyRate > regionalAvgWage
                   ? `+$${(userHourlyRate - regionalAvgWage).toFixed(2)}/hr (+${((userHourlyRate - regionalAvgWage) / regionalAvgWage * 100).toFixed(0)}%)`
                   : userHourlyRate < regionalAvgWage
                   ? `-$${(regionalAvgWage - userHourlyRate).toFixed(2)}/hr (${((userHourlyRate - regionalAvgWage) / regionalAvgWage * 100).toFixed(0)}%)`

@@ -1,9 +1,10 @@
 import type { SpecialtyCompensation } from 'src/types/specialty';
 import type { ProcessedDataItem, SalaryRangeValues } from '../types';
+import { CompensationCalculator } from 'src/utils/compensation';
 
-// Convert annual salary to hourly wage
-const annualToHourly = (annualSalary: number): number => {
-  return Math.round((annualSalary / 2080) * 100) / 100; // Round to 2 decimal places
+// Convert annual salary to hourly wage using proper shift hours
+const annualToHourly = (annualSalary: number, shiftHours: number = 12): number => {
+  return CompensationCalculator.annualToHourly(annualSalary, shiftHours);
 };
 
 export const calculateSalaryRange = (compensations: SpecialtyCompensation[] | undefined): SalaryRangeValues => {
@@ -27,14 +28,15 @@ export const calculateSalaryRange = (compensations: SpecialtyCompensation[] | un
 export const processCompensationData = (
   compensations: SpecialtyCompensation[] | undefined,
   salaryRange: [number, number],
-  selectedLocations: string[]
+  selectedLocations: string[],
+  shiftHours: number = 12
 ): ProcessedDataItem[] => {
   if (!compensations) return [];
 
   return compensations
     .filter((item) => {
-      // Convert annual compensation to hourly for comparison
-      const hourlyTotal = annualToHourly(item.totalCompensation);
+      // Convert annual compensation to hourly for comparison using proper shift hours
+      const hourlyTotal = annualToHourly(item.totalCompensation, shiftHours);
       const matchesSalary =
         hourlyTotal >= salaryRange[0] &&
         hourlyTotal <= salaryRange[1];
@@ -46,5 +48,6 @@ export const processCompensationData = (
       'Differential Pay': item.differentialPay, // Keep as annual, will be converted in Chart component
       total: item.totalCompensation, // Keep as annual, will be converted in Chart component
       state: selectedLocations[0] || 'ALL',
+      shiftHours, // Include shift hours for Chart component
     }));
 };

@@ -14,15 +14,21 @@ import { AuthModal } from 'src/components/features/auth';
 // Import separated components - Above-the-fold
 import DefaultHeader from 'src/components/features/landing/Header';
 import HeroSection from 'src/components/features/landing/HeroSection';
-import MobileSalaryDiscovery from 'src/components/features/landing/MobileSalaryDiscovery';
 
 // Lazy load Below-the-fold components
-const CompensationSection = lazy(() => import('src/components/features/landing/CompensationSection'));
-const DataSection = lazy(() => import('src/components/features/landing/DataSection'));
-const FeaturesSection = lazy(() => import('src/components/features/landing/FeaturesSection'));
-const TestimonialsSection = lazy(() => import('src/components/features/landing/TestimonialsSection'));
+const CompensationSection = lazy(
+  () => import('src/components/features/landing/CompensationSection')
+);
+const DataSection = lazy(
+  () => import('src/components/features/landing/DataSection')
+);
+const FeaturesSection = lazy(
+  () => import('src/components/features/landing/FeaturesSection')
+);
+const TestimonialsSection = lazy(
+  () => import('src/components/features/landing/TestimonialsSection')
+);
 const Footer = lazy(() => import('src/components/features/landing/Footer'));
-
 
 export default function HomePage() {
   const router = useRouter();
@@ -100,15 +106,13 @@ export default function HomePage() {
 
   const handleOnboardingClick = useCallback(async () => {
     try {
+      // If user is logged in and completed onboarding, go directly to dashboard
       if (user && user.hasCompletedOnboarding) {
         router.push(`/users/${user.id}`);
-        toast('You have already completed onboarding! Check out your profile.', {
-          icon: '👤',
-          duration: 3000,
-        });
         return;
       }
 
+      // If user is logged in but hasn't completed onboarding, let them continue
       const API_URL = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
       const response = await fetch(`${API_URL}/api/onboarding/init`, {
         method: 'POST',
@@ -151,7 +155,8 @@ export default function HomePage() {
           throw new Error('Login failed');
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to login';
+        const message =
+          error instanceof Error ? error.message : 'Failed to login';
         toast.error(message);
         // 에러를 다시 throw하여 LoginForm에서 catch할 수 있도록 함
         throw error;
@@ -179,7 +184,8 @@ export default function HomePage() {
           throw new Error('Sign up failed');
         }
       } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to create account';
+        const message =
+          error instanceof Error ? error.message : 'Failed to create account';
         toast.error(message);
         // 에러를 다시 throw하여 SignUpForm에서 catch할 수 있도록 함
         throw error;
@@ -213,21 +219,33 @@ export default function HomePage() {
     );
   }
 
-  // Mobile-specific layout - Optimized for mobile UX
-  if (isMobile && !user) {
-    // Mobile screen for non-logged in users
+  // Lazy load MobileLanding component
+  const MobileLanding = lazy(() => import('src/components/features/landing/MobileLanding'));
+
+  // Mobile-specific layout - New unified mobile experience
+  if (isMobile) {
     return (
-      <>
-        <MobileSalaryDiscovery
-          onOnboardingClick={() => {
-            setAuthMode('signup');
-            setShowAuthModal(true);
-          }}
-          onLoginClick={() => {
-            setAuthMode('login');
-            setShowAuthModal(true);
-          }}
-        />
+      <LazyMotion features={domAnimation} strict>
+        <Suspense
+          fallback={
+            <div className="min-h-screen bg-white flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500" />
+            </div>
+          }
+        >
+          <MobileLanding
+            user={user}
+            onLoginClick={() => {
+              setAuthMode('login');
+              setShowAuthModal(true);
+            }}
+            onSignUpClick={() => {
+              setAuthMode('signup');
+              setShowAuthModal(true);
+            }}
+            onSignOut={handleSignOut}
+          />
+        </Suspense>
 
         {/* Auth Modal */}
         <AuthModal
@@ -243,43 +261,7 @@ export default function HomePage() {
           onSignUp={handleSignUp}
           isLoading={isAuthLoading}
         />
-      </>
-    );
-  }
-
-  // Mobile screen for logged-in users (to be implemented)
-  if (isMobile && user) {
-    return (
-      <>
-        {/* Mobile dashboard for logged-in users - to be implemented */}
-        <div className="min-h-screen bg-gray-50 dark:bg-black p-4">
-          <div className="text-center py-20">
-            <h1 className="text-2xl font-bold mb-4">Welcome, {user.firstName || 'Nurse'}!</h1>
-            <button
-              type="button"
-              onClick={() => router.push(`/users/${user.id}`)}
-              className="px-6 py-3 bg-emerald-500 text-white rounded-lg"
-            >
-              View My Profile
-            </button>
-          </div>
-        </div>
-
-        {/* Auth Modal */}
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          mode={authMode}
-          onAuthSuccess={() => {
-            setShowAuthModal(false);
-            checkAuth();
-          }}
-          onModeSwitch={setAuthMode}
-          onLogin={handleLogin}
-          onSignUp={handleSignUp}
-          isLoading={isAuthLoading}
-        />
-      </>
+      </LazyMotion>
     );
   }
 
@@ -287,85 +269,95 @@ export default function HomePage() {
   return (
     <LazyMotion features={domAnimation} strict>
       <div className="min-h-screen bg-gradient-to-br from-white via-emerald-50/30 to-blue-50/40 dark:bg-gradient-to-br dark:from-zinc-950 dark:via-zinc-900 dark:to-black transition-colors">
-      <DefaultHeader
-        user={user}
-        onSignOut={handleSignOut}
-        onShowLogin={() => {
-          setAuthMode('login');
-          setShowAuthModal(true);
-        }}
-        onShowSignUp={() => {
-          setAuthMode('signup');
-          setShowAuthModal(true);
-        }}
-      />
-
-      <main className="pt-16">
-        <HeroSection
-          displayedGreeting={displayedGreeting}
-          displayedMessage={displayedMessage}
+        <DefaultHeader
           user={user}
-          onOnboardingClick={handleOnboardingClick}
+          onSignOut={handleSignOut}
+          onShowLogin={() => {
+            setAuthMode('login');
+            setShowAuthModal(true);
+          }}
+          onShowSignUp={() => {
+            setAuthMode('signup');
+            setShowAuthModal(true);
+          }}
         />
 
-        <Suspense fallback={
-          <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-          </div>
-        }>
-          <CompensationSection />
-        </Suspense>
-
-        <Suspense fallback={
-          <div className="py-20 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-          </div>
-        }>
-          <DataSection
-            nursingData={nursingData}
-            onPageChange={handlePageChange}
+        <main className="pt-16">
+          <HeroSection
+            displayedGreeting={displayedGreeting}
+            displayedMessage={displayedMessage}
+            user={user}
+            onOnboardingClick={handleOnboardingClick}
           />
+
+          <Suspense
+            fallback={
+              <div className="py-16 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            <CompensationSection />
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="py-20 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            <DataSection
+              nursingData={nursingData}
+              onPageChange={handlePageChange}
+            />
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="py-16 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            <FeaturesSection />
+          </Suspense>
+
+          <Suspense
+            fallback={
+              <div className="py-16 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            <TestimonialsSection />
+          </Suspense>
+        </main>
+
+        <Suspense
+          fallback={
+            <div className="py-12 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+            </div>
+          }
+        >
+          <Footer />
         </Suspense>
 
-        <Suspense fallback={
-          <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-          </div>
-        }>
-          <FeaturesSection />
-        </Suspense>
-
-        <Suspense fallback={
-          <div className="py-16 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-          </div>
-        }>
-          <TestimonialsSection />
-        </Suspense>
-      </main>
-
-      <Suspense fallback={
-        <div className="py-12 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-        </div>
-      }>
-        <Footer />
-      </Suspense>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        mode={authMode}
-        onAuthSuccess={() => {
-          setShowAuthModal(false);
-          checkAuth();
-        }}
-        onModeSwitch={setAuthMode}
-        onLogin={handleLogin}
-        onSignUp={handleSignUp}
-        isLoading={isAuthLoading}
-      />
+        {/* Auth Modal */}
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          mode={authMode}
+          onAuthSuccess={() => {
+            setShowAuthModal(false);
+            checkAuth();
+          }}
+          onModeSwitch={setAuthMode}
+          onLogin={handleLogin}
+          onSignUp={handleSignUp}
+          isLoading={isAuthLoading}
+        />
       </div>
     </LazyMotion>
   );

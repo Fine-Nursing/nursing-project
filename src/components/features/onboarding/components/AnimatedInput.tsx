@@ -14,6 +14,9 @@ interface AnimatedInputProps {
   disabled?: boolean;
   icon?: React.ReactNode;
   maxLength?: number;
+  min?: number;
+  max?: number;
+  step?: string;
   onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   className?: string;
   autoFocus?: boolean;
@@ -31,6 +34,9 @@ export default function AnimatedInput({
   disabled = false,
   icon,
   maxLength,
+  min,
+  max,
+  step,
   onKeyPress,
   className = '',
   autoFocus = false
@@ -68,6 +74,9 @@ export default function AnimatedInput({
           placeholder={placeholder}
           disabled={disabled}
           maxLength={maxLength}
+          min={min}
+          max={max}
+          step={step}
           autoFocus={autoFocus}
           className={`
             w-full px-4 py-3 rounded-lg border-2 transition-all duration-200

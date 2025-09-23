@@ -9,6 +9,13 @@ export interface UserProfile {
   organization: string;
   location: string;
   experience: string;
+  basePay?: number;
+  basePayUnit?: 'hourly' | 'yearly';
+  differentials?: {
+    type: string;
+    value: number;
+    frequency: number;
+  }[];
 }
 
 export interface UserProfileCardProps {

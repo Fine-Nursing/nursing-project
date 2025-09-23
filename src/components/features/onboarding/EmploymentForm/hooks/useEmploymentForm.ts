@@ -89,10 +89,6 @@ export function useEmploymentForm() {
   const handleContinue = useCallback(async () => {
     try {
       // Debug logging
-      console.log('Form Data:', formData);
-      console.log('Workplace valid:', validateWorkplaceSection());
-      console.log('Role valid:', validateRoleSection());
-      console.log('Compensation valid:', validateCompensationSection(formData));
       
       // Final validation
       if (!validateWorkplaceSection() || !validateRoleSection() || !validateCompensationSection(formData)) {
@@ -101,11 +97,6 @@ export function useEmploymentForm() {
       }
 
       // Debugging log
-      console.log('Sending to API:', {
-        organizationName: formData.organizationName,
-        organizationCity: formData.organizationCity,
-        organizationState: formData.organizationState,
-      });
       
       const payload = {
         organizationName: formData.organizationName || '',

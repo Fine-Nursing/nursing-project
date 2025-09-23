@@ -8,6 +8,8 @@ import { ONBOARDING_STEPS } from 'src/constants/onboarding';
 import useOnboardingStore from 'src/store/onboardingStores';
 import type { OnboardingStep } from 'src/types/onboarding';
 import { ThemeSwitch } from 'src/components/ui/common/ThemeToggle';
+import { Home, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 // Dynamic imports - 각 Form은 필요할 때만 로드
 const WelcomePage = lazy(() => import('src/components/features/onboarding/WelcomePage'));
@@ -39,6 +41,8 @@ function FormLoader() {
 function OnboardingFlow() {
   const { currentStep, restoreFromServer } = useOnboardingStore();
   const { isLoading, error } = useInitializeOnboarding();
+  const router = useRouter();
+  const [showExitModal, setShowExitModal] = React.useState(false);
 
   // 컴포넌트 마운트 시 서버에서 상태 복원
   React.useEffect(() => {
@@ -109,11 +113,61 @@ function OnboardingFlow() {
   return (
     <LazyMotion features={domAnimation} strict>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-        {/* Theme Toggle Button - Fixed position */}
-        <div className="fixed top-4 right-4 z-50">
+        {/* Theme Toggle Button - Desktop only */}
+        <div className="hidden sm:block fixed top-4 right-4 z-50">
           <ThemeSwitch />
         </div>
-        
+
+        {/* Home/Exit Button - Mobile only, not on welcome page */}
+        {currentStep !== 'welcome' && (
+          <div className="sm:hidden fixed bottom-6 right-6 z-50">
+            <button
+              onClick={() => setShowExitModal(true)}
+              className="p-3 bg-white dark:bg-gray-800 rounded-full shadow-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all hover:scale-110"
+              aria-label="Go to Home"
+            >
+              <Home className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            </button>
+          </div>
+        )}
+
+        {/* Exit Confirmation Modal - Mobile */}
+        {showExitModal && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50">
+            <m.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+            >
+              <div className="text-center">
+                <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <X className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Exit Onboarding?
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                  Your progress will be saved. You can continue where you left off anytime.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowExitModal(false)}
+                    className="flex-1 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Stay
+                  </button>
+                  <button
+                    onClick={() => router.push('/')}
+                    className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors"
+                  >
+                    Exit
+                  </button>
+                </div>
+              </div>
+            </m.div>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Progress Steps - Welcome 단계일 때는 숨김 */}
           {currentStep !== 'welcome' && (

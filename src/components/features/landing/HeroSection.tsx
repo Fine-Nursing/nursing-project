@@ -75,7 +75,7 @@ const HeroSection = memo(({
         {user ? (
           <>Track your progression • Explore opportunities • Achieve your goals</>
         ) : (
-          <>Join 50,000+ nurses • Real-time data • Career transformation</>
+          <>Real salary data • Real-time updates • Career transformation</>
         )}
           </m.p>
       

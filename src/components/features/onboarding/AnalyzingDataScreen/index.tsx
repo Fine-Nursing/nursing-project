@@ -110,7 +110,6 @@ function AnalyzingDataScreenContent() {
             router.push(`/users/${targetUserId}`);
           } else {
             // userId도 없고 user?.id도 없으면 홈으로 리다이렉트
-            console.warn('No userId found, redirecting to home');
             router.push('/');
           }
         }, 500);

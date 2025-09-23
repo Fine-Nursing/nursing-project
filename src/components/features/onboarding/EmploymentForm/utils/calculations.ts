@@ -1,27 +1,16 @@
 import type { IndividualDifferentialItem } from 'src/types/onboarding';
 import type { DifferentialTotals } from '../types';
+import { CompensationCalculator } from 'src/utils/compensation';
 
-export const calculateTotalDifferentials = (differentials: IndividualDifferentialItem[]): DifferentialTotals => 
-  differentials.reduce(
-    (totals, diff) => {
-      if (diff.unit === 'hourly') {
-        totals.hourly += diff.amount;
-      } else {
-        totals.annual += diff.amount;
-      }
-      return totals;
-    },
-    { hourly: 0, annual: 0 }
-  );
+export const calculateTotalDifferentials = (differentials: IndividualDifferentialItem[]): DifferentialTotals => {
+  // Use new unified calculation method
+  return CompensationCalculator.legacyCalculateTotalDifferentials(differentials);
+};
 
 export const formatCurrency = (amount: number, unit: 'hourly' | 'annual'): string => {
-  const formatted = amount.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: unit === 'hourly' ? 2 : 0,
-    maximumFractionDigits: unit === 'hourly' ? 2 : 0,
-  });
-  
+  const decimals = unit === 'hourly' ? 2 : 0;
+  const formatted = CompensationCalculator.formatCurrency(amount, decimals);
+
   return unit === 'hourly' ? `${formatted}/hr` : `${formatted}/year`;
 };
 

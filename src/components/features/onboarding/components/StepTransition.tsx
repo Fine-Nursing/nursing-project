@@ -23,51 +23,51 @@ export default function StepTransition({
 }: StepTransitionProps) {
   return (
     <div className="w-full">
-      {/* Mobile view - horizontal compact */}
+      {/* Mobile view - horizontal compact with better spacing */}
       <div className="sm:hidden">
-        <div className="flex items-center justify-between px-2">
+        <div className="flex items-center justify-between px-4">
           {steps.map((step, index) => (
             <React.Fragment key={step.id}>
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center flex-shrink-0">
                 <m.div
-                  animate={{ 
-                    scale: step.isActive ? 1.1 : 1
+                  animate={{
+                    scale: step.isActive ? 1.05 : 1
                   }}
                   transition={{ duration: 0.3 }}
                   className={`
-                    w-10 h-10 rounded-full flex items-center justify-center
-                    ${step.isCompleted 
-                      ? 'bg-emerald-500 text-white' 
-                      : step.isActive 
+                    w-8 h-8 rounded-full flex items-center justify-center
+                    ${step.isCompleted
+                      ? 'bg-emerald-500 text-white'
+                      : step.isActive
                         ? 'bg-emerald-100 border-2 border-emerald-500 text-emerald-600'
-                        : 'bg-gray-100 border-2 border-gray-300 text-gray-400'
+                        : 'bg-gray-100 border border-gray-300 text-gray-400'
                     }
                   `}
                 >
                   {step.isCompleted ? (
-                    <CheckCircle className="w-5 h-5" />
+                    <CheckCircle className="w-4 h-4" />
                   ) : (
-                    <span className="text-sm font-semibold">{index + 1}</span>
+                    <span className="text-xs font-semibold">{index + 1}</span>
                   )}
                 </m.div>
                 <p className={`
-                  mt-1 text-[10px] font-medium text-center max-w-[60px]
-                  ${step.isActive 
-                    ? 'text-emerald-600' 
-                    : step.isCompleted 
+                  mt-1.5 text-[11px] font-medium text-center
+                  ${step.isActive
+                    ? 'text-emerald-600'
+                    : step.isCompleted
                       ? 'text-gray-700'
                       : 'text-gray-400'
                   }
                 `}>
-                  {step.title}
+                  {step.title.split(' ')[0]}
                 </p>
               </div>
               {index < steps.length - 1 && (
-                <div className="flex-1 h-0.5 bg-gray-200 mx-1">
+                <div className="flex-1 h-0.5 bg-gray-200 mx-1.5 max-w-[40px]">
                   <m.div
                     className="h-full bg-emerald-500"
                     initial={{ width: 0 }}
-                    animate={{ 
+                    animate={{
                       width: step.isCompleted ? '100%' : '0%'
                     }}
                     transition={{ duration: 0.5 }}

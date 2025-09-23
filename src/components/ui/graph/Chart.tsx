@@ -8,6 +8,7 @@ import {
 import type { RegionStates } from 'src/types/location';
 import { findStateByCode } from 'src/api/useLocations';
 import { useTheme } from 'src/contexts/ThemeContext';
+import { CompensationCalculator } from 'src/utils/compensation';
 
 // -------------------------------------------
 // Types
@@ -19,8 +20,10 @@ interface ChartProps {
     'Differential Pay': number;
     total: number;
     state: string;
+    shiftHours?: number; // Add optional shift hours
   }>;
   states?: RegionStates;
+  defaultShiftHours?: number; // Default shift hours if not provided in data
 }
 
 type NursingBarDatum = {
@@ -29,18 +32,20 @@ type NursingBarDatum = {
   'Differential Pay': number;
   total: number;
   state: string;
+  shiftHours?: number;
 } & BarDatum;
 
 interface ChartTooltipProps extends BarTooltipProps<NursingBarDatum> {
   states?: RegionStates;
+  defaultShiftHours?: number;
 }
 
 // -------------------------------------------
 // Utility functions
 // -------------------------------------------
-function annualToHourly(annualSalary: number): number {
-  // Convert annual salary to hourly wage (assuming 40 hours/week * 52 weeks = 2080 hours/year)
-  return Math.round((annualSalary / 2080) * 100) / 100; // Round to 2 decimal places
+function annualToHourly(annualSalary: number, shiftHours: number = 12): number {
+  // Use CompensationCalculator for accurate conversion based on shift hours
+  return CompensationCalculator.annualToHourly(annualSalary, shiftHours);
 }
 
 function formatCompactNumber(num: number): string {
@@ -101,18 +106,22 @@ function ChartTooltip({
   indexValue,
   data,
   states,
+  defaultShiftHours = 12,
 }: ChartTooltipProps) {
   const stateName =
     states && data.state !== 'ALL'
       ? findStateByCode(states, data.state)?.name
       : 'All Locations';
 
+  // Use data's shiftHours if available, otherwise use default
+  const shiftHours = data.shiftHours || defaultShiftHours;
+
   return (
     <div className="bg-white p-3 sm:p-4 shadow-xl rounded-lg border border-gray-100 min-w-[250px]">
       <div className="font-semibold text-gray-800 text-sm sm:text-lg mb-2 sm:mb-3">
         {typeof indexValue === 'number' ? indexValue.toString() : indexValue}
       </div>
-      
+
       {/* Base Pay */}
       <div className="flex items-center justify-between text-xs sm:text-sm mb-1">
         <div className="flex items-center gap-2">
@@ -120,10 +129,10 @@ function ChartTooltip({
           <span className="text-gray-700">Base Pay (hourly):</span>
         </div>
         <span className="font-medium text-indigo-600">
-          ${annualToHourly(data['Base Pay']).toFixed(2)}
+          ${annualToHourly(data['Base Pay'], shiftHours).toFixed(2)}
         </span>
       </div>
-      
+
       {/* Differential Pay */}
       <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
         <div className="flex items-center gap-2">
@@ -131,19 +140,20 @@ function ChartTooltip({
           <span className="text-gray-700">Differential Pay (hourly):</span>
         </div>
         <span className="font-medium text-indigo-400">
-          ${annualToHourly(data['Differential Pay']).toFixed(2)}
+          ${annualToHourly(data['Differential Pay'], shiftHours).toFixed(2)}
         </span>
       </div>
-      
+
       <div className="pt-2 border-t border-gray-100">
         <div className="flex items-center justify-between font-semibold text-gray-800 text-xs sm:text-base mb-1">
           <span>Total Hourly Compensation:</span>
           <span className="text-emerald-600">
-            ${annualToHourly(data.total).toFixed(2)}
+            ${annualToHourly(data.total, shiftHours).toFixed(2)}
           </span>
         </div>
-        <div className="text-xs sm:text-sm text-gray-600">
-          Location: {stateName || data.state}
+        <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+          <div>Location: {stateName || data.state}</div>
+          <div className="text-xs text-gray-500">Based on {shiftHours}-hour shifts</div>
         </div>
       </div>
     </div>
@@ -153,7 +163,7 @@ function ChartTooltip({
 // -------------------------------------------
 // Main Chart Component
 // -------------------------------------------
-function Chart({ data, states }: ChartProps) {
+function Chart({ data, states, defaultShiftHours = 12 }: ChartProps) {
   const [isMobile, setIsMobile] = useState(false);
   const { theme } = useTheme();
   const isDark = theme === 'dark';
@@ -189,13 +199,17 @@ function Chart({ data, states }: ChartProps) {
     );
   }
 
-  // Convert annual data to hourly
-  const hourlyData = validData.map(item => ({
-    ...item,
-    'Base Pay': annualToHourly(item['Base Pay']),
-    'Differential Pay': annualToHourly(item['Differential Pay']),
-    total: annualToHourly(item.total),
-  }));
+  // Convert annual data to hourly using proper shift hours
+  const hourlyData = validData.map(item => {
+    const shiftHours = item.shiftHours || defaultShiftHours;
+    return {
+      ...item,
+      'Base Pay': annualToHourly(item['Base Pay'], shiftHours),
+      'Differential Pay': annualToHourly(item['Differential Pay'], shiftHours),
+      total: annualToHourly(item.total, shiftHours),
+      shiftHours, // Preserve shift hours for tooltip
+    };
+  });
 
   return (
     <div className="h-[650px] w-full">
@@ -314,7 +328,7 @@ function Chart({ data, states }: ChartProps) {
           },
         ]}
         // eslint-disable-next-line react/no-unstable-nested-components
-        tooltip={(props) => <ChartTooltip {...props} states={states} />}
+        tooltip={(props) => <ChartTooltip {...props} states={states} defaultShiftHours={defaultShiftHours} />}
       />
     </div>
   );

@@ -52,15 +52,21 @@ export const ROTATION_PATTERNS = [
   },
 ];
 
+// @deprecated - Use new DifferentialAPI instead
+// These are legacy constants, kept for backward compatibility
+// New system uses dynamic values from Backend API
 export const DIFFERENTIALS = {
-  NIGHT: 4.5,
-  WEEKEND: 3.75,
-  CHARGE: 2.5,
-  PRECEPTOR: 2.0,
-  CERTIFICATION: 1.5,
-  FLOAT_POOL: 5.0,
-  HOLIDAY: 7.5,
+  NIGHT: 4.5,          // Legacy: static value
+  WEEKEND: 3.75,       // Legacy: static value
+  CHARGE: 2.5,         // Legacy: static value
+  PRECEPTOR: 2.0,      // Legacy: static value
+  CERTIFICATION: 1.5,  // Legacy: static value
+  FLOAT_POOL: 5.0,     // Legacy: static value
+  HOLIDAY: 7.5,        // Legacy: static value
 };
+
+// @deprecated - Use CompensationCalculator.toHourlyRate() instead
+// These base pay ranges should come from Backend API
 
 // Base pay
 export const UNIT_BASE_PAY = {

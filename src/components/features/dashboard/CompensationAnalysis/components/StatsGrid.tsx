@@ -2,6 +2,7 @@ import React from 'react';
 import { Clock, Banknote, Calendar } from 'lucide-react';
 import { formatNumber } from '../utils';
 import type { UserProfile } from '../types';
+import { CompensationCalculator } from 'src/utils/compensation';
 
 interface StatsGridProps {
   theme: 'light' | 'dark';
@@ -9,6 +10,7 @@ interface StatsGridProps {
   editedProfile: UserProfile;
   setEditedProfile: (profile: UserProfile) => void;
   monthlyBase: number;
+  shiftHours?: number;
 }
 
 export function StatsGrid({
@@ -16,12 +18,16 @@ export function StatsGrid({
   isEditing,
   editedProfile,
   setEditedProfile,
-  monthlyBase
+  monthlyBase,
+  shiftHours = 12
 }: StatsGridProps) {
-  // Base pay만의 월급 계산 (base hourly rate * 160시간 기준)
-  const actualMonthlyBase = editedProfile?.baseAnnualSalary 
+  // Get shift pattern for accurate monthly hours
+  const pattern = CompensationCalculator.getShiftPattern(shiftHours);
+
+  // Base pay monthly calculation using actual monthly hours from shift pattern
+  const actualMonthlyBase = editedProfile?.baseAnnualSalary
     ? Math.round(editedProfile.baseAnnualSalary / 12)
-    : Math.round((editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0) * 160);
+    : Math.round((editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0) * pattern.hoursPerMonth);
     
   return (
     <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -51,11 +57,14 @@ export function StatsGrid({
               type="number"
               step="0.01"
               value={editedProfile?.baseHourlyRate || editedProfile?.hourlyRate || 0}
-              onChange={(e) => setEditedProfile({
-                ...editedProfile,
-                baseHourlyRate: parseFloat(e.target.value) || 0,
-                baseAnnualSalary: Math.round((parseFloat(e.target.value) || 0) * 2080)
-              })}
+              onChange={(e) => {
+                const hourlyRate = parseFloat(e.target.value) || 0;
+                setEditedProfile({
+                  ...editedProfile,
+                  baseHourlyRate: hourlyRate,
+                  baseAnnualSalary: CompensationCalculator.hourlyToAnnual(hourlyRate, shiftHours)
+                });
+              }}
               className={`text-xl font-bold w-20 bg-transparent border-b ${
                 theme === 'light' 
                   ? 'border-gray-300 text-gray-900' 
