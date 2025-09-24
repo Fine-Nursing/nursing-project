@@ -2,8 +2,8 @@ import type { AxiosError } from 'axios';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// Vercel Rewrites를 사용하므로 상대 경로 사용
-const API_BASE_URL = '';
+// Backend API base URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'https://nurse-backend.duckdns.org';
 
 // 공통 axios 인스턴스 생성
 export const apiClient = axios.create({

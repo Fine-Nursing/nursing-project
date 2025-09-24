@@ -34,7 +34,7 @@ const useEmploymentMutation = () => {
         JSON.parse(localStorage.getItem('onboarding_session') || '{}').tempUserId;
 
       const response = await fetch(
-        '/api/onboarding/employment',
+        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/employment`,
         {
           method: 'POST',
           headers: {

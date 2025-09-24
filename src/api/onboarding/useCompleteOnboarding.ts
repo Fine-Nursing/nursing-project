@@ -27,7 +27,7 @@ const useCompleteOnboarding = () => {
 
     try {
       const response = await fetch(
-        '/api/onboarding/complete',
+        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/complete`,
         {
           method: 'POST',
           headers: {
