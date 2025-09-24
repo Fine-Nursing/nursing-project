@@ -21,7 +21,7 @@ const checkExistingProgress = async (
   tempUserId: string
 ): Promise<OnboardingProgress | null> => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/progress/${tempUserId}`,
+    `/api/onboarding/progress/${tempUserId}`,
     {
       credentials: 'include',
     }
@@ -36,7 +36,7 @@ const checkExistingProgress = async (
 
 const createNewOnboarding = async () => {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/init`,
+    '/api/onboarding/init',
     {
       method: 'POST',
       headers: {

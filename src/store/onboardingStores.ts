@@ -159,7 +159,7 @@ const useOnboardingStore = create<OnboardingStore>((set, get) => ({
 
       // 서버에서 진행상황 조회
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/progress?tempUserId=${tempUserId}`,
+        `/api/onboarding/progress?tempUserId=${tempUserId}`,
         {
           method: 'GET',
           credentials: 'include',

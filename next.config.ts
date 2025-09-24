@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+
   // Performance optimizations
   experimental: {
     // Optimize package imports for better tree shaking
