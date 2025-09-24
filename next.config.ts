@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Test commit for rollback branch
   // Performance optimizations
   experimental: {
     // Optimize package imports for better tree shaking
