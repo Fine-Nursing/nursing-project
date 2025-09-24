@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { AvatarConfig } from '../types';
 import { DEFAULT_AVATAR_CONFIG } from '../constants';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'https://nurse-backend.duckdns.org';
 
 export function useAvatarManagement() {
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);

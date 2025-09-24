@@ -20,7 +20,7 @@ const useCultureMutation = () => {
         JSON.parse(localStorage.getItem('onboarding_session') || '{}').tempUserId;
 
       const response = await fetch(
-        '/api/onboarding/culture',
+        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/culture`,
         {
           method: 'POST',
           headers: {

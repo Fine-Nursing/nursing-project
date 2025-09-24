@@ -45,7 +45,7 @@ const useAuthStore = create<AuthState>()((set, get) => ({
         set({ isLoading: true });
         
         try {
-          const response = await fetch('/api/auth/me', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BE_URL}/api/auth/me`, {
             method: 'GET',
             credentials: 'include',
           });
@@ -102,7 +102,7 @@ const useAuthStore = create<AuthState>()((set, get) => ({
 
       signOut: async () => {
         try {
-          const response = await fetch('/api/auth/signout', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_BE_URL}/api/auth/signout`, {
             method: 'POST',
             credentials: 'include',
           });
