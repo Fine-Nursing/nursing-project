@@ -38,7 +38,7 @@ const useAuth = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/auth/signup`,
+        '/api/auth/signup',
         {
           method: 'POST',
           headers: {
@@ -84,7 +84,7 @@ const useAuth = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/auth/signin`,
+        '/api/auth/signin',
         {
           method: 'POST',
           headers: {
@@ -131,7 +131,7 @@ const useAuth = () => {
   const checkAuth = async (): Promise<User | null> => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/auth/me`,
+        '/api/auth/me',
         {
           method: 'GET',
           credentials: 'include',

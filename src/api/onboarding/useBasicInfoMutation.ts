@@ -19,7 +19,7 @@ const useBasicInfoMutation = () => {
         JSON.parse(localStorage.getItem('onboarding_session') || '{}').tempUserId;
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/basic-info`,
+        '/api/onboarding/basic-info',
         {
           method: 'POST',
           headers: {

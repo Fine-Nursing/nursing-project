@@ -113,8 +113,7 @@ export default function HomePage() {
       }
 
       // If user is logged in but hasn't completed onboarding, let them continue
-      const API_URL = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
-      const response = await fetch(`${API_URL}/api/onboarding/init`, {
+      const response = await fetch('/api/onboarding/init', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

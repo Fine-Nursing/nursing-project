@@ -28,9 +28,7 @@ export default function AuthCallback() {
 
         if (session) {
           // Sync with backend to create/update user in local database
-          const baseUrl = process.env.NEXT_PUBLIC_BE_URL || 'http://localhost:3000';
-          
-          const response = await fetch(`${baseUrl}/api/auth/oauth/callback`, {
+          const response = await fetch('/api/auth/oauth/callback', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
