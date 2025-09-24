@@ -10,15 +10,6 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'http://localhost:3000/api/:path*',
-      },
-    ];
-  },
-  // Test commit for rollback branch
   // Performance optimizations
   experimental: {
     // Optimize package imports for better tree shaking
