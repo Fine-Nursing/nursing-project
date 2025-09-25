@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import useOnboardingStore from 'src/store/onboardingStores';
+import apiClient from 'src/lib/axios';
 
 interface OnboardingSession {
   tempUserId: string;
@@ -20,38 +21,27 @@ interface OnboardingProgress {
 const checkExistingProgress = async (
   tempUserId: string
 ): Promise<OnboardingProgress | null> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/progress/${tempUserId}`,
-    {
-      credentials: 'include',
-    }
-  );
+  try {
+    const response = await apiClient.get(`/api/onboarding/progress/${tempUserId}`);
 
-  if (!response.ok) {
+    if (!response.data.success) {
+      return null;
+    }
+
+    return response.data.data || response.data;
+  } catch {
     return null;
   }
-
-  return response.json();
 };
 
 const createNewOnboarding = async () => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/init`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({}),
-    }
-  );
+  const response = await apiClient.post('/api/onboarding/init', {});
 
-  if (!response.ok) {
-    throw new Error('Failed to initialize onboarding.');
+  if (!response.data.success) {
+    throw new Error(response.data.message || 'Failed to initialize onboarding.');
   }
 
-  return response.json();
+  return response.data.data || response.data;
 };
 
 const useInitializeOnboarding = () => {

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { LoadingState } from 'src/components/ui/feedback';
 // import useAuthStore from 'src/hooks/useAuthStore';
+// import apiClient from 'src/lib/axios';
 
 export default function AuthCallback() {
   const router = useRouter();
@@ -28,21 +29,14 @@ export default function AuthCallback() {
 
         if (session) {
           // Sync with backend to create/update user in local database
-          const response = await fetch('/api/auth/oauth/callback', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-              access_token: session.access_token,
-              refresh_token: session.refresh_token,
-              user: session.user,
-            }),
+          const response = await apiClient.post('/api/auth/oauth/callback', {
+            access_token: session.access_token,
+            refresh_token: session.refresh_token,
+            user: session.user,
           });
 
-          if (response.ok) {
-            const userData = await response.json();
+          if (response.data.success) {
+            const userData = response.data.data || response.data;
             
             // Update auth store
             useAuthStore.getState().setUser({
