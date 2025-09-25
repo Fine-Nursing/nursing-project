@@ -1,7 +1,6 @@
 // src/api/onboarding/useEmploymentMutation.ts
 import { useMutation } from '@tanstack/react-query';
 import useOnboardingStore from 'src/store/onboardingStores';
-import apiClient from 'src/lib/axios';
 
 interface EmploymentPayload {
   specialty: string;
@@ -34,18 +33,29 @@ const useEmploymentMutation = () => {
       const storedTempUserId = tempUserId ||
         JSON.parse(localStorage.getItem('onboarding_session') || '{}').tempUserId;
 
-      const response = await apiClient.post('/api/onboarding/employment', {
-        ...data,
-        tempUserId: storedTempUserId,
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/employment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            ...data,
+            tempUserId: storedTempUserId,
+          }),
+        }
+      );
 
-      if (!response.data.success) {
+      if (!response.ok) {
+        const error = await response.json();
         throw new Error(
-          response.data.message || 'Failed to save employment information'
+          error.message || 'Failed to save employment information'
         );
       }
 
-      return response.data;
+      return response.json();
     },
     onSuccess: () => {
       setStep('culture');
