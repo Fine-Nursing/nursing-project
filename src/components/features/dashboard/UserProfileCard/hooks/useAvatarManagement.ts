@@ -21,7 +21,7 @@ export function useAvatarManagement() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/profile/avatar`, {
+      const response = await fetch(`${API_BASE_URL}/api/profile/avatar`, {
         method: 'GET',
         credentials: 'include', // Include cookies for authentication
         headers: {
@@ -64,7 +64,7 @@ export function useAvatarManagement() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/profile/avatar`, {
+      const response = await fetch(`${API_BASE_URL}/api/profile/avatar`, {
         method: 'PUT',
         credentials: 'include', // Include cookies for authentication
         headers: {
@@ -100,7 +100,7 @@ export function useAvatarManagement() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_BASE_URL}/profile/avatar`, {
+      const response = await fetch(`${API_BASE_URL}/api/profile/avatar`, {
         method: 'DELETE',
         credentials: 'include', // Include cookies for authentication
         headers: {
