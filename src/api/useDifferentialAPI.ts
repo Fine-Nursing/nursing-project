@@ -2,6 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'https://nurse-backend.duckdns.org';
 const API_PATH = '/api';
+
 // Types
 export interface DifferentialItem {
   type: string;
