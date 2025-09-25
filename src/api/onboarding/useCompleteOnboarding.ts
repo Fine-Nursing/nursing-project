@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuthStore from 'src/hooks/useAuthStore';
 import useOnboardingStore from 'src/store/onboardingStores';
+import apiClient from 'src/lib/axios';
 
 interface CompleteOnboardingResult {
   success: boolean;
@@ -26,31 +27,18 @@ const useCompleteOnboarding = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BE_URL}/api/onboarding/complete`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            tempUserId,
-          }),
-        }
-      );
+      const response = await apiClient.post('/api/onboarding/complete', {
+        tempUserId,
+      });
 
-      if (!response.ok) {
-        const errorData = await response
-          .json()
-          .catch(() => ({ message: 'Failed to complete onboarding' }));
+      if (!response.data.success) {
         const errorMessage =
-          errorData.message || 'Failed to complete onboarding';
+          response.data.message || 'Failed to complete onboarding';
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
 
-      const result = await response.json();
+      const result = response.data;
 
       // Clear onboarding session data
       localStorage.removeItem('onboarding_session');
