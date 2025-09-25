@@ -79,10 +79,9 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       // 이미 로그인 페이지거나 공개 API인 경우는 토스트 표시 안함
       const isAuthEndpoint = error.config?.url?.includes('/auth/');
-      const isOnboardingEndpoint = error.config?.url?.includes('/onboarding/');
       const isPublicEndpoint = error.config?.url?.includes('/dashboard/compensation-cards');
-
-      if (!isAuthEndpoint && !isOnboardingEndpoint && !isPublicEndpoint) {
+      
+      if (!isAuthEndpoint && !isPublicEndpoint) {
         toast.error('Please login to continue', {
           icon: '🔐',
           duration: 4000,
