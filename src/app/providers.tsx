@@ -14,6 +14,7 @@ function AuthInit() {
 
   useEffect(() => {
     // 온보딩 페이지에서는 인증 체크 건너뛰기
+    // 단, /auth/callback 같은 인증 관련 페이지는 체크 필요
     if (pathname?.startsWith('/onboarding')) {
       return;
     }
