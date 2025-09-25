@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BE_URL || 'https://nurse-backend.duckdns.org';
+const API_PATH = '/api';
 
 // Types
 export interface DifferentialItem {
@@ -52,7 +53,7 @@ export interface DifferentialTypes {
 
 // API functions
 async function fetchDifferentialTypes(): Promise<DifferentialTypes> {
-  const response = await fetch(`${API_BASE_URL}/differentials/types`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATH}/differentials/types`, {
     credentials: 'include',
   });
 
@@ -65,7 +66,7 @@ async function fetchDifferentialTypes(): Promise<DifferentialTypes> {
 }
 
 async function fetchAllDifferentialConfigs(): Promise<Record<string, DifferentialConfig>> {
-  const response = await fetch(`${API_BASE_URL}/differentials/config`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATH}/differentials/config`, {
     credentials: 'include',
   });
 
@@ -78,7 +79,7 @@ async function fetchAllDifferentialConfigs(): Promise<Record<string, Differentia
 }
 
 async function fetchDifferentialConfig(type: string): Promise<DifferentialConfig> {
-  const response = await fetch(`${API_BASE_URL}/differentials/config/${type}`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATH}/differentials/config/${type}`, {
     credentials: 'include',
   });
 
@@ -95,7 +96,7 @@ async function previewDifferentialCalculation(
   basePay: number,
   basePayUnit: string = 'hourly'
 ): Promise<DifferentialCalculationResult> {
-  const response = await fetch(`${API_BASE_URL}/differentials/preview`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATH}/differentials/preview`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -126,7 +127,7 @@ async function calculateAndSaveDifferentials(
   basePay: number,
   basePayUnit: string = 'hourly'
 ): Promise<DifferentialCalculationResult> {
-  const response = await fetch(`${API_BASE_URL}/differentials/calculate`, {
+  const response = await fetch(`${API_BASE_URL}${API_PATH}/differentials/calculate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
