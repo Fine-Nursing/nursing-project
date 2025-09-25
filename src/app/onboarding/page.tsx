@@ -45,9 +45,10 @@ function OnboardingFlow() {
   const [showExitModal, setShowExitModal] = React.useState(false);
 
   // 컴포넌트 마운트 시 서버에서 상태 복원
-  React.useEffect(() => {
-    restoreFromServer();
-  }, [restoreFromServer]);
+  // NOTE: useInitializeOnboarding에서 이미 처리하고 있음
+  // React.useEffect(() => {
+  //   restoreFromServer();
+  // }, [restoreFromServer]);
 
   const renderStep = (step: OnboardingStep) => {
     const Component = (() => {
