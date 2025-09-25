@@ -60,11 +60,11 @@ async function fetchDifferentialTypes(): Promise<DifferentialTypes> {
     credentials: 'include',
   });
 
-
-  if (!data.success) {
-    throw new Error(data.message || 'Failed to fetch differential types');
+  if (!response.ok) {
+    throw new Error('Failed to fetch differential types');
   }
 
+  const data = await response.json();
   return data.data;
 }
 
@@ -74,11 +74,11 @@ async function fetchAllDifferentialConfigs(): Promise<Record<string, Differentia
     credentials: 'include',
   });
 
-
-  if (!data.success) {
-    throw new Error(data.message || 'Failed to fetch differential configs');
+  if (!response.ok) {
+    throw new Error('Failed to fetch differential configs');
   }
 
+  const data = await response.json();
   return data.data;
 }
 
@@ -88,11 +88,11 @@ async function fetchDifferentialConfig(type: string): Promise<DifferentialConfig
     credentials: 'include',
   });
 
-
-  if (!data.success) {
-    throw new Error(data.message || `Failed to fetch config for ${type}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch config for ${type}`);
   }
 
+  const data = await response.json();
   return data.data;
 }
 
@@ -113,13 +113,13 @@ async function previewDifferentialCalculation(
       basePay,
       basePayUnit,
     }),
-
   });
 
-  if (!data.success) {
-    throw new Error(data.message || 'Calculation failed');
+  if (!response.ok) {
+    throw new Error('Calculation failed');
   }
 
+  const data = await response.json();
   return data.data;
 }
 
@@ -142,13 +142,13 @@ async function calculateAndSaveDifferentials(
       basePay,
       basePayUnit,
     }),
-
   });
 
-  if (!data.success) {
-    throw new Error(data.message || 'Calculation failed');
+  if (!response.ok) {
+    throw new Error('Calculation failed');
   }
 
+  const data = await response.json();
   return data.data;
 }
 
