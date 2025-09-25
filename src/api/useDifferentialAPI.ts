@@ -1,6 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-
-const API_BASE_URL = '/api';
+import apiClient from 'src/lib/axios';
 
 // Types
 export interface DifferentialItem {
@@ -52,41 +51,32 @@ export interface DifferentialTypes {
 
 // API functions
 async function fetchDifferentialTypes(): Promise<DifferentialTypes> {
-  const response = await fetch(`${API_BASE_URL}/differentials/types`, {
-    credentials: 'include',
-  });
+  const { data } = await apiClient.get('/api/differentials/types');
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch differential types');
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to fetch differential types');
   }
 
-  const data = await response.json();
   return data.data;
 }
 
 async function fetchAllDifferentialConfigs(): Promise<Record<string, DifferentialConfig>> {
-  const response = await fetch(`${API_BASE_URL}/differentials/config`, {
-    credentials: 'include',
-  });
+  const { data } = await apiClient.get('/api/differentials/config');
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch differential configs');
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to fetch differential configs');
   }
 
-  const data = await response.json();
   return data.data;
 }
 
 async function fetchDifferentialConfig(type: string): Promise<DifferentialConfig> {
-  const response = await fetch(`${API_BASE_URL}/differentials/config/${type}`, {
-    credentials: 'include',
-  });
+  const { data } = await apiClient.get(`/api/differentials/config/${type}`);
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch config for ${type}`);
+  if (!data.success) {
+    throw new Error(data.message || `Failed to fetch config for ${type}`);
   }
 
-  const data = await response.json();
   return data.data;
 }
 
@@ -95,24 +85,12 @@ async function previewDifferentialCalculation(
   basePay: number,
   basePayUnit: string = 'hourly'
 ): Promise<DifferentialCalculationResult> {
-  const response = await fetch(`${API_BASE_URL}/differentials/preview`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      differentials,
-      basePay,
-      basePayUnit,
-    }),
+  const { data } = await apiClient.post('/api/differentials/preview', {
+    differentials,
+    basePay,
+    basePayUnit,
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to preview differential calculation');
-  }
-
-  const data = await response.json();
   if (!data.success) {
     throw new Error(data.message || 'Calculation failed');
   }
@@ -126,25 +104,13 @@ async function calculateAndSaveDifferentials(
   basePay: number,
   basePayUnit: string = 'hourly'
 ): Promise<DifferentialCalculationResult> {
-  const response = await fetch(`${API_BASE_URL}/differentials/calculate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({
-      jobId,
-      differentials,
-      basePay,
-      basePayUnit,
-    }),
+  const { data } = await apiClient.post('/api/differentials/calculate', {
+    jobId,
+    differentials,
+    basePay,
+    basePayUnit,
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to calculate and save differentials');
-  }
-
-  const data = await response.json();
   if (!data.success) {
     throw new Error(data.message || 'Calculation failed');
   }
