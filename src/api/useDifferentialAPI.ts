@@ -110,14 +110,10 @@ async function previewDifferentialCalculation(
   });
 
   if (!response.ok) {
-    throw new Error('Failed to preview differential calculation');
+    throw new Error('Calculation failed');
   }
 
   const data = await response.json();
-  if (!data.success) {
-    throw new Error(data.message || 'Calculation failed');
-  }
-
   return data.data;
 }
 
@@ -142,14 +138,10 @@ async function calculateAndSaveDifferentials(
   });
 
   if (!response.ok) {
-    throw new Error('Failed to calculate and save differentials');
+    throw new Error('Calculation failed');
   }
 
   const data = await response.json();
-  if (!data.success) {
-    throw new Error(data.message || 'Calculation failed');
-  }
-
   return data.data;
 }
 
