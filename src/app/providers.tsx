@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import { Toaster } from 'react-hot-toast';
 import useAuthStore from 'src/hooks/useAuthStore';
 import ErrorBoundary from 'src/components/ErrorBoundary';
@@ -10,16 +9,10 @@ import { ThemeProvider } from 'src/contexts/ThemeContext';
 
 function AuthInit() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
-  const pathname = usePathname();
 
   useEffect(() => {
-    // 온보딩 페이지에서는 인증 체크 건너뛰기
-    // 단, /auth/callback 같은 인증 관련 페이지는 체크 필요
-    if (pathname?.startsWith('/onboarding')) {
-      return;
-    }
-
-    // 페이지 로드 시 한 번만 인증 상태 확인
+    // 모든 페이지에서 인증 체크는 시도하지만, 실패해도 괜찮음
+    // 온보딩은 로그인/비로그인 모두 가능해야 함
     let isMounted = true;
 
     const initAuth = async () => {
@@ -28,6 +21,7 @@ function AuthInit() {
           await checkAuth();
         } catch {
           // Silent fail on initial auth check
+          // 온보딩 페이지든 어디든 인증 실패는 조용히 처리
         }
       }
     };
@@ -37,7 +31,7 @@ function AuthInit() {
     return () => {
       isMounted = false;
     };
-  }, [checkAuth, pathname]); // pathname dependency 추가
+  }, [checkAuth]); // pathname dependency 제거
 
   return null;
 }
