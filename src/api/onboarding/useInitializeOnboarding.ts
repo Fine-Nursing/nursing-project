@@ -38,11 +38,16 @@ const createNewOnboarding = async () => {
   try {
     const response = await apiClient.post('/api/onboarding/init', {});
 
-    if (!response.data.success) {
-      throw new Error(response.data.message || 'Failed to initialize onboarding.');
+    // 백엔드가 직접 데이터를 반환하는 경우와 success 필드를 반환하는 경우 모두 처리
+    if (response.data.tempUserId && response.data.sessionId) {
+      return response.data;
     }
 
-    return response.data.data || response.data;
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+
+    throw new Error('Invalid response from onboarding init');
   } catch (error: any) {
     // 401 에러는 무시하고 기본값 반환 (온보딩은 인증 없이 가능해야 함)
     if (error?.response?.status === 401) {
@@ -52,6 +57,7 @@ const createNewOnboarding = async () => {
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       return { tempUserId, sessionId };
     }
+    console.error('Failed to create onboarding session:', error);
     throw error;
   }
 };
